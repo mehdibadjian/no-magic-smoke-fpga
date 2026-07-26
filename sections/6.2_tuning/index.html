@@ -1,0 +1,2441 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An independent, unofficial study companion to the AMD UltraFast Design Methodology. FPGA engineering taught Head First style, with the arithmetic left in - worked calculations, runnable artifacts, and answers to every question it asks.">
+      
+      
+        <meta name="author" content="Mehdi Badjian">
+      
+      
+        <link rel="canonical" href="https://mehdibadjian.github.io/no-magic-smoke-fpga/sections/6.2_tuning/">
+      
+      
+        <link rel="prev" href="../6.1_debug/">
+      
+      
+        <link rel="next" href="../../references/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>6.2 Performance Tuning - No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#section-62-system-performance-tuning-the-final-sprint" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-header__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              6.2 Performance Tuning
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../1.1_pcb_layout/" class="md-tabs__link">
+          
+  
+  
+  Chapter 1: Board Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../2.1_timing_ballet/" class="md-tabs__link">
+          
+  
+  
+  Chapter 2: Constraints
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../3.1_rtl_coding/" class="md-tabs__link">
+          
+  
+  
+  Chapter 3: Design Creation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../4.1_synthesis/" class="md-tabs__link">
+          
+  
+  
+  Chapter 4: Implementation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../5.1_power/" class="md-tabs__link">
+          
+  
+  
+  Chapter 5: Power & Thermal
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../6.1_debug/" class="md-tabs__link">
+          
+  
+  
+  Chapter 6: Debug & Tuning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../references/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  References
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-nav__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 1: Board Planning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 1: Board Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.1_pcb_layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.1 Hardware Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.2_power_planning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.2 Power Delivery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.3_clocking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.3 Clocking Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.4_ssi_hbm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.4 I/O Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 2: Constraints
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 2: Constraints
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.1_timing_ballet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.1 Defining Clocks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.2_constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.2 I/O Delays
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.3_cdc_minefield/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.3 CDC Minefield
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 3: Design Creation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 3: Design Creation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.1_rtl_coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1 RTL Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.2_ip_integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 IP Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.3_security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Design Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.4_verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 4: Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 4: Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.1_synthesis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.1 Synthesis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.2_placement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.2 Placement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.3_closure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.3 Closure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 5: Power & Thermal
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 5: Power & Thermal
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.1_power/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.1 Power Estimation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.2_thermal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.2 Thermal Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 6: Debug & Tuning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 6: Debug & Tuning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6.1_debug/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.1 Hardware Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.2 Performance Tuning
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.2 Performance Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#throughput-vs-latency-choosing-your-race" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Throughput vs. Latency: Choosing Your Race
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#axi-performance-monitor-apm-the-data-traffic-camera" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AXI Performance Monitor (APM): The Data Traffic Camera
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-the-bandwidth-king-and-the-latency-ninja" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: The Bandwidth King and the Latency Ninja
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bottleneck-identification-finding-the-slowest-runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bottleneck Identification: Finding the Slowest Runner
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-victory-lap-final-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Victory Lap: Final Validation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-fifo-starvation-trap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The FIFO Starvation Trap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Do the Math">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#littles-law-the-one-formula-that-sizes-every-buffer-you-will-ever-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Little's Law: the one formula that sizes every buffer you will ever build
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#turning-an-apm-reading-into-a-verdict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Turning an APM reading into a verdict
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-throughputlatency-trade-quantified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The throughput/latency trade, quantified
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-the-sprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on the Sprint
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#throughput-vs-latency-choosing-your-race" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Throughput vs. Latency: Choosing Your Race
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#axi-performance-monitor-apm-the-data-traffic-camera" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AXI Performance Monitor (APM): The Data Traffic Camera
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-the-bandwidth-king-and-the-latency-ninja" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: The Bandwidth King and the Latency Ninja
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bottleneck-identification-finding-the-slowest-runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bottleneck Identification: Finding the Slowest Runner
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-victory-lap-final-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Victory Lap: Final Validation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-fifo-starvation-trap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The FIFO Starvation Trap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Do the Math">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#littles-law-the-one-formula-that-sizes-every-buffer-you-will-ever-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Little's Law: the one formula that sizes every buffer you will ever build
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#turning-an-apm-reading-into-a-verdict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Turning an APM reading into a verdict
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-throughputlatency-trade-quantified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The throughput/latency trade, quantified
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-the-sprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on the Sprint
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/edit/main/docs/sections/6.2_tuning.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/raw/main/docs/sections/6.2_tuning.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
+
+
+<h1 id="section-62-system-performance-tuning-the-final-sprint">Section 6.2: System Performance Tuning: The Final Sprint</h1>
+<p>Congratulations! Your FPGA design is running, it’s stable, and it’s cool. But there’s one final hurdle before you can ship: <strong>Performance Tuning</strong>. In the UltraFast methodology, meeting your timing constraints is just the minimum requirement. To truly succeed, your system must meet its "Real-World" performance goals, whether that’s processing 100 gigabits of data per second or responding to a radar pulse in under a microsecond.</p>
+<p>Think of performance tuning like a Formula 1 pit crew. The car is already fast, but the crew is looking for those tiny adjustments—the tire pressure, the wing angle, the fuel mix—that will turn a fast car into a championship-winning one.</p>
+<h3 id="throughput-vs-latency-choosing-your-race">Throughput vs. Latency: Choosing Your Race</h3>
+<p>In system tuning, you are usually optimizing for one of two things:</p>
+<ol>
+<li><strong>Throughput:</strong> The total amount of data you can process in a given time (e.g., Megabytes per second). This is like a massive cargo train—it carries a lot of weight, but it takes a long time to start and stop.</li>
+<li><strong>Latency:</strong> The time it takes for a single piece of data to travel from input to output (e.g., nanoseconds). This is like a high-speed drone—it carries very little, but it’s incredibly fast and agile.</li>
+</ol>
+<p>The AMD UltraFast methodology teaches you that you often have to trade one for the other. Adding registers (pipelining) increases your throughput by allowing higher clock speeds, but it also increases your latency by adding clock cycles to the path. Know your "Race" and tune accordingly.</p>
+<blockquote>
+<p><strong>Brain Power</strong>
+<strong>In a High-Frequency Trading (HFT) system, which is more important: Throughput or Latency? Why would adding an extra register to a 400MHz path actually HURT an HFT strategy even if it makes the timing easier to meet?</strong></p>
+</blockquote>
+<h3 id="axi-performance-monitor-apm-the-data-traffic-camera">AXI Performance Monitor (APM): The Data Traffic Camera</h3>
+<p>Most modern AMD FPGA designs use the <strong>AXI Interconnect</strong> to move data between modules. If your system is slow, the problem is usually a "Data Traffic Jam" in the interconnect. The <strong>AXI Performance Monitor (APM)</strong> is your tool for diagnosing these jams.</p>
+<p>The APM tracks how many bytes are moving across each bus and how much time the data spends waiting for a "Ready" signal. It’s like a traffic camera on a busy highway. If the APM shows that your DDR4 memory is only 20% utilized, but your processor is 100% busy, you know the bottleneck isn't the memory—it's the processing logic. Don't guess where the bottleneck is; let the APM show you the numbers.</p>
+<p><img alt="AXI Traffic Jam Monitor" src="../../assets/images/fig_6_2_apm.png" /></p>
+<h3 id="fireside-chat-the-bandwidth-king-and-the-latency-ninja">Fireside Chat: The Bandwidth King and the Latency Ninja</h3>
+<p><strong>Bandwidth King:</strong> "I’ve optimized the DMA engine to move 512 bits per clock cycle! We can fill up the entire DDR4 memory in less than a second. My throughput is legendary!"</p>
+<p><strong>Latency Ninja:</strong> "That’s impressive, but your DMA engine takes 2,000 clock cycles just to start a transfer. By the time your first byte arrives, my radar system has already missed the target. Your cargo train is too slow to react."</p>
+<p><strong>Bandwidth King:</strong> "React? Who cares about reaction time when you have this much volume?"</p>
+<p><strong>Latency Ninja:</strong> "The customer cares. They need the answer <em>now</em>, not a gigabyte of data later. I’ve tuned my design for a single-cycle response. I move less data, but I move it instantly. In my world, the first byte is the only one that matters."</p>
+<h3 id="bottleneck-identification-finding-the-slowest-runner">Bottleneck Identification: Finding the Slowest Runner</h3>
+<p>Every system has a <strong>Bottleneck</strong>—the single component that limits the overall performance. It might be the DDR4 bandwidth, the PCIe latency, or a poorly written state machine in your RTL.</p>
+<p>To find the bottleneck, use a "Stress Test." Gradually increase the data rate until the system fails. Then, use the ILA and APM to see which module was the first to "choke." Is a FIFO overflowing? Is a bus master waiting too long for an arbiter? Once you find the "Slowest Runner," you can focus 100% of your energy on optimizing that one component. Improving anything else is a waste of time.</p>
+<h3 id="the-victory-lap-final-validation">The Victory Lap: Final Validation</h3>
+<p>The "Victory Lap" is the final step of the UltraFast methodology. It’s where you run your design under "Worst-Case" conditions—maximum data rate, highest temperature, and minimum voltage—and verify that it still meets all its goals.</p>
+<p>Document your performance results. Create a "Benchmark Report" that shows your throughput, latency, and resource utilization. This report isn't just for the customer; it’s for <em>you</em>. It’s your proof that you followed the methodology, you did the work, and you built a world-class FPGA system.</p>
+<p><img alt="Victory Lap Finish Line" src="../../assets/images/fig_6_2_victory.png" /></p>
+<h3 id="code-detective-the-fifo-starvation-trap">Code Detective: The FIFO Starvation Trap</h3>
+<p>A common performance killer is a FIFO that isn't sized correctly for the system latency.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">// Code Detective: Why will this system fail to reach its maximum throughput?</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1">// The AXI master has a latency of 100 clock cycles to get data.</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1">// The FIFO is only 64 entries deep.</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1">// The consumer reads one entry per clock cycle.</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1">// Hint: Can the master refill the FIFO before the consumer empties it?</span>
+</code></pre></div>
+<p>The flaw here is <strong>FIFO Starvation</strong>. If the latency to get new data (100 cycles) is longer than the time it takes to empty the FIFO (64 cycles), the consumer will run out of data and have to wait.</p>
+<p>Put a number on the loss, because "throughput will drop significantly" is not actionable.
+The consumer drains 64 entries in 64 cycles, then waits 36 cycles for the refill to arrive:</p>
+<div class="arithmatex">\[\text{Duty} = \frac{64}{64 + 36} = \frac{64}{100} = 64\ \%\]</div>
+<p><strong>You are getting 64 % of the throughput you designed for</strong>, and no amount of tuning the
+memory controller changes it, because the memory controller is not the problem.</p>
+<p><strong>The fix</strong>, with the sizing derived rather than guessed:</p>
+<div class="arithmatex">\[\text{Depth} \ge \text{round-trip latency} \times \text{consumption rate}\]</div>
+<div class="arithmatex">\[\text{Depth} \ge 100\ \text{cycles} \times 1\ \text{entry/cycle} = 100\ \text{entries}\]</div>
+<p>Round up to a power of two and add margin for jitter in the memory latency, which is
+never actually constant:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// 128 entries: 100 for the latency-bandwidth product, 28 for latency variation.</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1">// Note this is the SAME calculation as TCP&#39;s bandwidth-delay product, and the same</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1">// as a CPU prefetch distance - it is the general answer to &quot;how much buffering does</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1">// a pipeline with latency need?&quot;</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">xpm_fifo_sync</span><span class="w"> </span><span class="p">#(</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="p">.</span><span class="n">FIFO_MEMORY_TYPE</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;block&quot;</span><span class="p">),</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="p">.</span><span class="n">FIFO_WRITE_DEPTH</span><span class="w"> </span><span class="p">(</span><span class="mi">128</span><span class="p">),</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="p">.</span><span class="n">WRITE_DATA_WIDTH</span><span class="w"> </span><span class="p">(</span><span class="mi">512</span><span class="p">),</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="p">.</span><span class="n">READ_DATA_WIDTH</span><span class="w">  </span><span class="p">(</span><span class="mi">512</span><span class="p">),</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="p">.</span><span class="n">READ_MODE</span><span class="w">        </span><span class="p">(</span><span class="s">&quot;fwft&quot;</span><span class="p">),</span><span class="w">     </span><span class="c1">// first-word-fall-through: removes a cycle of</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">                                    </span><span class="c1">// read latency from the consumer&#39;s critical loop</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="p">.</span><span class="n">PROG_EMPTY_THRESH</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span><span class="w">          </span><span class="c1">// request the next burst at 32 remaining, NOT at</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">                                    </span><span class="c1">// empty - requesting at empty guarantees a stall</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="p">)</span><span class="w"> </span><span class="n">u_prefetch_fifo</span><span class="w"> </span><span class="p">(...);</span>
+</code></pre></div>
+<p>The <code>PROG_EMPTY_THRESH</code> line is the half people miss. A correctly sized FIFO that only
+requests more data when it hits <em>empty</em> still stalls for the full round trip. Issue the
+next request while there is still enough data buffered to cover the latency:</p>
+<div class="arithmatex">\[\text{Threshold} \ge \text{round-trip latency} \times \text{consumption rate} = 100\]</div>
+<p>which for a 128-deep FIFO means requesting at 100 remaining, not 32 — or, more practically,
+keeping <strong>two requests in flight</strong> so the pipeline never has a gap. That last technique,
+issuing the next request before the current one lands, is what actually saturates a
+high-latency memory, and it is why AXI supports multiple outstanding transactions at all.</p>
+<h3 id="analogy-silicon">Analogy → Silicon</h3>
+<table>
+<thead>
+<tr>
+<th>In the story</th>
+<th>In the silicon</th>
+<th>Where the analogy breaks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cargo train vs high-speed drone</td>
+<td>Throughput (bytes/s) vs latency (ns from input to output)</td>
+<td>Trains and drones are different vehicles; throughput and latency are properties of <em>one</em> pipeline, traded against each other by the same design choices</td>
+</tr>
+<tr>
+<td>Traffic camera on the highway</td>
+<td><strong>AXI Performance Monitor</strong>: transaction counts, and cycles spent waiting on <code>READY</code></td>
+<td>A camera counts vehicles; the APM's most valuable output is not the count but the <strong>stall time</strong>, which is what identifies the bottleneck</td>
+</tr>
+<tr>
+<td>The slowest runner</td>
+<td>The bottleneck stage, whose throughput bounds the whole pipeline</td>
+<td>Runners can be substituted; a bottleneck in FPGA design often <em>moves</em> once you fix it, so the process is iterative by nature</td>
+</tr>
+<tr>
+<td>Pit crew adjustments</td>
+<td><code>PROG_EMPTY_THRESH</code>, outstanding transaction depth, burst length, FIFO depth</td>
+<td>Pit adjustments are independent; these interact, and changing burst length alters the latency that determined your FIFO depth</td>
+</tr>
+<tr>
+<td>The victory lap</td>
+<td>Validation at worst-case data rate, temperature and voltage</td>
+<td>A victory lap is ceremonial; this is where systems fail, because every earlier measurement was taken under convenient conditions</td>
+</tr>
+</tbody>
+</table>
+<h3 id="do-the-math">Do the Math</h3>
+<h4 id="littles-law-the-one-formula-that-sizes-every-buffer-you-will-ever-build">Little's Law: the one formula that sizes every buffer you will ever build</h4>
+<div class="arithmatex">\[L = \lambda \times W\]</div>
+<p>Items in flight <span class="arithmatex">\(=\)</span> arrival rate <span class="arithmatex">\(\times\)</span> time in system. Everything below is a special
+case.</p>
+<p><strong>Case 1 — FIFO depth for a latency-hiding prefetch.</strong></p>
+<p><strong>Givens:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(\lambda\)</span></td>
+<td>Consumption rate</td>
+<td>1 beat/cycle</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(W\)</span></td>
+<td>Memory round-trip latency</td>
+<td>140 cycles</td>
+</tr>
+</tbody>
+</table>
+<div class="arithmatex">\[L = 1 \times 140 = 140\ \text{beats minimum}\]</div>
+<p>Round up to 256 for headroom and power-of-two addressing. A 64-deep FIFO here delivers
+<span class="arithmatex">\(64/140 = 46\ \%\)</span> of line rate, and the memory subsystem will look innocent throughout.</p>
+<p><strong>Case 2 — outstanding transactions to saturate a link.</strong></p>
+<div class="arithmatex">\[N_{\text{outstanding}} \ge \frac{\text{round-trip latency}}{\text{burst duration}}\]</div>
+<p><strong>Givens:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Round-trip latency</td>
+<td>Request issued to first data returned</td>
+<td>140 cycles</td>
+</tr>
+<tr>
+<td>Burst length</td>
+<td>AXI beats per transaction</td>
+<td>16 beats</td>
+</tr>
+<tr>
+<td>Burst duration</td>
+<td>Time to transfer one burst</td>
+<td>16 cycles</td>
+</tr>
+</tbody>
+</table>
+<div class="arithmatex">\[N \ge \frac{140}{16} = 8.75 \quad \Longrightarrow \quad 9 \text{ outstanding transactions}\]</div>
+<p>If your master supports 4, you achieve at most:</p>
+<div class="arithmatex">\[\frac{4 \times 16}{140} = 46\ \%\ \text{of line rate}\]</div>
+<p><strong>Same 46 %, from a completely different cause.</strong> This is why "the DDR is slow" is almost
+never the diagnosis — a memory controller delivering 19.2 GB/s to a master that can only
+keep four bursts in flight will report itself as mostly idle while the system starves.</p>
+<h4 id="turning-an-apm-reading-into-a-verdict">Turning an APM reading into a verdict</h4>
+<p>The APM gives you transaction counts and stall cycles. Convert them:</p>
+<div class="arithmatex">\[\text{Efficiency} = \frac{\text{data beats transferred}}{\text{total cycles observed}}\]</div>
+<p><strong>Givens</strong> — one observation window:</p>
+<table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Observation window</td>
+<td>1,000,000 cycles</td>
+</tr>
+<tr>
+<td>Data beats transferred</td>
+<td>410,000</td>
+</tr>
+<tr>
+<td>Cycles with <code>VALID</code> high and <code>READY</code> low (slave stalling master)</td>
+<td>62,000</td>
+</tr>
+<tr>
+<td>Cycles with <code>READY</code> high and <code>VALID</code> low (master starving slave)</td>
+<td>528,000</td>
+</tr>
+</tbody>
+</table>
+<div class="arithmatex">\[\text{Efficiency} = \frac{410{,}000}{1{,}000{,}000} = 41\ \%\]</div>
+<p>Now the diagnosis, which is in the <em>ratio of the two stall types</em>:</p>
+<ul>
+<li>Slave stalling the master: 62,000 cycles (6 %)</li>
+<li>Master starving the slave: <strong>528,000 cycles (53 %)</strong></li>
+</ul>
+<p><strong>The slave is idle and waiting more than half the time.</strong> The bottleneck is upstream — the
+master is not issuing requests fast enough, which points straight at outstanding
+transaction depth or FIFO sizing, i.e. Cases 1 and 2 above. Had the numbers been reversed,
+the memory subsystem would have been the constraint and you would be looking at burst
+length, address patterns and bank conflicts.</p>
+<p><strong>Verdict: measure which side is waiting before optimising either.</strong> Half of all
+performance work is spent optimising the component that was already fast enough.</p>
+<h4 id="the-throughputlatency-trade-quantified">The throughput/latency trade, quantified</h4>
+<p>Adding a pipeline stage:</p>
+<div class="arithmatex">\[f_{\max} \uparrow, \qquad \text{latency} = N_{\text{stages}} \times T_{\text{clk}}\]</div>
+<p><strong>Givens:</strong> a path closing at 250 MHz with 4 stages, versus 400 MHz with 7 stages.</p>
+<div class="arithmatex">\[\text{Latency}_{250} = \frac{4}{250\times10^{6}} = 16.0\ \text{ns}\]</div>
+<div class="arithmatex">\[\text{Latency}_{400} = \frac{7}{400\times10^{6}} = 17.5\ \text{ns}\]</div>
+<p>Throughput improved 60 % (250 → 400 MHz) and latency got <strong>worse by 1.5 ns</strong>. For a
+streaming application that is an obvious win. For a system whose specification is
+"respond within 20 ns," you have just spent 9 % of the entire budget to gain throughput
+you may not need.</p>
+<h3 id="the-real-artifact">The Real Artifact</h3>
+<p>Instrumentation that answers "where is the time going" without an APM licence, plus the
+measurement discipline that makes the numbers mean something.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// axi_stall_counters.sv</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1">//</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1">// A minimal, always-on performance monitor. Four counters per interface tell you</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1">// everything the expensive tools tell you about WHERE a pipeline is waiting:</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1">//</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="c1">//   beats      - useful work done</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="c1">//   stall_slave- VALID &amp;&amp; !READY : the downstream cannot keep up</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="c1">//   stall_mstr - !VALID &amp;&amp; READY : the upstream cannot keep up</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="c1">//   idle       - !VALID &amp;&amp; !READY: nothing wanted anything</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="c1">//</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="c1">// The RATIO of stall_slave to stall_mstr is the diagnosis. Leave these in the</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="c1">// production design - they cost a few hundred flops and they turn a customer</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="c1">// report of &quot;it&#39;s slow&quot; into a number.</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="k">module</span><span class="w"> </span><span class="n">axi_stall_counters</span><span class="w"> </span><span class="p">#(</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">    </span><span class="k">parameter</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">CW</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">48</span><span class="w">                 </span><span class="c1">// wide enough not to wrap during a run</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="p">)</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w"> </span><span class="n">clk</span><span class="p">,</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w"> </span><span class="n">rst_n</span><span class="p">,</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w"> </span><span class="n">tvalid</span><span class="p">,</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w"> </span><span class="n">tready</span><span class="p">,</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w"> </span><span class="n">sample_en</span><span class="p">,</span><span class="w">               </span><span class="c1">// gate to one measurement window</span>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w"> </span><span class="n">clear</span><span class="p">,</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="kt">logic</span><span class="w"> </span><span class="p">[</span><span class="n">CW</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="n">beats</span><span class="p">,</span>
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="kt">logic</span><span class="w"> </span><span class="p">[</span><span class="n">CW</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="n">stall_slave</span><span class="p">,</span><span class="w">    </span><span class="c1">// producer ready, consumer not</span>
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="kt">logic</span><span class="w"> </span><span class="p">[</span><span class="n">CW</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="n">stall_master</span><span class="p">,</span><span class="w">   </span><span class="c1">// consumer ready, producer not</span>
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="kt">logic</span><span class="w"> </span><span class="p">[</span><span class="n">CW</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="n">idle</span><span class="p">,</span>
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="kt">logic</span><span class="w"> </span><span class="p">[</span><span class="n">CW</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="n">window_cycles</span>
+<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a><span class="p">);</span>
+<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a>
+<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="w">    </span><span class="k">always_ff</span><span class="w"> </span><span class="p">@(</span><span class="k">posedge</span><span class="w"> </span><span class="n">clk</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">rst_n</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">clear</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a><span class="w">            </span><span class="n">beats</span><span class="w">         </span><span class="o">&lt;=</span><span class="w"> </span><span class="m">&#39;0</span><span class="p">;</span>
+<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a><span class="w">            </span><span class="n">stall_slave</span><span class="w">   </span><span class="o">&lt;=</span><span class="w"> </span><span class="m">&#39;0</span><span class="p">;</span>
+<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a><span class="w">            </span><span class="n">stall_master</span><span class="w">  </span><span class="o">&lt;=</span><span class="w"> </span><span class="m">&#39;0</span><span class="p">;</span>
+<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a><span class="w">            </span><span class="n">idle</span><span class="w">          </span><span class="o">&lt;=</span><span class="w"> </span><span class="m">&#39;0</span><span class="p">;</span>
+<a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a><span class="w">            </span><span class="n">window_cycles</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="m">&#39;0</span><span class="p">;</span>
+<a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a><span class="w">        </span><span class="k">end</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sample_en</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a><span class="w">            </span><span class="n">window_cycles</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">window_cycles</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mb">1&#39;b1</span><span class="p">;</span>
+<a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a><span class="w">            </span><span class="k">unique</span><span class="w"> </span><span class="k">case</span><span class="w"> </span><span class="p">({</span><span class="n">tvalid</span><span class="p">,</span><span class="w"> </span><span class="n">tready</span><span class="p">})</span>
+<a id="__codelineno-2-42" name="__codelineno-2-42" href="#__codelineno-2-42"></a><span class="w">                </span><span class="mb">2&#39;b11</span><span class="o">:</span><span class="w"> </span><span class="n">beats</span><span class="w">        </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">beats</span><span class="w">        </span><span class="o">+</span><span class="w"> </span><span class="mb">1&#39;b1</span><span class="p">;</span><span class="w">   </span><span class="c1">// transfer</span>
+<a id="__codelineno-2-43" name="__codelineno-2-43" href="#__codelineno-2-43"></a><span class="w">                </span><span class="mb">2&#39;b10</span><span class="o">:</span><span class="w"> </span><span class="n">stall_slave</span><span class="w">  </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">stall_slave</span><span class="w">  </span><span class="o">+</span><span class="w"> </span><span class="mb">1&#39;b1</span><span class="p">;</span><span class="w">   </span><span class="c1">// backpressure</span>
+<a id="__codelineno-2-44" name="__codelineno-2-44" href="#__codelineno-2-44"></a><span class="w">                </span><span class="mb">2&#39;b01</span><span class="o">:</span><span class="w"> </span><span class="n">stall_master</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">stall_master</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mb">1&#39;b1</span><span class="p">;</span><span class="w">   </span><span class="c1">// starvation</span>
+<a id="__codelineno-2-45" name="__codelineno-2-45" href="#__codelineno-2-45"></a><span class="w">                </span><span class="mb">2&#39;b00</span><span class="o">:</span><span class="w"> </span><span class="n">idle</span><span class="w">         </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">idle</span><span class="w">         </span><span class="o">+</span><span class="w"> </span><span class="mb">1&#39;b1</span><span class="p">;</span><span class="w">   </span><span class="c1">// nothing offered</span>
+<a id="__codelineno-2-46" name="__codelineno-2-46" href="#__codelineno-2-46"></a><span class="w">            </span><span class="k">endcase</span>
+<a id="__codelineno-2-47" name="__codelineno-2-47" href="#__codelineno-2-47"></a><span class="w">        </span><span class="k">end</span>
+<a id="__codelineno-2-48" name="__codelineno-2-48" href="#__codelineno-2-48"></a><span class="w">    </span><span class="k">end</span>
+<a id="__codelineno-2-49" name="__codelineno-2-49" href="#__codelineno-2-49"></a>
+<a id="__codelineno-2-50" name="__codelineno-2-50" href="#__codelineno-2-50"></a><span class="k">endmodule</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c">#==============================================================================</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c"># perf_measure.tcl - the discipline that makes a benchmark mean something.</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c">#</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c"># The three mistakes this exists to prevent:</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c">#   1. Measuring at nominal conditions and shipping against worst case.</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="c">#   2. Measuring one workload and reporting it as &quot;the&quot; throughput.</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c">#   3. Optimising before measuring which side of the interface is waiting.</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="c">#==============================================================================</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="c"># --- 1. Read the counters over the existing debug or management path ----------</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="k">proc</span><span class="w"> </span>read_perf<span class="w"> </span><span class="k">{</span><span class="nv">ila</span><span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">    </span><span class="k">set</span><span class="w"> </span>beats<span class="w">  </span><span class="k">[</span><span class="nv">get_hw_probe_value</span><span class="w"> </span><span class="nv">${ila}</span><span class="o">/</span>beats<span class="k">]</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">    </span><span class="k">set</span><span class="w"> </span>st_slv<span class="w"> </span><span class="k">[</span><span class="nv">get_hw_probe_value</span><span class="w"> </span><span class="nv">${ila}</span><span class="o">/</span>stall_slave<span class="k">]</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">    </span><span class="k">set</span><span class="w"> </span>st_mst<span class="w"> </span><span class="k">[</span><span class="nv">get_hw_probe_value</span><span class="w"> </span><span class="nv">${ila}</span><span class="o">/</span>stall_master<span class="k">]</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">    </span><span class="k">set</span><span class="w"> </span>total<span class="w">  </span><span class="k">[</span><span class="nv">get_hw_probe_value</span><span class="w"> </span><span class="nv">${ila}</span><span class="o">/</span>window_cycles<span class="k">]</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">    </span><span class="k">set</span><span class="w"> </span>eff<span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="k">{</span><span class="nv">100.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">$beats</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nv">$total</span><span class="k">}]</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="k">[</span><span class="nb">format</span><span class="w"> </span><span class="s2">&quot;efficiency        %.1f%%&quot;</span><span class="w">  </span><span class="nv">$eff</span><span class="k">]</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="k">[</span><span class="nb">format</span><span class="w"> </span><span class="s2">&quot;backpressure      %.1f%%   (consumer too slow)&quot;</span><span class="w"> </span><span class="err">\</span>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="w">          </span><span class="k">[expr</span><span class="w"> </span><span class="k">{</span><span class="nv">100.0</span><span class="o">*</span><span class="nv">$st_slv</span><span class="o">/</span><span class="nv">$total</span><span class="k">}]]</span>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="k">[</span><span class="nb">format</span><span class="w"> </span><span class="s2">&quot;starvation        %.1f%%   (producer too slow)&quot;</span><span class="w"> </span><span class="err">\</span>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="w">          </span><span class="k">[expr</span><span class="w"> </span><span class="k">{</span><span class="nv">100.0</span><span class="o">*</span><span class="nv">$st_mst</span><span class="o">/</span><span class="nv">$total</span><span class="k">}]]</span>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="w">    </span><span class="c"># The verdict, stated rather than left to interpretation:</span>
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="k">{</span><span class="nv">$st_mst</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">2</span><span class="o">*</span><span class="nv">$st_slv</span><span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a><span class="w">        </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;&gt;&gt; BOTTLENECK IS UPSTREAM. Check outstanding transactions, FIFO&quot;</span>
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a><span class="w">        </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;   depth and PROG_EMPTY_THRESH. Optimising the consumer is wasted work.&quot;</span>
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a><span class="w">    </span><span class="k">}</span><span class="w"> </span><span class="k">elseif</span><span class="w"> </span><span class="k">{</span><span class="nv">$st_slv</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">2</span><span class="o">*</span><span class="nv">$st_mst</span><span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a><span class="w">        </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;&gt;&gt; BOTTLENECK IS DOWNSTREAM. Check burst length, width conversion,&quot;</span>
+<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a><span class="w">        </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;   memory access patterns and arbitration.&quot;</span>
+<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a><span class="w">    </span><span class="k">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a><span class="w">        </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;&gt;&gt; Balanced. Both sides contribute; look at the clock rate or the&quot;</span>
+<a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a><span class="w">        </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;   data width before micro-optimising either end.&quot;</span>
+<a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a><span class="w">    </span><span class="k">}</span>
+<a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a><span class="k">}</span>
+<a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a>
+<a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a><span class="c"># --- 2. The victory lap: measure at the conditions you will SHIP into ---------</span>
+<a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a><span class="c"># Timing was signed off at the slow corner. Performance is usually measured at</span>
+<a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a><span class="c"># room temperature on a bench supply. Close that gap deliberately:</span>
+<a id="__codelineno-3-40" name="__codelineno-3-40" href="#__codelineno-3-40"></a><span class="c">#</span>
+<a id="__codelineno-3-41" name="__codelineno-3-41" href="#__codelineno-3-41"></a><span class="c">#   * Maximum sustained data rate, not a burst</span>
+<a id="__codelineno-3-42" name="__codelineno-3-42" href="#__codelineno-3-42"></a><span class="c">#   * Maximum ambient temperature the enclosure reaches (Section 5.2)</span>
+<a id="__codelineno-3-43" name="__codelineno-3-43" href="#__codelineno-3-43"></a><span class="c">#   * Minimum supply voltage within regulator tolerance (Section 1.2)</span>
+<a id="__codelineno-3-44" name="__codelineno-3-44" href="#__codelineno-3-44"></a><span class="c">#   * The most adversarial data pattern you can construct, not random data</span>
+<a id="__codelineno-3-45" name="__codelineno-3-45" href="#__codelineno-3-45"></a><span class="c">#</span>
+<a id="__codelineno-3-46" name="__codelineno-3-46" href="#__codelineno-3-46"></a><span class="c"># Record all four alongside every number you publish. A throughput figure without</span>
+<a id="__codelineno-3-47" name="__codelineno-3-47" href="#__codelineno-3-47"></a><span class="c"># its conditions is not a measurement, it is an anecdote.</span>
+</code></pre></div>
+<h3 id="sharpen-your-pencil">Sharpen Your Pencil</h3>
+<ol>
+<li>A memory round trip is 220 cycles and your consumer takes one 512-bit beat per cycle.
+   Compute the minimum FIFO depth, and the minimum number of outstanding 32-beat AXI
+   transactions needed to saturate the link.</li>
+<li>Your APM reports, over 500,000 cycles: 180,000 beats transferred, 240,000 cycles of
+   <code>!VALID &amp;&amp; READY</code>, 45,000 cycles of <code>VALID &amp;&amp; !READY</code>. Compute the efficiency and
+   state the diagnosis in one sentence.</li>
+<li>You pipeline a datapath from 5 stages at 200 MHz to 9 stages at 350 MHz. Compute both
+   latencies and the throughput change. For which of these two systems is it the right
+   trade: a video scaler, or a motor control loop?</li>
+</ol>
+<h3 id="final-thoughts-on-the-sprint">Final Thoughts on the Sprint</h3>
+<p>System tuning is where you turn a working design into a <em>great</em> design. It requires a deep understanding of your data flow and a mastery of your monitoring tools. By identifying bottlenecks and balancing throughput against latency, you ensure that your FPGA performs at its absolute peak. You’ve followed the UltraFast Design Methodology from start to finish. Now, take your victory lap. You’ve earned it.</p>
+<h3 id="answers">Answers</h3>
+<p><strong>Brain Power</strong> — <em>HFT: throughput or latency? Why would an extra register on a 400 MHz
+path hurt, even though it makes timing easier?</em></p>
+<p><strong>Latency, overwhelmingly</strong> — and specifically <em>tail</em> latency, the worst case rather than
+the average. In high-frequency trading the economic value of a response decays to zero
+within the time it takes a competitor to respond. Throughput matters only insofar as you
+must not drop messages; being able to process ten million messages per second is worth
+nothing if your response to the one that mattered arrived 40 ns late.</p>
+<p>Why an extra register hurts, concretely. One pipeline stage at 400 MHz is:</p>
+<div class="arithmatex">\[\frac{1}{400\times10^{6}} = 2.5\ \text{ns}\]</div>
+<p>For a tick-to-trade path with a total budget of, say, 200 ns, that is <strong>1.25 % of the
+entire budget for one register.</strong> A pipelining exercise that adds eight stages across a
+datapath costs 20 ns — 10 % of the budget — in exchange for a frequency increase that buys
+throughput nobody is paying for.</p>
+<p>The subtler point, and the one that makes this a good question: <strong>making timing easier is
+not free even when it works.</strong> The engineer who pipelines to close timing has optimised
+the metric the tool reports (WNS) rather than the metric the customer buys (latency). It is
+the same failure as optimising the component that was already fast enough.</p>
+<p>What a latency-optimised design does instead: run at a lower clock frequency with wider,
+shallower logic (fewer cycles, each longer), use combinational paths where they close, keep
+the datapath physically short with floorplanning, and cut through rather than store —
+process a packet header as it arrives rather than buffering the frame. All of these are the
+<em>opposite</em> of what a throughput-optimised design does, which is why "make it faster" is an
+ambiguous instruction until someone says which axis.</p>
+<p><strong>Sharpen Your Pencil #1</strong> — 220-cycle round trip, 1 beat/cycle consumption, 32-beat
+bursts.</p>
+<p>FIFO depth, from Little's Law:</p>
+<div class="arithmatex">\[L = \lambda W = 1 \times 220 = 220\ \text{beats minimum}\]</div>
+<p>Round up to <strong>256</strong> (power of two, plus 36 beats of margin for latency variation — real
+memory latency is not constant, and a FIFO sized to the <em>average</em> stalls on every
+above-average round trip).</p>
+<p>Outstanding transactions:</p>
+<div class="arithmatex">\[N \ge \frac{\text{round-trip latency}}{\text{burst duration}} = \frac{220}{32} = 6.875 \quad \Longrightarrow \quad 7\]</div>
+<p>So: <strong>256-deep FIFO and at least 7 outstanding transactions.</strong> Both are required — they are
+not alternatives. The FIFO absorbs the latency for data already requested; the outstanding
+transaction depth is what keeps requests continuously in flight so the FIFO gets refilled
+before it drains. A design with a 256-deep FIFO and 2 outstanding transactions achieves</p>
+<div class="arithmatex">\[\frac{2 \times 32}{220} = 29\ \%\]</div>
+<p>of line rate, with a mostly-empty FIFO, and the FIFO will look like the innocent party
+throughout.</p>
+<p><strong>Sharpen Your Pencil #2</strong> — 500,000 cycles, 180,000 beats, 240,000 starved, 45,000
+backpressured.</p>
+<div class="arithmatex">\[\text{Efficiency} = \frac{180{,}000}{500{,}000} = 36\ \%\]</div>
+<p>(The remaining 35,000 cycles are fully idle — neither side wanted anything.)</p>
+<p>Diagnosis in one sentence: <strong>the consumer is waiting on the producer 48 % of the time
+against 9 % the other way, so the bottleneck is upstream and the fix is more data in
+flight — outstanding transactions, FIFO depth, and prefetch threshold — not anything on the
+consumer side.</strong></p>
+<p><strong>Sharpen Your Pencil #3</strong> — 5 stages at 200 MHz versus 9 stages at 350 MHz.</p>
+<div class="arithmatex">\[\text{Latency}_{200} = \frac{5}{200\times10^{6}} = 25.0\ \text{ns}\]</div>
+<div class="arithmatex">\[\text{Latency}_{350} = \frac{9}{350\times10^{6}} = 25.7\ \text{ns}\]</div>
+<div class="arithmatex">\[\text{Throughput change} = \frac{350}{200} = 1.75\times\]</div>
+<p>So: <strong>75 % more throughput for 0.7 ns (2.8 %) more latency.</strong></p>
+<ul>
+<li><strong>Video scaler: yes, clearly.</strong> Throughput is the entire requirement — pixels per second
+  determines the resolution and frame rate you can support. An extra 0.7 ns is
+  imperceptible against a frame time of 16.7 ms, and the 1.75× may be the difference
+  between supporting 4K60 and not.</li>
+<li><strong>Motor control loop: it depends, and probably not for the reason you expect.</strong> The
+  latency increase is trivial in absolute terms; a control loop running at, say, 20 kHz has
+  a 50 µs period, and 0.7 ns is nothing. So the honest answer is that <em>this particular
+  trade</em> is harmless for the motor controller too — but it is also <strong>pointless</strong>, because
+  the extra throughput has no use. You have added four pipeline stages, four registers'
+  worth of area, and four stages of additional verification surface, to gain a capability
+  the system will never exercise.</li>
+</ul>
+<p>The general lesson, and it is the one worth keeping: <strong>do not optimise a metric the system
+does not buy.</strong> For the scaler, throughput is the product. For the motor controller, the
+correct question is not "can I make it faster" but "what is my worst-case loop delay, and
+does it have margin" — and the answer to that comes from the <em>maximum</em> latency under all
+conditions, not from the clock rate.</p>
+<h3 id="there-are-no-dumb-questions">There Are No Dumb Questions</h3>
+<p><strong>Q: My design meets timing at 400 MHz. Why is my throughput not 400 million beats per
+second?</strong></p>
+<p>A: Because timing closure guarantees your clock, not your data flow. Between the two sit
+stalls: an interface with nothing to send, a FIFO that emptied, an arbiter that granted
+someone else, a burst that ended and whose successor has not been requested. Efficiency —
+beats divided by cycles — is a separate measurement from <span class="arithmatex">\(F_{max}\)</span>, and it is usually the
+one that is wrong. That is what the stall counters are for.</p>
+<p><strong>Q: Where should I put the performance counters?</strong></p>
+<p>A: On every interface where a producer meets a consumer, and permanently. They cost a few
+hundred flops each, which is nothing, and they convert a field report of "the system feels
+slow" into a stall ratio you can act on without reproducing anything. Instrumentation you
+add during a performance investigation always arrives after you needed it.</p>
+<p><strong>Q: Should I use the AXI Performance Monitor IP or roll my own counters?</strong></p>
+<p>A: The APM gives you far more — latency histograms, per-ID tracking, address profiling —
+and it is the right tool for a serious investigation of a complex interconnect. Simple
+stall counters give you the <em>diagnosis</em> (which side is waiting) for a fraction of the
+resources, and can stay in the production design. Use counters everywhere by default, and
+bring in the APM when the counters tell you which interface deserves the scrutiny.</p>
+<p><strong>Q: Is bigger always better for FIFO depth?</strong></p>
+<p>A: No, and there are two costs. BRAM is finite, and a FIFO sized far beyond the
+latency-bandwidth product consumes memory a real feature could have used. More importantly,
+<strong>a deep FIFO adds latency when it is full</strong> — in a latency-sensitive system a 4096-deep
+buffer is a way to make your worst-case response time terrible while your average looks
+excellent. Size to the calculation plus margin, not to whatever fits.</p>
+<p><strong>Q: How do I find the bottleneck when there are twenty interfaces?</strong></p>
+<p>A: Do not stare at twenty. Start at the <em>output</em> and walk backwards: the last stage is
+either producing at line rate or it is not; if it is starved, look at what feeds it; repeat.
+The bottleneck is the first stage you reach that is <em>not</em> starved, because everything
+downstream of it is waiting on it. This converges in a few steps regardless of how many
+interfaces exist, and it stops you optimising a stage that was never the constraint.</p>
+<p><strong>Q: My throughput measurement varies between runs. Which number do I publish?</strong></p>
+<p>A: The worst one, with its conditions attached. And investigate the variance — if
+throughput varies run to run on identical stimulus, something is non-deterministic
+(arbitration, memory refresh timing, an asynchronous crossing) and the <em>variance itself</em>
+may be the finding. A system whose throughput ranges from 80 % to 95 % of line rate has a
+15 % problem hiding in it.</p>
+<h3 id="bullet-points">Bullet Points</h3>
+<ul>
+<li><strong>Little's Law</strong>: <span class="arithmatex">\(L = \lambda W\)</span>. Items in flight = rate × latency. It sizes every
+  buffer, every prefetch distance, and every outstanding-transaction count you will build.</li>
+<li><strong>FIFO depth</strong> ≥ round-trip latency × consumption rate. Add margin for latency
+  <em>variation</em>, then round up to a power of two.</li>
+<li><strong>Outstanding transactions</strong> ≥ round-trip latency ÷ burst duration. FIFO depth and
+  outstanding depth are both required; neither substitutes for the other.</li>
+<li><strong><code>PROG_EMPTY_THRESH</code>, not empty.</strong> Requesting the next burst at empty guarantees a stall
+  of one full round trip.</li>
+<li><strong>Diagnose with the stall ratio.</strong> <code>!VALID &amp;&amp; READY</code> = starvation (bottleneck upstream);
+  <code>VALID &amp;&amp; !READY</code> = backpressure (bottleneck downstream). Measure before optimising
+  either.</li>
+<li><strong>Efficiency = beats ÷ cycles</strong>, and it is a different number from <span class="arithmatex">\(F_{max}\)</span>. Meeting
+  timing at 400 MHz does not deliver 400 M beats/s.</li>
+<li><strong>Throughput and latency trade against each other.</strong> A pipeline stage costs
+  <span class="arithmatex">\(1/f_{\text{clk}}\)</span> of latency. Know which axis your product is sold on before optimising.</li>
+<li><strong>Walk backwards from the output</strong> to find a bottleneck among many interfaces.</li>
+<li><strong>Publish measurements with their conditions</strong>: sustained rate, worst-case temperature,
+  minimum voltage, adversarial data. A number without conditions is an anecdote.</li>
+<li><strong>Commands and parameters</strong>: <code>xpm_fifo_sync</code> / <code>xpm_fifo_async</code> with <code>READ_MODE("fwft")</code>
+  and <code>PROG_EMPTY_THRESH</code>; <code>refresh_hw_device</code> and <code>get_hw_probe_value</code> to read counters
+  from the hardware manager; <code>report_utilization</code> to price the buffering you just sized.</li>
+</ul>
+<hr />
+<p>[REVIEW_STATUS: APPROVED BY PUBLISHER]</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../6.1_debug/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 6.1 Hardware Debugging">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                6.1 Hardware Debugging
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../references/" class="md-footer__link md-footer__link--next" aria-label="Next: References">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                References
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2026 <a href="https://github.com/mehdibadjian">Mehdi Badjian</a> &middot; <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga">github.com/mehdibadjian/no-magic-smoke-fpga</a> &middot; content <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/blob/main/LICENSE-CODE">MIT</a> &middot; independent, unofficial guide - not affiliated with or endorsed by AMD, Inc.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" target="_blank" rel="noopener" title="Source and issues on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.footer", "content.code.copy", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

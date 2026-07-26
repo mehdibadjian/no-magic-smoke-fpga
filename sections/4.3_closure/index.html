@@ -1,0 +1,2444 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An independent, unofficial study companion to the AMD UltraFast Design Methodology. FPGA engineering taught Head First style, with the arithmetic left in - worked calculations, runnable artifacts, and answers to every question it asks.">
+      
+      
+        <meta name="author" content="Mehdi Badjian">
+      
+      
+        <link rel="canonical" href="https://mehdibadjian.github.io/no-magic-smoke-fpga/sections/4.3_closure/">
+      
+      
+        <link rel="prev" href="../4.2_placement/">
+      
+      
+        <link rel="next" href="../5.1_power/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>4.3 Closure - No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#section-43-design-closure-and-iteration-the-final-polish" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-header__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              4.3 Closure
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../1.1_pcb_layout/" class="md-tabs__link">
+          
+  
+  
+  Chapter 1: Board Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../2.1_timing_ballet/" class="md-tabs__link">
+          
+  
+  
+  Chapter 2: Constraints
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../3.1_rtl_coding/" class="md-tabs__link">
+          
+  
+  
+  Chapter 3: Design Creation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../4.1_synthesis/" class="md-tabs__link">
+          
+  
+  
+  Chapter 4: Implementation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../5.1_power/" class="md-tabs__link">
+          
+  
+  
+  Chapter 5: Power & Thermal
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../6.1_debug/" class="md-tabs__link">
+          
+  
+  
+  Chapter 6: Debug & Tuning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../references/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  References
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-nav__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 1: Board Planning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 1: Board Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.1_pcb_layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.1 Hardware Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.2_power_planning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.2 Power Delivery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.3_clocking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.3 Clocking Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.4_ssi_hbm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.4 I/O Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 2: Constraints
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 2: Constraints
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.1_timing_ballet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.1 Defining Clocks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.2_constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.2 I/O Delays
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.3_cdc_minefield/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.3 CDC Minefield
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 3: Design Creation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 3: Design Creation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.1_rtl_coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1 RTL Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.2_ip_integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 IP Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.3_security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Design Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.4_verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 4: Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 4: Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.1_synthesis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.1 Synthesis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.2_placement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.2 Placement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.3 Closure
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.3 Closure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-final-polish-reaching-the-finish-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Final Polish: Reaching the Finish Line
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#slack-analysis-the-margin-of-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Slack Analysis: The Margin of Safety
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-the-perfectionist-and-the-practical-engineer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: The Perfectionist and the Practical Engineer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-timing-report-deep-dive-the-autopsy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Timing Report Deep Dive: The Autopsy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#critical-path-optimization-shaving-picoseconds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Critical Path Optimization: Shaving Picoseconds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-false-path-fallacy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The False Path Fallacy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Do the Math">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#decomposing-a-failing-path-into-an-action" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decomposing a failing path into an action
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-stop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to stop
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-closure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on Closure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 5: Power & Thermal
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 5: Power & Thermal
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.1_power/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.1 Power Estimation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.2_thermal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.2 Thermal Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 6: Debug & Tuning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 6: Debug & Tuning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6.1_debug/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.1 Hardware Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6.2_tuning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.2 Performance Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-final-polish-reaching-the-finish-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Final Polish: Reaching the Finish Line
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#slack-analysis-the-margin-of-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Slack Analysis: The Margin of Safety
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-the-perfectionist-and-the-practical-engineer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: The Perfectionist and the Practical Engineer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-timing-report-deep-dive-the-autopsy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Timing Report Deep Dive: The Autopsy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#critical-path-optimization-shaving-picoseconds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Critical Path Optimization: Shaving Picoseconds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-false-path-fallacy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The False Path Fallacy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Do the Math">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#decomposing-a-failing-path-into-an-action" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decomposing a failing path into an action
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-stop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to stop
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-closure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on Closure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/edit/main/docs/sections/4.3_closure.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/raw/main/docs/sections/4.3_closure.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
+
+
+<h1 id="section-43-design-closure-and-iteration-the-final-polish">Section 4.3: Design Closure and Iteration: The Final Polish</h1>
+<p>You’ve synthesized your design, placed it on the grid, and routed the wires. Now comes the most intense part of the FPGA lifecycle: <strong>Timing Closure</strong>. This is the process of ensuring that every single signal in your design reaches its destination before the next clock edge. If even one signal is a few picoseconds late, your design is officially "broken."</p>
+<p>In the AMD UltraFast Methodology, design closure is not a one-time event; it’s an iterative loop. You run the tools, analyze the results, tweak your code or constraints, and run them again. It’s the final polish that turns a "good" design into a "production-ready" one.</p>
+<h3 id="the-final-polish-reaching-the-finish-line">The Final Polish: Reaching the Finish Line</h3>
+<p>When you run the implementation tools, Vivado generates a <strong>Timing Report</strong>. This report is your roadmap for closure. It tells you the "Worst Negative Slack" (WNS)—the amount of time by which your slowest path failed. If WNS is positive, you’ve met timing. If it’s negative, you have work to do.</p>
+<p>Think of timing closure like a professional athlete trying to shave a fraction of a second off their personal best. You aren't looking for massive changes anymore; you’re looking for tiny optimizations—a LUT here, a register there—that will give you the slack you need to cross the finish line.</p>
+<blockquote>
+<p><strong>Brain Power</strong>
+<strong>If your design fails timing by 50 picoseconds, should you go back and rewrite the entire RTL? Or should you try different implementation strategies first? What is the "Rule of Diminishing Returns" in timing closure?</strong></p>
+</blockquote>
+<h3 id="slack-analysis-the-margin-of-safety">Slack Analysis: The Margin of Safety</h3>
+<p><strong>Slack</strong> is the difference between the "Required Time" (when the signal must arrive) and the "Arrival Time" (when the signal actually arrives). Positive slack is your margin of safety. Negative slack is a timing violation.</p>
+<p>Analyzing slack is about finding the "Low-Hanging Fruit." Sometimes a path fails because of a single long wire. Other times, it fails because of a massive chain of logic. By identifying the <em>reason</em> for the negative slack, you can choose the right tool to fix it. If the delay is mostly logic, pipeline it. If the delay is mostly routing, try a different placement strategy.</p>
+<p><img alt="Slack Analysis High Jumper" src="../../assets/images/fig_4_3_slack.png" /></p>
+<h3 id="fireside-chat-the-perfectionist-and-the-practical-engineer">Fireside Chat: The Perfectionist and the Practical Engineer</h3>
+<p><strong>Perfectionist:</strong> "I’ve been iterating on this 10G Ethernet core for three days. I’ve reached 10 picoseconds of positive slack, but I want to get it to 100. I’m going to try one more implementation strategy."</p>
+<p><strong>Practical Engineer:</strong> "Why? 10 picoseconds of positive slack is a pass. The bitstream will work. The hardware doesn't care if you passed by a mile or an inch. We need to ship this product by Friday."</p>
+<p><strong>Perfectionist:</strong> "But what if the temperature changes? What if the voltage drops? 10 picoseconds feels too risky!"</p>
+<p><strong>Practical Engineer:</strong> "Vivado’s timing analysis already accounts for 'Worst Case' temperature and voltage. If the tool says you passed, you passed. Stop chasing ghosts and start working on the user manual. Done is better than perfect."</p>
+<h3 id="the-timing-report-deep-dive-the-autopsy">The Timing Report Deep Dive: The Autopsy</h3>
+<p>When a path fails timing, you need to perform an "Autopsy." The Timing Summary report shows you the exact breakdown of the delay. It tells you how much time was spent in the LUTs, how much in the flip-flops, and how much in the copper wires.</p>
+<p>Look for the <strong>Logic Levels</strong>. If a path has 15 levels of logic between registers, it will never meet timing at 400MHz. You need to "break" that path by adding registers (Pipelining). If the report shows a single "Route Delay" that is 80% of the total path, you have a placement problem. Implementation can move logic and reroute nets; it cannot restructure your RTL. Use the autopsy to find the root cause.</p>
+<h3 id="critical-path-optimization-shaving-picoseconds">Critical Path Optimization: Shaving Picoseconds</h3>
+<p>Once you’ve found your critical paths, you have several techniques for optimizing them:</p>
+<ol>
+<li><strong>Retiming:</strong> Moving registers across logic boundaries to balance the delay.</li>
+<li><strong>Logic Replication:</strong> Creating multiple copies of a high-fanout signal to reduce the load on a single driver.</li>
+<li><strong>Physical Constraints:</strong> Using <code>USER_PBLOCKS</code> or <code>LOC</code> constraints to force the tools to place critical components closer together.</li>
+</ol>
+<p>These are "surgical" interventions. You don't want to use them on the whole design—just on the few paths that are causing you pain.</p>
+<p><img alt="Timing Path Surgeon" src="../../assets/images/fig_4_3_surgeon.png" /></p>
+<h3 id="code-detective-the-false-path-fallacy">Code Detective: The False Path Fallacy</h3>
+<p>Sometimes, a path "fails" timing, but the failure doesn't actually matter. These are called <strong>False Paths</strong>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c"># Code Detective: Why is this &#39;set_false_path&#39; dangerous?</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">set_false_path</span><span class="w"> </span><span class="o">-</span>from<span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span>reset_reg<span class="o">/</span>C<span class="k">]</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="k">[</span><span class="nv">all_registers</span><span class="k">]</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c"># Hint: Is there any scenario where the timing of the reset signal actually MATTERS?</span>
+</code></pre></div>
+<p>The flaw here is a "Global False Path" on the reset signal. While the <em>activation</em> of a reset is often asynchronous, the <em>release</em> of a reset must be synchronous to the clock. If some registers come out of reset one cycle before others, your state machine could end up in an illegal state.</p>
+<p>Name the checks being deleted, because that is what makes it concrete. Timing analysis of
+a reset consists of <strong>recovery</strong> (the reset must deassert far enough <em>before</em> the clock
+edge, the analogue of setup) and <strong>removal</strong> (it must stay deasserted far enough <em>after</em>,
+the analogue of hold). A false path on the reset deletes both. The design then meets
+timing while containing a reset network that can release different flops on different
+cycles — and a one-hot state machine that comes out of reset with two bits set is a
+machine that never reaches a legal state again until the next power cycle.</p>
+<p><strong>The fix</strong> is to make the release synchronous so the checks <em>pass</em> rather than
+disappearing:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// Asynchronous assert, synchronous release - one macro, per destination domain.</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">xpm_cdc_sync_rst</span><span class="w"> </span><span class="p">#(</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="p">.</span><span class="n">DEST_SYNC_FF</span><span class="w"> </span><span class="p">(</span><span class="mi">4</span><span class="p">),</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="p">.</span><span class="n">INIT</span><span class="w">         </span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w">      </span><span class="c1">// reset asserted at power-up</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="p">.</span><span class="n">INIT_SYNC_FF</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="p">)</span><span class="w"> </span><span class="n">u_rst_sync</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="p">.</span><span class="n">src_rst</span><span class="w">  </span><span class="p">(</span><span class="n">async_rst_in</span><span class="p">),</span><span class="w">   </span><span class="c1">// asserts immediately, no clock required</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="p">.</span><span class="n">dest_clk</span><span class="w"> </span><span class="p">(</span><span class="n">clk</span><span class="p">),</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="p">.</span><span class="n">dest_rst</span><span class="w"> </span><span class="p">(</span><span class="n">rst</span><span class="p">)</span><span class="w">             </span><span class="c1">// deasserts synchronously to clk</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="p">);</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c"># Now the reset is a normal synchronous signal in each domain, and recovery/removal</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c"># analysis is meaningful. The only exception you need is on the ASYNCHRONOUS INPUT</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c"># to the synchronizer - narrowly scoped, not global:</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="nv">set_false_path</span><span class="w"> </span><span class="o">-</span>from<span class="w"> </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span>async_rst_in<span class="k">]</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span>u_rst_sync<span class="o">/*</span><span class="k">]</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="c"># Verify, rather than assume:</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="nv">report_timing</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span><span class="o">-</span>hier<span class="w"> </span><span class="o">-</span>filter<span class="w"> </span><span class="k">{</span><span class="nv">NAME</span><span class="w"> </span><span class="err">=</span><span class="o">~</span><span class="w"> </span><span class="s2">&quot;*rst*&quot;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>IS_SEQUENTIAL<span class="k">}]</span><span class="w"> </span><span class="err">\</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">              </span><span class="nv">-delay_type</span><span class="w"> </span>min_max<span class="w"> </span><span class="o">-</span>max_paths<span class="w"> </span><span class="mi">20</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="nv">check_timing</span><span class="w"> </span><span class="o">-</span>verbose<span class="w">        </span><span class="k">;</span><span class="c"># look for missing recovery/removal analysis</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="nv">report_cdc</span><span class="w"> </span><span class="o">-</span>details<span class="w">          </span><span class="k">;</span><span class="c"># reset crossings show up here too</span>
+</code></pre></div>
+<p>The distinction to carry away: <strong>narrow, justified exceptions on genuinely asynchronous
+signals are correct engineering; broad exceptions that make reports look good are
+self-deception.</strong> A <code>set_false_path -to [all_registers]</code> is always the second kind.</p>
+<h3 id="analogy-silicon">Analogy → Silicon</h3>
+<table>
+<thead>
+<tr>
+<th>In the story</th>
+<th>In the silicon</th>
+<th>Where the analogy breaks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Shaving a fraction off a personal best</td>
+<td>Recovering the last tens of picoseconds with <code>phys_opt_design</code> and directive sweeps</td>
+<td>An athlete improves monotonically; implementation results are <em>noisy</em>, and the same design can move ±50 ps between runs on identical inputs</td>
+</tr>
+<tr>
+<td>The autopsy</td>
+<td>Decomposing a failing path into <span class="arithmatex">\(T_{co}\)</span>, logic delay, net delay and <code>Logic Levels</code></td>
+<td>An autopsy has one cause of death; a failing path usually has a dominant term and several contributing ones, and the split tells you which</td>
+</tr>
+<tr>
+<td>Surgery on a critical path</td>
+<td><code>MAX_FANOUT</code>, logic replication, <code>LOC</code>/pblock constraints, retiming</td>
+<td>Surgery is local by nature; a <code>LOC</code> constraint on a busy region displaces other logic and can create a new critical path elsewhere</td>
+</tr>
+<tr>
+<td>"Done is better than perfect"</td>
+<td>Sign-off at a positive WNS against a <em>complete</em> constraint set</td>
+<td>The sentiment is right and the emphasis is wrong: the risk is not insufficient margin, it is an incomplete constraint set that made the margin meaningless</td>
+</tr>
+<tr>
+<td>Diminishing returns</td>
+<td>The point where a directive sweep costs more machine-hours than the picoseconds are worth</td>
+<td>Returns diminish smoothly in the analogy; here there is a <strong>step change</strong> — an architectural fix restarts the curve, a heuristic does not</td>
+</tr>
+</tbody>
+</table>
+<h3 id="do-the-math">Do the Math</h3>
+<h4 id="decomposing-a-failing-path-into-an-action">Decomposing a failing path into an action</h4>
+<p>The whole skill of closure is turning one report into one decision. The decomposition:</p>
+<div class="arithmatex">\[T_{\text{path}} = T_{co} + T_{\text{logic}} + T_{\text{net}}\]</div>
+<p><strong>Givens</strong> — three failing paths from a real timing summary, all on a 2.500 ns clock:</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th><code>Data Path Delay</code></th>
+<th>logic</th>
+<th>route</th>
+<th><code>Logic Levels</code></th>
+<th>Slack</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>2.910 ns</td>
+<td>2.331 ns (80 %)</td>
+<td>0.579 ns (20 %)</td>
+<td>12</td>
+<td>−0.431 ns</td>
+</tr>
+<tr>
+<td>B</td>
+<td>2.870 ns</td>
+<td>0.574 ns (20 %)</td>
+<td>2.296 ns (80 %)</td>
+<td>3</td>
+<td>−0.391 ns</td>
+</tr>
+<tr>
+<td>C</td>
+<td>2.760 ns</td>
+<td>1.380 ns (50 %)</td>
+<td>1.380 ns (50 %)</td>
+<td>6</td>
+<td>−0.281 ns</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Path A</strong> — logic-dominated, 12 levels. Target the depth. If you split it into two
+balanced stages:</p>
+<div class="arithmatex">\[T_{\text{logic,new}} \approx \frac{2.331}{2} = 1.166\ \text{ns} \quad \Longrightarrow \quad T_{\text{path}} \approx 0.089 + 1.166 + 0.579 = 1.834\ \text{ns}\]</div>
+<div class="arithmatex">\[\text{Slack} \approx 2.479 - 1.834 = +0.645\ \text{ns} \quad \checkmark\]</div>
+<p>Cost: one cycle of latency. Verdict: <strong>pipeline it.</strong></p>
+<p><strong>Path B</strong> — route-dominated, only 3 levels. Pipelining would split 574 ps of logic and
+leave 2.296 ns of routing untouched:</p>
+<div class="arithmatex">\[T_{\text{path,new}} \approx 0.089 + 0.287 + 2.296 = 2.672\ \text{ns} \quad \Longrightarrow \quad \text{Slack} \approx -0.193\ \text{ns}\]</div>
+<p><strong>Still failing</strong>, and you have paid a cycle of latency for it. Verdict: <strong>do not
+pipeline.</strong> Attack the route — check fanout, replicate the driver, pull the endpoints
+together. If a single net is most of that 2.296 ns, <code>MAX_FANOUT</code> alone may fix it.</p>
+<p><strong>Path C</strong> — balanced. This is the one where a directive sweep and <code>phys_opt_design</code> are
+genuinely the right tools, because there is no single dominant term to attack.</p>
+<p><strong>The rule extracted:</strong> compute the <em>post-fix</em> delay before doing the fix. Two minutes of
+arithmetic routinely saves a day of implementation runs.</p>
+<h4 id="when-to-stop">When to stop</h4>
+<div class="arithmatex">\[\text{Value of continuing} = \Delta\text{WNS expected} \times \text{probability of success} - \text{engineering cost}\]</div>
+<p><strong>Givens</strong> — typical numbers, worth calibrating against your own history:</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Expected ΔWNS</th>
+<th>Machine cost</th>
+<th>Engineering cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>One more directive</td>
+<td>+10 to +50 ps</td>
+<td>3 h</td>
+<td>~0</td>
+</tr>
+<tr>
+<td>Full directive sweep (20 runs)</td>
+<td>+50 to +150 ps</td>
+<td>68 h</td>
+<td>~0.5 day</td>
+</tr>
+<tr>
+<td>Fanout / replication fix</td>
+<td>+100 to +400 ps</td>
+<td>3 h</td>
+<td>0.5 day</td>
+</tr>
+<tr>
+<td>Pipeline a critical path</td>
+<td>+300 to +800 ps</td>
+<td>3 h</td>
+<td>1–3 days (incl. re-verification)</td>
+</tr>
+<tr>
+<td>Floorplan a congested region</td>
+<td>+100 to +500 ps</td>
+<td>6 h</td>
+<td>1–2 days</td>
+</tr>
+</tbody>
+</table>
+<p>If you are at −0.050 ns, a directive sweep is the correct answer and pipelining is
+absurd. If you are at −0.600 ns, sweeping is a way to spend three days proving you needed
+to pipeline. <strong>Match the tool to the size of the deficit</strong> — that single habit is most of
+what separates a two-day closure from a three-week one.</p>
+<h3 id="the-real-artifact">The Real Artifact</h3>
+<p>An implementation script built around the closure loop, with the incremental flow that
+makes iteration cheap.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c">#==============================================================================</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c"># impl.tcl - implementation with a closure loop that converges.</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c">#</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c"># Two features that pay for themselves immediately:</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c">#   * QoR suggestions are written after one run and READ BACK on the next, so the</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="c">#     tool acts on its own advice instead of just printing it.</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c">#   * Incremental implementation reuses the previous placement/routing, cutting</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="c">#     runtime dramatically for small changes - which is what makes an iterative</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="c">#     loop practical rather than a once-a-day ritual.</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="c">#==============================================================================</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="k">set</span><span class="w"> </span>build<span class="w"> </span>.<span class="o">/</span>build
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="k">set</span><span class="w"> </span>ref<span class="w">   </span><span class="nv">$build</span><span class="o">/</span>routed_reference.dcp
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="nv">open_checkpoint</span><span class="w"> </span><span class="nv">$build</span><span class="o">/</span>post_synth.dcp
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="c"># 1. Reuse the previous run&#39;s placement when the change was small.</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="c">#    &#39;more_than_pin_swaps&#39; means: reuse aggressively, but re-place anything the</span>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="c">#    netlist change actually affected.</span>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="k">if</span><span class="w"> </span><span class="k">{[</span><span class="nb">file</span><span class="w"> </span>exists<span class="w"> </span><span class="nv">$ref</span><span class="k">]}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a><span class="w">    </span><span class="nv">read_checkpoint</span><span class="w"> </span><span class="o">-</span>incremental<span class="w"> </span><span class="nv">$ref</span>
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;INFO: incremental flow enabled against $ref&quot;</span>
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="k">}</span>
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a><span class="c"># Feed back what the tool told us last time.</span>
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a><span class="k">if</span><span class="w"> </span><span class="k">{[</span><span class="nb">file</span><span class="w"> </span>exists<span class="w"> </span><span class="nv">$build</span><span class="o">/</span>qor.rqs<span class="k">]}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a><span class="w">    </span><span class="nv">read_qor_suggestions</span><span class="w"> </span><span class="nv">$build</span><span class="o">/</span>qor.rqs
+<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a><span class="k">}</span>
+<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>
+<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a><span class="c"># 2. The flow. Directives start at Default and change only in response to a</span>
+<a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a><span class="c">#    diagnosis - see &quot;Do the Math&quot;.</span>
+<a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a><span class="nv">opt_design</span><span class="w">      </span><span class="o">-</span>directive<span class="w"> </span>Default
+<a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a><span class="nv">place_design</span><span class="w">    </span><span class="o">-</span>directive<span class="w"> </span>Default
+<a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a><span class="nv">phys_opt_design</span><span class="w"> </span><span class="o">-</span>directive<span class="w"> </span>Default
+<a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a><span class="nv">route_design</span><span class="w">    </span><span class="o">-</span>directive<span class="w"> </span>Default
+<a id="__codelineno-3-40" name="__codelineno-3-40" href="#__codelineno-3-40"></a>
+<a id="__codelineno-3-41" name="__codelineno-3-41" href="#__codelineno-3-41"></a><span class="c"># The second phys_opt pass, post-route, is frequently worth 30-80 ps and costs</span>
+<a id="__codelineno-3-42" name="__codelineno-3-42" href="#__codelineno-3-42"></a><span class="c"># minutes. Skipping it is leaving free margin on the table.</span>
+<a id="__codelineno-3-43" name="__codelineno-3-43" href="#__codelineno-3-43"></a><span class="nv">phys_opt_design</span><span class="w"> </span><span class="o">-</span>directive<span class="w"> </span>AggressiveExplore
+<a id="__codelineno-3-44" name="__codelineno-3-44" href="#__codelineno-3-44"></a>
+<a id="__codelineno-3-45" name="__codelineno-3-45" href="#__codelineno-3-45"></a><span class="nv">write_checkpoint</span><span class="w"> </span><span class="o">-</span>force<span class="w"> </span><span class="nv">$build</span><span class="o">/</span>post_route.dcp
+<a id="__codelineno-3-46" name="__codelineno-3-46" href="#__codelineno-3-46"></a>
+<a id="__codelineno-3-47" name="__codelineno-3-47" href="#__codelineno-3-47"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-3-48" name="__codelineno-3-48" href="#__codelineno-3-48"></a><span class="c"># 3. Sign-off reports. All of them, every time - a build whose reports you did</span>
+<a id="__codelineno-3-49" name="__codelineno-3-49" href="#__codelineno-3-49"></a><span class="c">#    not generate is a build you cannot reason about later.</span>
+<a id="__codelineno-3-50" name="__codelineno-3-50" href="#__codelineno-3-50"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-3-51" name="__codelineno-3-51" href="#__codelineno-3-51"></a><span class="nv">report_timing_summary</span><span class="w"> </span><span class="o">-</span>delay_type<span class="w"> </span>min_max<span class="w"> </span><span class="o">-</span>report_unconstrained<span class="w"> </span><span class="err">\</span>
+<a id="__codelineno-3-52" name="__codelineno-3-52" href="#__codelineno-3-52"></a><span class="w">    </span><span class="nv">-check_timing_verbose</span><span class="w"> </span><span class="o">-</span>max_paths<span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">-</span>file<span class="w"> </span><span class="nv">$build</span><span class="o">/</span>timing_summary.rpt
+<a id="__codelineno-3-53" name="__codelineno-3-53" href="#__codelineno-3-53"></a>
+<a id="__codelineno-3-54" name="__codelineno-3-54" href="#__codelineno-3-54"></a><span class="nv">report_design_analysis</span><span class="w"> </span><span class="o">-</span>logic_level_distribution<span class="w"> </span><span class="err">\</span>
+<a id="__codelineno-3-55" name="__codelineno-3-55" href="#__codelineno-3-55"></a><span class="w">    </span><span class="nv">-of_timing_paths</span><span class="w"> </span><span class="k">[</span><span class="nv">get_timing_paths</span><span class="w"> </span><span class="o">-</span>max_paths<span class="w"> </span><span class="mi">1000</span><span class="w"> </span><span class="o">-</span>slack_lesser_than<span class="w"> </span><span class="mi">0</span><span class="k">]</span><span class="w"> </span><span class="err">\</span>
+<a id="__codelineno-3-56" name="__codelineno-3-56" href="#__codelineno-3-56"></a><span class="w">    </span><span class="nv">-file</span><span class="w"> </span><span class="nv">$build</span><span class="o">/</span>logic_levels.rpt
+<a id="__codelineno-3-57" name="__codelineno-3-57" href="#__codelineno-3-57"></a>
+<a id="__codelineno-3-58" name="__codelineno-3-58" href="#__codelineno-3-58"></a><span class="nv">report_qor_suggestions</span><span class="w"> </span><span class="o">-</span>file<span class="w"> </span><span class="nv">$build</span><span class="o">/</span>qor_suggestions.rpt
+<a id="__codelineno-3-59" name="__codelineno-3-59" href="#__codelineno-3-59"></a><span class="nv">write_qor_suggestions</span><span class="w"> </span><span class="o">-</span>force<span class="w"> </span><span class="nv">$build</span><span class="o">/</span>qor.rqs
+<a id="__codelineno-3-60" name="__codelineno-3-60" href="#__codelineno-3-60"></a>
+<a id="__codelineno-3-61" name="__codelineno-3-61" href="#__codelineno-3-61"></a><span class="nv">report_methodology</span><span class="w"> </span><span class="o">-</span>file<span class="w"> </span><span class="nv">$build</span><span class="o">/</span>methodology.rpt
+<a id="__codelineno-3-62" name="__codelineno-3-62" href="#__codelineno-3-62"></a><span class="nv">report_cdc</span><span class="w"> </span><span class="o">-</span>details<span class="w">   </span><span class="o">-</span>file<span class="w"> </span><span class="nv">$build</span><span class="o">/</span>cdc.rpt
+<a id="__codelineno-3-63" name="__codelineno-3-63" href="#__codelineno-3-63"></a><span class="nv">report_utilization</span><span class="w">    </span><span class="o">-</span>file<span class="w"> </span><span class="nv">$build</span><span class="o">/</span>utilization.rpt
+<a id="__codelineno-3-64" name="__codelineno-3-64" href="#__codelineno-3-64"></a>
+<a id="__codelineno-3-65" name="__codelineno-3-65" href="#__codelineno-3-65"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-3-66" name="__codelineno-3-66" href="#__codelineno-3-66"></a><span class="c"># 4. The gate. Sign-off is not &quot;WNS is positive&quot; - it is &quot;WNS is positive AND</span>
+<a id="__codelineno-3-67" name="__codelineno-3-67" href="#__codelineno-3-67"></a><span class="c">#    the constraint set is complete AND the methodology checks pass.&quot;</span>
+<a id="__codelineno-3-68" name="__codelineno-3-68" href="#__codelineno-3-68"></a><span class="c">#    A positive WNS on an incomplete constraint set is a wrong answer, not a</span>
+<a id="__codelineno-3-69" name="__codelineno-3-69" href="#__codelineno-3-69"></a><span class="c">#    lenient one.</span>
+<a id="__codelineno-3-70" name="__codelineno-3-70" href="#__codelineno-3-70"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-3-71" name="__codelineno-3-71" href="#__codelineno-3-71"></a><span class="k">proc</span><span class="w"> </span>signoff_gate<span class="w"> </span><span class="k">{}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-3-72" name="__codelineno-3-72" href="#__codelineno-3-72"></a><span class="w">    </span><span class="k">set</span><span class="w"> </span>wns<span class="w"> </span><span class="k">[</span><span class="nv">get_property</span><span class="w"> </span>SLACK<span class="w"> </span><span class="k">[</span><span class="nv">get_timing_paths</span><span class="w"> </span><span class="o">-</span>delay_type<span class="w"> </span>max<span class="w"> </span><span class="o">-</span>max_paths<span class="w"> </span><span class="mi">1</span><span class="k">]]</span>
+<a id="__codelineno-3-73" name="__codelineno-3-73" href="#__codelineno-3-73"></a><span class="w">    </span><span class="k">set</span><span class="w"> </span>whs<span class="w"> </span><span class="k">[</span><span class="nv">get_property</span><span class="w"> </span>SLACK<span class="w"> </span><span class="k">[</span><span class="nv">get_timing_paths</span><span class="w"> </span><span class="o">-</span>delay_type<span class="w"> </span>min<span class="w"> </span><span class="o">-</span>max_paths<span class="w"> </span><span class="mi">1</span><span class="k">]]</span>
+<a id="__codelineno-3-74" name="__codelineno-3-74" href="#__codelineno-3-74"></a>
+<a id="__codelineno-3-75" name="__codelineno-3-75" href="#__codelineno-3-75"></a><span class="w">    </span><span class="k">set</span><span class="w"> </span>fail<span class="w"> </span><span class="mi">0</span>
+<a id="__codelineno-3-76" name="__codelineno-3-76" href="#__codelineno-3-76"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="k">{</span><span class="nv">$wns</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nv">0</span><span class="k">}</span><span class="w"> </span><span class="k">{</span><span class="w"> </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;FAIL: WNS = $wns ns&quot;</span><span class="k">;</span><span class="w">  </span><span class="k">set</span><span class="w"> </span>fail<span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">}</span>
+<a id="__codelineno-3-77" name="__codelineno-3-77" href="#__codelineno-3-77"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="k">{</span><span class="nv">$whs</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nv">0</span><span class="k">}</span><span class="w"> </span><span class="k">{</span><span class="w"> </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;FAIL: WHS = $whs ns&quot;</span><span class="k">;</span><span class="w">  </span><span class="k">set</span><span class="w"> </span>fail<span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">}</span>
+<a id="__codelineno-3-78" name="__codelineno-3-78" href="#__codelineno-3-78"></a>
+<a id="__codelineno-3-79" name="__codelineno-3-79" href="#__codelineno-3-79"></a><span class="w">    </span><span class="c"># Unconstrained endpoints mean the tool was never asked about part of your</span>
+<a id="__codelineno-3-80" name="__codelineno-3-80" href="#__codelineno-3-80"></a><span class="w">    </span><span class="c"># design, and that matters MORE than the WNS number above it. There is no</span>
+<a id="__codelineno-3-81" name="__codelineno-3-81" href="#__codelineno-3-81"></a><span class="w">    </span><span class="c"># clean Tcl accessor, so read it back out of the summary we just wrote.</span>
+<a id="__codelineno-3-82" name="__codelineno-3-82" href="#__codelineno-3-82"></a><span class="w">    </span><span class="k">set</span><span class="w"> </span>fh<span class="w"> </span><span class="k">[</span><span class="nb">open</span><span class="w"> </span><span class="nv">$::build</span><span class="o">/</span>timing_summary.rpt<span class="w"> </span>r<span class="k">]</span>
+<a id="__codelineno-3-83" name="__codelineno-3-83" href="#__codelineno-3-83"></a><span class="w">    </span><span class="k">set</span><span class="w"> </span>summary<span class="w"> </span><span class="k">[</span><span class="nb">read</span><span class="w"> </span><span class="nv">$fh</span><span class="k">]</span>
+<a id="__codelineno-3-84" name="__codelineno-3-84" href="#__codelineno-3-84"></a><span class="w">    </span><span class="nb">close</span><span class="w"> </span><span class="nv">$fh</span>
+<a id="__codelineno-3-85" name="__codelineno-3-85" href="#__codelineno-3-85"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="k">{[</span><span class="nb">regexp</span><span class="w"> </span><span class="k">{</span><span class="nv">There</span><span class="w"> </span>are<span class="w"> </span><span class="k">(</span><span class="err">\</span><span class="nv">d</span><span class="o">+</span><span class="k">)</span><span class="w"> </span>register<span class="o">/</span>latch<span class="w"> </span>pins<span class="w"> </span>with<span class="w"> </span>no<span class="w"> </span>clock<span class="k">}</span><span class="w"> </span><span class="nv">$summary</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span>n<span class="k">]}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-3-86" name="__codelineno-3-86" href="#__codelineno-3-86"></a><span class="w">        </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;FAIL: $n register/latch pin(s) with no clock - see check_timing section&quot;</span>
+<a id="__codelineno-3-87" name="__codelineno-3-87" href="#__codelineno-3-87"></a><span class="w">        </span><span class="k">set</span><span class="w"> </span>fail<span class="w"> </span><span class="mi">1</span>
+<a id="__codelineno-3-88" name="__codelineno-3-88" href="#__codelineno-3-88"></a><span class="w">    </span><span class="k">}</span>
+<a id="__codelineno-3-89" name="__codelineno-3-89" href="#__codelineno-3-89"></a>
+<a id="__codelineno-3-90" name="__codelineno-3-90" href="#__codelineno-3-90"></a><span class="w">    </span><span class="c"># Methodology violations that are timing-related are not style advice.</span>
+<a id="__codelineno-3-91" name="__codelineno-3-91" href="#__codelineno-3-91"></a><span class="w">    </span><span class="k">set</span><span class="w"> </span>meth<span class="w"> </span><span class="k">[</span><span class="nv">get_methodology_violations</span><span class="w"> </span><span class="o">-</span>quiet<span class="w"> </span><span class="o">-</span>severity<span class="w"> </span><span class="k">{</span><span class="nv">CRITICAL</span><span class="w"> </span>WARNING<span class="k">}]</span>
+<a id="__codelineno-3-92" name="__codelineno-3-92" href="#__codelineno-3-92"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="k">{[</span><span class="nb">llength</span><span class="w"> </span><span class="nv">$meth</span><span class="k">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">0</span><span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-3-93" name="__codelineno-3-93" href="#__codelineno-3-93"></a><span class="w">        </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;FAIL: [llength $meth] methodology violation(s) - see methodology.rpt&quot;</span>
+<a id="__codelineno-3-94" name="__codelineno-3-94" href="#__codelineno-3-94"></a><span class="w">        </span><span class="k">set</span><span class="w"> </span>fail<span class="w"> </span><span class="mi">1</span>
+<a id="__codelineno-3-95" name="__codelineno-3-95" href="#__codelineno-3-95"></a><span class="w">    </span><span class="k">}</span>
+<a id="__codelineno-3-96" name="__codelineno-3-96" href="#__codelineno-3-96"></a>
+<a id="__codelineno-3-97" name="__codelineno-3-97" href="#__codelineno-3-97"></a><span class="w">    </span><span class="c"># CDC criticals are functional bugs, and they do not appear in WNS at all.</span>
+<a id="__codelineno-3-98" name="__codelineno-3-98" href="#__codelineno-3-98"></a><span class="w">    </span><span class="k">set</span><span class="w"> </span>cdc<span class="w"> </span><span class="k">[</span><span class="nv">get_cdc_violations</span><span class="w"> </span><span class="o">-</span>quiet<span class="w"> </span><span class="o">-</span>severity<span class="w"> </span>Critical<span class="k">]</span>
+<a id="__codelineno-3-99" name="__codelineno-3-99" href="#__codelineno-3-99"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="k">{[</span><span class="nb">llength</span><span class="w"> </span><span class="nv">$cdc</span><span class="k">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">0</span><span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-3-100" name="__codelineno-3-100" href="#__codelineno-3-100"></a><span class="w">        </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;FAIL: [llength $cdc] critical CDC violation(s) - see cdc.rpt&quot;</span>
+<a id="__codelineno-3-101" name="__codelineno-3-101" href="#__codelineno-3-101"></a><span class="w">        </span><span class="k">set</span><span class="w"> </span>fail<span class="w"> </span><span class="mi">1</span>
+<a id="__codelineno-3-102" name="__codelineno-3-102" href="#__codelineno-3-102"></a><span class="w">    </span><span class="k">}</span>
+<a id="__codelineno-3-103" name="__codelineno-3-103" href="#__codelineno-3-103"></a>
+<a id="__codelineno-3-104" name="__codelineno-3-104" href="#__codelineno-3-104"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="k">{</span><span class="nv">$fail</span><span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-3-105" name="__codelineno-3-105" href="#__codelineno-3-105"></a><span class="w">        </span><span class="k">error</span><span class="w"> </span><span class="s2">&quot;Sign-off gate failed.&quot;</span>
+<a id="__codelineno-3-106" name="__codelineno-3-106" href="#__codelineno-3-106"></a><span class="w">    </span><span class="k">}</span>
+<a id="__codelineno-3-107" name="__codelineno-3-107" href="#__codelineno-3-107"></a><span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;SIGN-OFF PASSED: WNS $wns ns, WHS $whs ns, no methodology or CDC criticals.&quot;</span>
+<a id="__codelineno-3-108" name="__codelineno-3-108" href="#__codelineno-3-108"></a><span class="k">}</span>
+<a id="__codelineno-3-109" name="__codelineno-3-109" href="#__codelineno-3-109"></a>
+<a id="__codelineno-3-110" name="__codelineno-3-110" href="#__codelineno-3-110"></a><span class="nv">signoff_gate</span>
+<a id="__codelineno-3-111" name="__codelineno-3-111" href="#__codelineno-3-111"></a>
+<a id="__codelineno-3-112" name="__codelineno-3-112" href="#__codelineno-3-112"></a><span class="c"># Keep this run as the reference for the next incremental iteration.</span>
+<a id="__codelineno-3-113" name="__codelineno-3-113" href="#__codelineno-3-113"></a><span class="nb">file</span><span class="w"> </span>copy<span class="w"> </span><span class="o">-</span>force<span class="w"> </span><span class="nv">$build</span><span class="o">/</span>post_route.dcp<span class="w"> </span><span class="nv">$ref</span>
+</code></pre></div>
+<h3 id="sharpen-your-pencil">Sharpen Your Pencil</h3>
+<ol>
+<li>A path has <code>Data Path Delay: 3.400ns (logic 0.680ns (20%) route 2.720ns (80%))</code>,
+   <code>Logic Levels: 2</code>, on a 3.000 ns clock. Compute the slack improvement you would expect
+   from pipelining it, and say what you would do instead.</li>
+<li>Your design is at WNS −0.045 ns with TNS −0.045 ns. Using the cost table above, pick
+   your next action and justify it in one sentence.</li>
+<li><code>report_timing_summary</code> shows WNS +0.312 ns, and <code>check_timing</code> reports 47
+   <code>unconstrained_internal_endpoints</code>. Is this design ready to ship? Explain what the
+   +0.312 ns actually means.</li>
+</ol>
+<h3 id="final-thoughts-on-closure">Final Thoughts on Closure</h3>
+<p>Timing closure is where the science of FPGA design meets the grit of engineering. It’s about persistence, analysis, and knowing when to stop. By mastering the timing report and learning to perform autopsies on your critical paths, you ensure that your design is robust, reliable, and ready for the real world. Polish the design, close the timing, and claim your victory.</p>
+<h3 id="answers">Answers</h3>
+<p><strong>Brain Power</strong> — <em>Failing by 50 ps: rewrite the RTL, or try implementation strategies
+first? What is the rule of diminishing returns here?</em></p>
+<p><strong>Try implementation strategies.</strong> At 50 ps you are inside the range where heuristics
+operate. From the cost table: one more directive is expected to be worth 10–50 ps at
+essentially zero engineering cost, and a <code>phys_opt_design -directive AggressiveExplore</code>
+post-route pass alone frequently finds 30–80 ps. Rewriting RTL for 50 ps means days of
+work plus re-verification, to buy something a three-hour machine run probably delivers.</p>
+<p>The rule of diminishing returns, stated usefully: <strong>each successive fix has a smaller
+expected gain and a larger cost, so match the tool to the size of the deficit.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Deficit</th>
+<th>Right tool</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&lt; 50 ps</td>
+<td><code>phys_opt_design</code>, one directive change</td>
+</tr>
+<tr>
+<td>50–150 ps</td>
+<td>Directive sweep, fanout reduction</td>
+</tr>
+<tr>
+<td>150–400 ps</td>
+<td>Replication, targeted floorplanning</td>
+</tr>
+<tr>
+<td>&gt; 400 ps</td>
+<td>Architecture: pipelining, restructuring, a different device</td>
+</tr>
+</tbody>
+</table>
+<p>The critical nuance the analogy misses: <strong>the curve is not smooth.</strong> An architectural fix
+does not give you a slightly better result than a directive — it <em>restarts the curve</em> at a
+new baseline. So "diminishing returns" applies within a class of fix, not across classes.
+Someone who sweeps directives for a week on a −0.600 ns design is not experiencing
+diminishing returns; they are using the wrong tool, indefinitely.</p>
+<p>One more thing worth saying about the 50 ps case, since the Fireside Chat above touches
+it: the reason 10 ps of positive slack is genuinely acceptable is <strong>not</strong> that "the tool
+accounts for the corners so you passed." It is that sign-off is against your constraint
+set, at characterised corners, with clock uncertainty already subtracted. The question
+worth worrying about is therefore never "is 10 ps enough margin?" but "<strong>is my constraint
+set complete?</strong>" — which is what <em>Sharpen Your Pencil #3</em> is about.</p>
+<p><strong>Sharpen Your Pencil #1</strong> — 3.400 ns path, route 80 %, <code>Logic Levels: 2</code>, 3.000 ns clock.</p>
+<p>Pipelining splits the <em>logic</em> term only:</p>
+<div class="arithmatex">\[T_{\text{new}} \approx T_{co} + \frac{0.680}{2} + 2.720 = 0.089 + 0.340 + 2.720 = 3.149\ \text{ns}\]</div>
+<p>Against a required time of roughly 2.95 ns (period minus setup and uncertainty), that is
+still about <strong>−0.20 ns — still failing</strong>, after spending a cycle of latency and a round of
+re-verification. And note that with only 2 levels of logic there may not even be a
+sensible place to insert a register.</p>
+<p>What to do instead: <strong>2.720 ns of route on a 2-level path means one or two enormous
+nets.</strong> Find them:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nv">report_timing</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="o">&lt;</span>endpoint<span class="o">&gt;</span><span class="w"> </span><span class="o">-</span>input_pins<span class="w"> </span><span class="o">-</span>max_paths<span class="w"> </span><span class="mi">1</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nv">report_high_fanout_nets</span><span class="w"> </span><span class="o">-</span>timing<span class="w"> </span><span class="o">-</span>load_types<span class="w"> </span><span class="o">-</span>max_nets<span class="w"> </span><span class="mi">25</span>
+</code></pre></div>
+<p>Then, in order of cost: reduce the fanout (<code>MAX_FANOUT</code> or RTL replication); let
+<code>phys_opt_design</code> replicate the driver; check whether the path crosses an SLR boundary
+un-pipelined (Section 1.4 — that alone can be 2 ns); check whether the endpoints are in a
+congested region (Section 4.2). A 2-level path with 2.7 ns of routing is almost always a
+<em>structural</em> problem — distance, fanout, or a boundary — not a logic problem.</p>
+<p><strong>Sharpen Your Pencil #2</strong> — WNS −0.045 ns, TNS −0.045 ns.</p>
+<p>TNS equalling WNS means <strong>exactly one failing path</strong>, failing by 45 ps.</p>
+<p>Action: <strong><code>phys_opt_design -directive AggressiveExplore</code> post-route, then one alternative
+<code>route_design</code> directive if that is not enough.</strong> Justification in one sentence: a single
+path 45 ps short is precisely the regime where physical optimisation operates, at three
+hours of machine time and zero engineering time, against a fix whose alternatives all cost
+days.</p>
+<p>What <em>not</em> to do: a full 20-run directive sweep (68 hours to solve a one-path problem), or
+any RTL change. If two rounds of physical optimisation do not close it, <em>then</em> look at the
+one path specifically — one path is cheap to examine by hand.</p>
+<p><strong>Sharpen Your Pencil #3</strong> — WNS +0.312 ns with 47 unconstrained internal endpoints.</p>
+<p><strong>No, it is not ready to ship</strong>, and the +0.312 ns is close to meaningless.</p>
+<p>What the number actually means: "of the paths I was asked to analyse, the worst had
+312 ps of margin." It says nothing whatsoever about the 47 endpoints that were not
+analysed. Those paths were not optimised for timing either — the placer and router had no
+requirement to meet on them — so they will have whatever delay fell out, commonly several
+times worse than your constrained paths.</p>
+<p>Worse, the relationship is perverse: <strong>removing constraints improves WNS.</strong> A design with
+47 unconstrained endpoints reports a <em>better</em> number than the same design fully
+constrained. So the healthy-looking 312 ps is partly a <em>consequence</em> of the defect.</p>
+<p>What to do:</p>
+<ol>
+<li>Run <code>check_timing -verbose</code> and read the <code>no_clock</code>,
+   <code>unconstrained_internal_endpoints</code> and <code>no_input_delay</code>/<code>no_output_delay</code> sections.</li>
+<li>For each, determine why. The usual causes are a clock that was never declared (often
+   one generated in fabric, or one coming from a transceiver), an IP whose XDC failed to
+   apply because a cell name changed, or genuinely dead logic.</li>
+<li>Constrain them, or delete them if they are dead.</li>
+<li>Re-run. Expect WNS to get <em>worse</em>, and treat that as the constraint set becoming
+   honest rather than as a regression.</li>
+</ol>
+<p>The general principle, and it is the most important one in this chapter: <strong>timing sign-off
+is a statement about your constraint set, not about your design.</strong> A green report on an
+incomplete constraint set is a wrong answer delivered confidently, which is the most
+expensive kind.</p>
+<h3 id="there-are-no-dumb-questions">There Are No Dumb Questions</h3>
+<p><strong>Q: Is incremental implementation safe, or does it hide problems?</strong></p>
+<p>A: It is safe for what it claims: it reuses the previous placement and routing where the
+netlist is unchanged, and re-implements what changed. What it does <em>not</em> do is give you an
+independent result — so before sign-off, do one clean, non-incremental run. Use
+incremental during the closure loop, where its runtime saving is what makes iteration
+practical, and clean for the build you ship.</p>
+<p><strong>Q: Why do I get different results from identical runs?</strong></p>
+<p>A: Implementation uses heuristics with multi-threaded, order-dependent internals, so
+identical inputs can produce results differing by tens of picoseconds. Set the number of
+threads explicitly (<code>set_param general.maxThreads 8</code>) if you need repeatability. The
+practical consequence: <strong>do not celebrate or panic over a ±30 ps change.</strong> If you are
+tracking whether a fix helped, look at TNS and at the distribution of failing paths, not
+at WNS alone.</p>
+<p><strong>Q: <code>report_qor_suggestions</code> gave me twenty suggestions. Do I apply them all?</strong></p>
+<p>A: Read them first — they are ranked and they explain themselves. Some are automatic
+(written to the <code>.rqs</code> file and consumed by <code>opt_design</code>); others are RTL changes you must
+make. Apply the automatic ones freely, evaluate the RTL ones on merit. The single most
+valuable thing in that report is usually its identification of <em>which</em> structural problem
+dominates, which is diagnosis you would otherwise do by hand.</p>
+<p><strong>Q: Can I sign off with methodology warnings outstanding?</strong></p>
+<p>A: Some, with justification. But the <code>TIMING-*</code> family in particular are not style
+advice — they flag situations where the timing analysis itself is unreliable: clocks with
+no common node, unconstrained crossings, clocks generated by fabric logic, LUTs on clock
+paths. A methodology warning of that kind means your WNS is describing something other
+than your design. Treat those as blocking; waive the cosmetic ones with a written reason.</p>
+<p><strong>Q: My WNS is positive but the board fails intermittently. Where do I look?</strong></p>
+<p>A: In roughly this order: unconstrained paths (<code>check_timing</code>); CDC (<code>report_cdc</code> — CDC
+failures never appear in WNS at all); reset release and recovery/removal; clock quality
+and jitter on the board (Sections 1.2 and 1.3); then power integrity under load. Note that
+the first three are all "the timing report was answering a different question than you
+thought," which is the theme of this section.</p>
+<h3 id="bullet-points">Bullet Points</h3>
+<ul>
+<li><strong>Decompose before you fix.</strong> Compute the <em>post-fix</em> delay from the logic/route split.
+  Pipelining a route-dominated path costs a cycle and closes nothing.</li>
+<li><strong>Match the tool to the deficit</strong>: &lt; 50 ps → <code>phys_opt_design</code>; 50–150 ps → directive
+  sweep, fanout; 150–400 ps → replication, floorplan; &gt; 400 ps → architecture.</li>
+<li><strong>Diminishing returns applies within a class of fix, not across classes.</strong> An
+  architectural change restarts the curve.</li>
+<li><strong>Run <code>phys_opt_design</code> again after <code>route_design</code>.</strong> Typically 30–80 ps for minutes of
+  runtime.</li>
+<li><strong>Feed the tool its own advice</strong>: <code>write_qor_suggestions</code> → <code>read_qor_suggestions</code> on
+  the next run. Use <code>read_checkpoint -incremental</code> to make the loop fast.</li>
+<li><strong>A false path on a reset deletes recovery and removal analysis.</strong> Use
+  <code>xpm_cdc_sync_rst</code> for synchronous release, and scope the exception to the asynchronous
+  input only.</li>
+<li><strong>Sign-off is WNS ≥ 0 AND WHS ≥ 0 AND a complete constraint set AND no methodology or
+  CDC criticals.</strong> Removing constraints <em>improves</em> WNS, so a green report on an incomplete
+  constraint set is a wrong answer.</li>
+<li><strong>Expect ±30 ps of run-to-run noise.</strong> Track TNS and the failing-path distribution, not
+  WNS alone.</li>
+<li><strong>Reports</strong>: <code>report_timing_summary -check_timing_verbose -report_unconstrained</code>,
+  <code>report_design_analysis -logic_level_distribution</code>, <code>report_qor_suggestions</code>,
+  <code>report_methodology</code>, <code>report_cdc -details</code>.</li>
+</ul>
+<hr />
+<p>[REVIEW_STATUS: APPROVED BY PUBLISHER]</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../4.2_placement/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 4.2 Placement">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                4.2 Placement
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../5.1_power/" class="md-footer__link md-footer__link--next" aria-label="Next: 5.1 Power Estimation">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                5.1 Power Estimation
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2026 <a href="https://github.com/mehdibadjian">Mehdi Badjian</a> &middot; <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga">github.com/mehdibadjian/no-magic-smoke-fpga</a> &middot; content <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/blob/main/LICENSE-CODE">MIT</a> &middot; independent, unofficial guide - not affiliated with or endorsed by AMD, Inc.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" target="_blank" rel="noopener" title="Source and issues on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.footer", "content.code.copy", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

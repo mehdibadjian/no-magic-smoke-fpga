@@ -1,0 +1,2277 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An independent, unofficial study companion to the AMD UltraFast Design Methodology. FPGA engineering taught Head First style, with the arithmetic left in - worked calculations, runnable artifacts, and answers to every question it asks.">
+      
+      
+        <meta name="author" content="Mehdi Badjian">
+      
+      
+        <link rel="canonical" href="https://mehdibadjian.github.io/no-magic-smoke-fpga/sections/2.1_timing_ballet/">
+      
+      
+        <link rel="prev" href="../1.4_ssi_hbm/">
+      
+      
+        <link rel="next" href="../2.2_constraints/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>2.1 Defining Clocks - No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#section-21-the-setup-and-hold-ballet" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-header__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              2.1 Defining Clocks
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../1.1_pcb_layout/" class="md-tabs__link">
+          
+  
+  
+  Chapter 1: Board Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Chapter 2: Constraints
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../3.1_rtl_coding/" class="md-tabs__link">
+          
+  
+  
+  Chapter 3: Design Creation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../4.1_synthesis/" class="md-tabs__link">
+          
+  
+  
+  Chapter 4: Implementation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../5.1_power/" class="md-tabs__link">
+          
+  
+  
+  Chapter 5: Power & Thermal
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../6.1_debug/" class="md-tabs__link">
+          
+  
+  
+  Chapter 6: Debug & Tuning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../references/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  References
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-nav__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 1: Board Planning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 1: Board Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.1_pcb_layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.1 Hardware Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.2_power_planning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.2 Power Delivery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.3_clocking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.3 Clocking Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.4_ssi_hbm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.4 I/O Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 2: Constraints
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 2: Constraints
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.1 Defining Clocks
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.1 Defining Clocks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-invisible-clock-edge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Invisible Clock Edge
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup-time-the-race-against-the-clock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup Time: The Race Against the Clock
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-setup-vs-hold" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: Setup vs. Hold
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hold-time-the-minimum-delay-trap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hold Time: The Minimum Delay Trap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-skew-monster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Skew Monster
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jitter-and-uncertainty-the-wobbly-metronome" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Jitter and Uncertainty: The Wobbly Metronome
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-timing-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The Timing Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-the-ballet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on the Ballet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.2_constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.2 I/O Delays
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.3_cdc_minefield/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.3 CDC Minefield
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 3: Design Creation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 3: Design Creation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.1_rtl_coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1 RTL Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.2_ip_integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 IP Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.3_security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Design Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.4_verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 4: Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 4: Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.1_synthesis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.1 Synthesis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.2_placement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.2 Placement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.3_closure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.3 Closure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 5: Power & Thermal
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 5: Power & Thermal
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.1_power/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.1 Power Estimation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.2_thermal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.2 Thermal Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 6: Debug & Tuning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 6: Debug & Tuning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6.1_debug/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.1 Hardware Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6.2_tuning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.2 Performance Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-invisible-clock-edge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Invisible Clock Edge
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup-time-the-race-against-the-clock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup Time: The Race Against the Clock
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-setup-vs-hold" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: Setup vs. Hold
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hold-time-the-minimum-delay-trap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hold Time: The Minimum Delay Trap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-skew-monster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Skew Monster
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jitter-and-uncertainty-the-wobbly-metronome" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Jitter and Uncertainty: The Wobbly Metronome
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-timing-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The Timing Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-the-ballet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on the Ballet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/edit/main/docs/sections/2.1_timing_ballet.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/raw/main/docs/sections/2.1_timing_ballet.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
+
+
+<h1 id="section-21-the-setup-and-hold-ballet">Section 2.1: The Setup and Hold Ballet</h1>
+<p>If FPGA design is a theater production, timing closure is the choreography. You can have the most beautiful script (HDL) and the most expensive actors (HBM/SSI), but if your dancers (data signals) don't hit their marks at the exact same time as the music (the clock), the whole show falls apart. Welcome to the setup and hold ballet—the place where most FPGA dreams go to die.</p>
+<p>Most beginners think timing is about "speed." They think, "My design runs at 200MHz, so I'm fast." But timing isn't about speed; it's about <strong>certainty</strong>. It’s about ensuring that every single flip-flop in your massive silicon city gets its data at exactly the right moment. If you're off by even a few picoseconds, your data becomes "metastable," and your design enters a state of digital madness.</p>
+<h3 id="the-invisible-clock-edge">The Invisible Clock Edge</h3>
+<p>Think of a flip-flop as a camera. The clock edge is the shutter. When the shutter clicks, the camera captures whatever is in front of it. Setup time is the requirement that the subject (the data) must be standing still in front of the lens <em>before</em> the shutter clicks. Hold time is the requirement that the subject must stay still for a brief moment <em>after</em> the shutter clicks to make sure the image isn't blurred.</p>
+<p>In a modern AMD FPGA, these times are measured in picoseconds. To a human, a picosecond is nothing. To a signal traveling at a significant fraction of the speed of light, a picosecond is enough time to travel across a few hundred logic cells. You aren't just writing code; you’re managing a high-speed physics experiment.</p>
+<blockquote>
+<p><strong>Brain Power</strong>
+<strong>If your clock period is 4ns (250MHz) and your data path takes 3.8ns to travel from Register A to Register B, you only have 200ps of setup margin. If the temperature of your chip rises and the silicon slows down by 5%, what happens to your timing?</strong></p>
+</blockquote>
+<h3 id="setup-time-the-race-against-the-clock">Setup Time: The Race Against the Clock</h3>
+<p>Setup time is the "arrival" requirement. Your data has to race through lookup tables (LUTs), multiplexers, and routing tracks to get to the next register before the next clock edge arrives. If the path is too long, the data arrives late, and the flip-flop captures garbage. This is called a setup violation.</p>
+<p>The UltraFast Methodology tells us that the best way to fix setup violations isn't to "optimize" the routing, but to <strong>shorten the logic</strong>. If you have six levels of LUTs between registers, you’re asking for trouble. Break that logic apart! Add more registers (pipelining) to give the data more time to "rest" between stages. In an FPGA, registers are free—use them like they're going out of style.</p>
+<p><img alt="Setup Time Race" src="../../assets/images/fig_2_1_mailbox.png" /></p>
+<h3 id="fireside-chat-setup-vs-hold">Fireside Chat: Setup vs. Hold</h3>
+<p><strong>Setup:</strong> "I'm exhausted. I had to go through three LUTs, a carry chain, and a long routing track. I barely made it before the clock edge! I need more time."</p>
+<p><strong>Hold:</strong> "Oh, shut up. At least you have a whole clock period to get where you're going. I have to arrive <em>instantly</em> and then stay perfectly still while the clock edge passes. If I move too fast, I'll accidentally trigger the <em>next</em> clock cycle's data. I'm the one who really suffers."</p>
+<p><strong>Setup:</strong> "Yeah, but if I'm late, the whole system crashes. If you're early, nobody even notices until the simulation fails."</p>
+<p><strong>Hold:</strong> "Exactly! I'm the silent killer. You can fix setup by slowing down the clock. You can't fix a hold violation by slowing down the clock. I'm a permanent physical error."</p>
+<h3 id="hold-time-the-minimum-delay-trap">Hold Time: The Minimum Delay Trap</h3>
+<p>Hold time is the "stability" requirement. It’s the rule that data must stay at the input of a flip-flop for a minimum amount of time after the clock edge. If the data changes too quickly—usually because the path between registers is too short—it will "leak" into the current clock cycle and cause a hold violation.</p>
+<p>Hold violations are terrifying because they don't care about your clock frequency. If you have a hold violation at 100MHz, you’ll still have it at 10MHz. Vivado usually fixes these by adding "buffer" delays to the path, but if your clock skew is too high, the tools might run out of routing resources trying to slow down your data.</p>
+<h3 id="the-skew-monster">The Skew Monster</h3>
+<p>Clock skew is the difference in arrival time of the same clock edge at two different flip-flops. Imagine two photographers trying to take a picture of the same runner at the exact same time, but one of them is standing 5 miles further away. Their shutters won't click simultaneously.</p>
+<p>In a large FPGA, the clock signal has to travel through a massive distribution network (the clock tree). Even with AMD's highly optimized global clock buffers, there will be some skew. If the clock arrives at the destination register <em>after</em> it arrives at the source register, it helps your setup time but hurts your hold time. This is why using dedicated clocking resources (Section 1.3) is non-negotiable.</p>
+<h3 id="jitter-and-uncertainty-the-wobbly-metronome">Jitter and Uncertainty: The Wobbly Metronome</h3>
+<p>Jitter is the uncertainty in the clock period itself. No oscillator is perfect. Sometimes the clock cycle is 4.01ns, and sometimes it's 3.99ns. Vivado accounts for this using "Clock Uncertainty." It effectively "shrinks" your available timing budget to account for the worst-case wobble.</p>
+<p>If you have a noisy power supply (remember Section 1.2?), your jitter will increase. This makes timing closure even harder. The UltraFast methodology emphasizes that a clean board design leads to a clean timing report. You can't fix bad hardware with good constraints.</p>
+<p><img alt="Clock Jitter Symphony" src="../../assets/images/fig_2_1_jitter.png" /></p>
+<h3 id="code-detective-the-timing-summary">Code Detective: The Timing Summary</h3>
+<p>When you look at a Vivado timing report, four numbers tell you almost everything: WNS (Worst Negative Slack), TNS (Total Negative Slack), WHS (Worst Hold Slack) and WPWS (Worst Pulse Width Slack).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c"># Code Detective: Is this a passing timing report?</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c"># Check the Slack values</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c"># WNS: -0.052ns</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c"># TNS: -12.450ns</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c"># WHS: 0.120ns</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c"># WPWS: 1.200ns</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c"># Hint: Slack must be POSITIVE to pass. </span>
+</code></pre></div>
+<p>The flaw here is that the user might see the positive WHS (Hold Slack) and think they are safe. But the <strong>WNS is negative</strong>, meaning the design is failing its setup requirements. Even a negative slack of -0.001ns is a failure.</p>
+<p><strong>The fix — and the diagnosis you must do first.</strong> Look at the <em>ratio</em> of TNS to WNS
+before touching anything:</p>
+<div class="arithmatex">\[\frac{\text{TNS}}{\text{WNS}} = \frac{-12.450}{-0.052} \approx 239\]</div>
+<p>Roughly 239 paths are failing, each by about 50 ps. That is not a path problem; that is a
+systemic one. Chasing the single worst path here would be a wasted afternoon.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c"># 1. Are the failures concentrated in one clock or one region?</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nv">report_timing_summary</span><span class="w"> </span><span class="o">-</span>delay_type<span class="w"> </span>min_max<span class="w"> </span><span class="o">-</span>report_unconstrained<span class="w"> </span><span class="o">-</span>file<span class="w"> </span>ts.rpt
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c"># 2. Group the failing paths by clock, then by hierarchy. 239 paths failing by a</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c">#    similar tiny amount almost always share a cause.</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nv">report_timing</span><span class="w"> </span><span class="o">-</span>setup<span class="w"> </span><span class="o">-</span>max_paths<span class="w"> </span><span class="mi">300</span><span class="w"> </span><span class="o">-</span>nworst<span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">-</span>path_type<span class="w"> </span>summary<span class="w"> </span><span class="o">-</span>sort_by<span class="w"> </span>group
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="c"># 3. The three usual systemic causes, in the order they are worth checking:</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="nv">report_clock_interaction</span><span class="w">               </span><span class="k">;</span><span class="c"># an unconstrained or mis-related clock domain</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="nv">report_design_analysis</span><span class="w"> </span><span class="o">-</span>congestion<span class="w">     </span><span class="k">;</span><span class="c"># a congested region stretching every route</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="nv">report_high_fanout_nets</span><span class="w"> </span><span class="o">-</span>timing<span class="w">        </span><span class="k">;</span><span class="c"># one net loaded everywhere in the failing group</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="c"># 4. Only once you know the cause: re-run implementation with a directive that</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="c">#    targets it, rather than sweeping directives blindly.</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="c">#    e.g. congestion -&gt; place_design -directive AltSpreadLogic_high</span>
+</code></pre></div>
+<p><code>WPWS: 1.200ns</code> in the report is the pulse width check, and it being positive is worth
+noticing: it confirms your clocks satisfy the minimum high/low time of the primitives
+they drive. A negative WPWS usually means a clock is being generated in fabric — which is
+a different and worse problem than a slow path.</p>
+<h3 id="analogy-silicon">Analogy → Silicon</h3>
+<table>
+<thead>
+<tr>
+<th>In the story</th>
+<th>In the silicon</th>
+<th>Where the analogy breaks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Camera shutter</td>
+<td>The active clock edge at the capture flop's <code>C</code> pin</td>
+<td>A shutter is instantaneous; the capture window is a <em>region</em> defined by setup before and hold after, and the flop's behaviour inside it is undefined rather than merely blurry</td>
+</tr>
+<tr>
+<td>Subject standing still before the click</td>
+<td>Setup time <span class="arithmatex">\(T_{su}\)</span> — data stable before the edge</td>
+<td>The subject can be told to hold still; data stability is decided by the <em>previous</em> stage's delay, which you control only through pipelining and placement</td>
+</tr>
+<tr>
+<td>Staying still after the click</td>
+<td>Hold time <span class="arithmatex">\(T_h\)</span> — data stable after the edge</td>
+<td>Independent of clock period, which is why "slow the clock down" fixes setup and does nothing for hold</td>
+</tr>
+<tr>
+<td>Two photographers at different distances</td>
+<td>Clock <strong>skew</strong> — the same edge arriving at launch and capture flops at different times</td>
+<td>Photographers can be moved; skew is what the clock tree gives you, and it <em>helps</em> setup while <em>hurting</em> hold on the same path</td>
+</tr>
+<tr>
+<td>Drummer who can't keep the beat</td>
+<td><strong>Jitter</strong>, which Vivado folds into <code>clock uncertainty</code></td>
+<td>A wobbly drummer averages out; the timing engine assumes the worst-case edge every time, so uncertainty is subtracted from every setup path unconditionally</td>
+</tr>
+<tr>
+<td>Data "resting" between stages</td>
+<td>A pipeline register breaking a long combinational path</td>
+<td>Rest implies time recovered for free; each pipeline stage costs a cycle of latency and a real flop, and changes your protocol's timing</td>
+</tr>
+</tbody>
+</table>
+<h3 id="do-the-math">Do the Math</h3>
+<p>A Vivado timing path report is not prose — it is an equation with the numbers filled in.
+Learn to read it as one, and timing closure stops being guesswork.</p>
+<p><strong>Setup slack:</strong></p>
+<div class="arithmatex">\[\text{Slack}_{\text{setup}} = \underbrace{(T_{\text{clk}} + T_{\text{skew}} - T_{\text{uncertainty}} - T_{su})}_{\text{required time}} - \underbrace{(T_{co} + T_{\text{logic}} + T_{\text{net}})}_{\text{arrival time}}\]</div>
+<p><strong>Givens</strong> — read off an actual <code>report_timing</code> for one path:</p>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Where it comes from in the report</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(T_{\text{clk}}\)</span></td>
+<td>Destination clock period</td>
+<td>2.500 ns</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(T_{co}\)</span></td>
+<td>Launch flop clock-to-Q</td>
+<td>0.089 ns</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(T_{\text{logic}}\)</span></td>
+<td>Sum of LUT delays on the path</td>
+<td>0.412 ns</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(T_{\text{net}}\)</span></td>
+<td>Sum of net delays on the path</td>
+<td>1.807 ns</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(T_{su}\)</span></td>
+<td>Capture flop setup requirement</td>
+<td>0.031 ns</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(T_{\text{skew}}\)</span></td>
+<td>Destination clock arrival − source clock arrival</td>
+<td>+0.045 ns</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(T_{\text{uncertainty}}\)</span></td>
+<td>Jitter + phase error</td>
+<td>0.035 ns</td>
+</tr>
+</tbody>
+</table>
+<div class="arithmatex">\[\text{Required} = 2.500 + 0.045 - 0.035 - 0.031 = 2.479\ \text{ns}\]</div>
+<div class="arithmatex">\[\text{Arrival} = 0.089 + 0.412 + 1.807 = 2.308\ \text{ns}\]</div>
+<div class="arithmatex">\[\text{Slack} = 2.479 - 2.308 = +0.171\ \text{ns} \quad \checkmark\]</div>
+<p>Now look at <em>where the time went</em>, because that is the part that tells you what to do:</p>
+<div class="arithmatex">\[\frac{T_{\text{net}}}{T_{co} + T_{\text{logic}} + T_{\text{net}}} = \frac{1.807}{2.308} = 78.3\ \%\]</div>
+<p>(Vivado counts <span class="arithmatex">\(T_{co}\)</span> in the "logic" bucket of its <code>Data Path Delay</code> split, which is
+why the report below prints <code>logic 0.501ns</code> and not <code>0.412ns</code>. Use its convention so your
+arithmetic matches the report you are staring at.)</p>
+<p><strong>78 % of this path is wire, not logic.</strong> Adding a pipeline stage would split the logic —
+which is only 19 % of the problem. This is a <em>placement</em> path, and the fixes are
+floorplanning, fanout reduction, or letting <code>phys_opt_design</code> replicate the driver.
+Pipelining it would cost a cycle of latency and buy almost nothing.</p>
+<p><strong>Hold slack</strong> uses the same terms, minimum-delay corner, and no clock period at all:</p>
+<div class="arithmatex">\[\text{Slack}_{\text{hold}} = (T_{co,\min} + T_{\text{logic},\min} + T_{\text{net},\min}) - (T_h + T_{\text{skew}} + T_{\text{uncertainty}})\]</div>
+<p>With <span class="arithmatex">\(T_{co,\min} = 0.045\)</span> ns, a short path of <span class="arithmatex">\(T_{\text{net},\min} = 0.018\)</span> ns, no logic,
+<span class="arithmatex">\(T_h = 0.052\)</span> ns, skew <span class="arithmatex">\(+0.045\)</span> ns and uncertainty <span class="arithmatex">\(0.035\)</span> ns:</p>
+<div class="arithmatex">\[\text{Slack}_{\text{hold}} = (0.045 + 0 + 0.018) - (0.052 + 0.045 + 0.035) = 0.063 - 0.132 = -0.069\ \text{ns} \quad \times\]</div>
+<p><strong>Note what is absent from that equation: <span class="arithmatex">\(T_{\text{clk}}\)</span>.</strong> Halve your clock frequency
+and this path still fails by exactly 69 ps. That is the whole reason hold violations are
+a different kind of problem — and why the same <span class="arithmatex">\(+0.045\)</span> ns of skew that <em>helped</em> setup by
+45 ps <em>hurt</em> hold by 45 ps.</p>
+<h3 id="the-real-artifact">The Real Artifact</h3>
+<p>Here is a real <code>report_timing</code> path, annotated. Every number above appears in it, and
+knowing which column is which is the single highest-leverage skill in this chapter.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Slack (MET) :             0.171ns  (required time - arrival time)
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  Source:                 u_dsp/acc_reg[17]/C
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>                            (rising edge-triggered cell FDRE clocked by clk_400
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>                             {rise@0.000ns fall@1.250ns period=2.500ns})
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>  Destination:            u_out/sum_reg[17]/D
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>                            (rising edge-triggered cell FDRE clocked by clk_400)
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>  Path Group:             clk_400
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>  Path Type:              Setup (Max at Slow Process Corner)
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>  Requirement:            2.500ns  (clk_400 rise@2.500ns - clk_400 rise@0.000ns)
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>  Data Path Delay:        2.308ns  (logic 0.501ns (21.7%)  route 1.807ns (78.3%))
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>  Logic Levels:           3  (LUT3=1 LUT6=2)
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>  Clock Path Skew:        0.045ns
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>  Clock Uncertainty:      0.035ns
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>    Location             Delay type       Incr(ns)  Path(ns)    Netlist Resource(s)
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>  -------------------------------------------------------------------------------
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>                         (clock clk_400 rise edge)  0.000     0.000
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>    SLICE_X52Y188        FDRE (Prop_fdre_C_Q)       0.089     0.089    u_dsp/acc_reg[17]/Q
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>                         net (fo=42, routed)        0.912     1.001    u_dsp/acc_n[17]
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>    SLICE_X61Y201        LUT6 (Prop_lut6_I0_O)      0.124     1.125    u_dsp/sel[17]
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>                         net (fo=1, routed)         0.601     1.726    u_dsp/sel_n[17]
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>    SLICE_X70Y214        LUT3 (Prop_lut3_I1_O)      0.098     1.824    u_out/pre[17]
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>                         net (fo=1, routed)         0.294     2.118    u_out/pre_n[17]
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>    SLICE_X74Y219        LUT6 (Prop_lut6_I2_O)      0.190     2.308    u_out/sum_d[17]
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>  -------------------------------------------------------------------------------
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>                         arrival time                        2.308
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>                         required time                       2.479
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>                         ---------------------------------------------
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a>                         slack                                0.171
+</code></pre></div>
+<p><strong>How to read it in fifteen seconds, in this order:</strong></p>
+<ol>
+<li><strong><code>Data Path Delay</code> split.</strong> <code>route 78.3%</code> — this is a routing-dominated path.
+   Pipelining will not help it; placement will. If it said <code>logic 75%</code>, the opposite.</li>
+<li><strong><code>Logic Levels: 3</code>.</strong> Low. At 400 MHz you can afford perhaps 4–6 levels, so the levels
+   are not the problem. A path with 15 levels at this frequency is architecturally
+   broken and no amount of <code>phys_opt_design</code> will save it.</li>
+<li><strong>The single biggest <code>Incr</code>.</strong> Here it is <code>net (fo=42, routed) 0.912</code> — 40 % of the
+   entire path is one net with a fanout of 42. <strong>That is the bug.</strong> The fix is fanout
+   reduction, not pipelining: replicate the driver, or set <code>MAX_FANOUT</code> on the net.</li>
+<li><strong><code>Clock Path Skew</code> sign.</strong> <code>+0.045</code> helps setup here. Remember that the same number
+   is working against you on the hold check for these flops.</li>
+</ol>
+<p>The workflow that follows from the report:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c"># 1. Is this one path or a systemic problem?</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nv">report_timing_summary</span><span class="w"> </span><span class="o">-</span>delay_type<span class="w"> </span>min_max<span class="w"> </span><span class="o">-</span>report_unconstrained<span class="w"> </span><span class="o">-</span>file<span class="w"> </span>timing_summary.rpt
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c"># 2. What do the worst paths have in common?</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nv">report_timing</span><span class="w"> </span><span class="o">-</span>setup<span class="w"> </span><span class="o">-</span>max_paths<span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="o">-</span>nworst<span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">-</span>path_type<span class="w"> </span>summary<span class="w"> </span><span class="o">-</span>sort_by<span class="w"> </span>group
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c"># 3. High-fanout nets are the most common single cause of route-dominated paths.</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="nv">report_high_fanout_nets</span><span class="w"> </span><span class="o">-</span>timing<span class="w"> </span><span class="o">-</span>load_types<span class="w"> </span><span class="o">-</span>max_nets<span class="w"> </span><span class="mi">25</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="c"># 4. Ask the tool what it would do.</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="nv">report_qor_suggestions</span><span class="w"> </span><span class="o">-</span>file<span class="w"> </span>qor.rpt
+</code></pre></div>
+<h3 id="sharpen-your-pencil">Sharpen Your Pencil</h3>
+<ol>
+<li>A path reports <code>Data Path Delay: 3.104ns (logic 2.481ns (79.9%) route 0.623ns
+   (20.1%))</code> with <code>Logic Levels: 11</code>, on a 3.000 ns clock. Compute nothing yet — just
+   say which fix you would reach for, and which one you would not, and why.</li>
+<li>Using the setup equation and the givens table above, recompute slack if clock
+   uncertainty rises from 0.035 ns to 0.180 ns (a noisier reference oscillator). Does the
+   path still pass? What board-level change caused this, and which section covers it?</li>
+<li>A hold path fails by −0.069 ns. Your colleague suggests dropping the clock from
+   400 MHz to 200 MHz "to give it more room." What happens, exactly, and what should be
+   done instead?</li>
+</ol>
+<h3 id="final-thoughts-on-the-ballet">Final Thoughts on the Ballet</h3>
+<p>Setup and hold times are the fundamental laws of digital logic. They are the reason we pipeline, the reason we floorplan, and the reason we care about PCB stackup. When you stop seeing your FPGA as a place for "code" and start seeing it as a high-speed temporal dance, you’ll find that timing closure becomes much more intuitive. Respect the clock, and the clock will respect you.</p>
+<h3 id="answers">Answers</h3>
+<p><strong>Brain Power</strong> — <em>4 ns period, 3.8 ns data path, 200 ps margin. The silicon slows by 5 %
+with temperature. What happens?</em></p>
+<p>Apply the derating to the data path, which is what temperature affects:</p>
+<div class="arithmatex">\[T_{\text{data}} = 3.800\ \text{ns} \times 1.05 = 3.990\ \text{ns}\]</div>
+<div class="arithmatex">\[\text{Slack} = 4.000 - 3.990 = +0.010\ \text{ns}\]</div>
+<p>Ten picoseconds. Technically passing, practically not — that is less than the tool's own
+modelling resolution on a path this long.</p>
+<p>But the important part of the answer is that <strong>this is not how sign-off works, and
+believing it is has shipped a lot of broken hardware.</strong> Vivado does not analyse your
+design at nominal and leave you to apply a temperature factor by hand. It analyses at
+characterised process/voltage/temperature <em>corners</em>: the slow corner (slow process, low
+voltage, high temperature) for setup, and the fast corner for hold. The 3.8 ns figure in
+your report, if it came from <code>report_timing -setup</code>, <strong>already is the hot, slow,
+low-voltage number.</strong></p>
+<p>So the correct answer is: nothing happens, provided two conditions hold — your design
+stays inside the operating range the speed grade was characterised for, and your
+constraints actually describe the design. The failure mode in the field is almost never
+"the tool's corner model was wrong." It is "the constraints were wrong," which is what
+the next section is about.</p>
+<p><strong>Sharpen Your Pencil #1</strong> — <code>logic 79.9%</code>, <code>Logic Levels: 11</code>, 3.000 ns period.</p>
+<p>This is the mirror image of the worked example. Eleven levels of logic at 333 MHz is far
+too many; the path is <strong>logic-dominated</strong>, and the time is going into LUT propagation,
+not wire.</p>
+<ul>
+<li><strong>Reach for</strong>: pipelining. Break the path into two or three stages so each has three or
+  four levels. Secondarily, restructure the RTL — eleven levels frequently means a wide
+  priority encoder or a long <code>if/else if</code> chain that wants to be a balanced tree, or an
+  arithmetic expression that wants a DSP.</li>
+<li><strong>Do not reach for</strong>: floorplanning, pblocks, <code>MAX_FANOUT</code>, or a placement directive
+  sweep. Route is only 20 % of the path; even perfect placement recovers at most 623 ps
+  of a path that needs to lose over a nanosecond. You would spend two days of runtime
+  and close nothing.</li>
+</ul>
+<p>The general rule this teaches: <strong>read the logic/route split before choosing a fix.</strong>
+Routing-dominated → placement, fanout, replication. Logic-dominated → pipelining,
+retiming, RTL restructuring.</p>
+<p><strong>Sharpen Your Pencil #2</strong> — with <span class="arithmatex">\(T_{\text{uncertainty}} = 0.180\)</span> ns:</p>
+<div class="arithmatex">\[\text{Required} = 2.500 + 0.045 - 0.180 - 0.031 = 2.334\ \text{ns}\]</div>
+<div class="arithmatex">\[\text{Slack} = 2.334 - 2.308 = +0.026\ \text{ns}\]</div>
+<p>Still passing, but the margin collapsed from 171 ps to 26 ps — an 85 % loss of margin
+from one board-level component. Every path on that clock domain lost the same 145 ps, so
+paths that were marginal are now failing and your WNS moved with it.</p>
+<p>The cause is reference clock jitter, which is dominated by oscillator quality and by
+power supply noise on the oscillator and on <span class="arithmatex">\(V_{CCAUX}\)</span>/the MMCM rails. <strong>Section 1.2</strong>
+covers it: this is exactly the "clean power leads to clean timing" claim, quantified.
+A cheaper oscillator is not a $2 saving; here it cost 145 ps on every path in the design.</p>
+<p><strong>Sharpen Your Pencil #3</strong> — dropping to 200 MHz changes the hold slack by <strong>exactly
+nothing</strong>:</p>
+<div class="arithmatex">\[\text{Slack}_{\text{hold}} = (T_{co,\min} + T_{\text{logic},\min} + T_{\text{net},\min}) - (T_h + T_{\text{skew}} + T_{\text{uncertainty}})\]</div>
+<p>There is no <span class="arithmatex">\(T_{\text{clk}}\)</span> term. The path still fails by −0.069 ns at 200 MHz, at
+20 MHz, and at DC. Hold is a race between the data and the clock edge <em>at the same
+edge</em> — the period never enters it.</p>
+<p>What to do instead, in order of preference:</p>
+<ol>
+<li><strong>Let the router fix it.</strong> Hold violations of this size are routine and
+   <code>route_design</code> fixes them automatically by inserting routing detours, provided it has
+   spare resources. If you see them in a <em>routed</em> design, the tool ran out of room —
+   which usually means congestion, which is the actual problem.</li>
+<li><strong>Look at the skew.</strong> <span class="arithmatex">\(+0.045\)</span> ns of skew is contributing two thirds of the failure. If
+   launch and capture flops are on the same clock but physically distant, pull them
+   together; if they are on <em>different</em> clock buffers, that is the bug.</li>
+<li><strong>Add a delay element in RTL</strong> as a last resort, and only with <code>dont_touch</code> so
+   synthesis does not optimise it away.</li>
+</ol>
+<p>And note the diagnostic value of the question: anyone proposing "slow the clock down" for
+a hold violation is telling you they have not internalised the equation. It is a good
+interview question for exactly that reason.</p>
+<h3 id="there-are-no-dumb-questions">There Are No Dumb Questions</h3>
+<p><strong>Q: Where does <code>Clock Uncertainty</code> actually come from? I never set it.</strong></p>
+<p>A: Vivado computes a default from the clock's source — MMCM/PLL jitter properties, the
+input jitter you declared on <code>create_clock</code>, and phase error through the clock tree. You
+can add to it with <code>set_clock_uncertainty</code> when you know something the tool does not
+(a noisy reference, an SSC clock, a margin policy your team applies). You cannot usefully
+<em>reduce</em> it below the physical contributors, and trying to is how designs pass in the
+tool and fail on the bench.</p>
+<p><strong>Q: Is <code>Logic Levels</code> the number of LUTs?</strong></p>
+<p>A: The number of <em>levels</em>, i.e. the depth of the combinational chain — LUTs in series,
+plus carry chain and MUXF elements. A 64-input OR built as a balanced tree of LUT6s is
+three levels; built as a chain it is eleven. Same LUT count, wildly different timing. It
+is one of the few numbers that tells you about your RTL's <em>structure</em> rather than its
+size.</p>
+<p><strong>Q: WNS is −0.052 ns and TNS is −12.450 ns. Which do I care about?</strong></p>
+<p>A: Both, and they say different things. WNS is your worst single path — how far you are
+from passing. TNS is the sum of all negative slack — how <em>many</em> paths are failing. WNS
+−0.052 with TNS −0.052 is one marginal path, and you fix it in an afternoon. WNS −0.052
+with TNS −12.450 is roughly 240 paths each failing by about 50 ps, which is not a path
+problem at all: it is a clock, a constraint, or a congestion problem affecting a whole
+region. Same WNS, completely different week.</p>
+<p><strong>Q: Can I ship with −0.001 ns of slack?</strong></p>
+<p>A: No, and not for the reason people usually give. It is not that 1 ps is physically
+significant — it is that a failing path means the tool did not converge on a solution it
+believes in, and the <em>next</em> thing you change may move it by 100 ps in the wrong
+direction. There is also no meaningful "how negative is too negative" line: sign-off is
+binary because the corner analysis already contains your margin.</p>
+<h3 id="bullet-points">Bullet Points</h3>
+<ul>
+<li><strong>Setup slack</strong> <span class="arithmatex">\(= (T_{\text{clk}} + T_{\text{skew}} - T_{\text{uncertainty}} - T_{su}) - (T_{co} + T_{\text{logic}} + T_{\text{net}})\)</span></li>
+<li><strong>Hold slack</strong> <span class="arithmatex">\(= (T_{co,\min} + T_{\text{logic},\min} + T_{\text{net},\min}) - (T_h + T_{\text{skew}} + T_{\text{uncertainty}})\)</span> —
+  <strong>no clock period term.</strong> Hold failures are frequency independent.</li>
+<li><strong>Positive skew helps setup and hurts hold</strong> by the same amount, on the same path.</li>
+<li><strong>Read the logic/route split first.</strong> Route-dominated → placement, fanout,
+  replication. Logic-dominated → pipelining, retiming, RTL restructuring.</li>
+<li><strong>Then find the single biggest <code>Incr</code>.</strong> A high-fanout net is the most common single
+  cause of a route-dominated path.</li>
+<li><strong><code>Logic Levels</code></strong> is depth, not count. At 400 MHz budget roughly 4–6; 11+ is an
+  architectural problem.</li>
+<li><strong>WNS vs TNS</strong>: WNS = how far off. TNS = how widespread. TNS ≫ WNS means a systemic
+  cause, not a path to fix.</li>
+<li><strong>Sign-off is at corners.</strong> <code>report_timing -setup</code> is already the slow/hot/low-voltage
+  number; do not derate it again by hand.</li>
+<li><strong>Commands</strong>: <code>report_timing_summary -delay_type min_max -report_unconstrained</code>,
+  <code>report_timing -setup -max_paths 20 -nworst 1</code>, <code>report_high_fanout_nets -timing</code>,
+  <code>report_qor_suggestions</code>, <code>set_clock_uncertainty</code>.</li>
+</ul>
+<hr />
+<p>[REVIEW_STATUS: APPROVED BY PUBLISHER]</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../1.4_ssi_hbm/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 1.4 I/O Planning">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                1.4 I/O Planning
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../2.2_constraints/" class="md-footer__link md-footer__link--next" aria-label="Next: 2.2 I/O Delays">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                2.2 I/O Delays
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2026 <a href="https://github.com/mehdibadjian">Mehdi Badjian</a> &middot; <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga">github.com/mehdibadjian/no-magic-smoke-fpga</a> &middot; content <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/blob/main/LICENSE-CODE">MIT</a> &middot; independent, unofficial guide - not affiliated with or endorsed by AMD, Inc.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" target="_blank" rel="noopener" title="Source and issues on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.footer", "content.code.copy", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

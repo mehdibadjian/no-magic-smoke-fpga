@@ -1,0 +1,2478 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An independent, unofficial study companion to the AMD UltraFast Design Methodology. FPGA engineering taught Head First style, with the arithmetic left in - worked calculations, runnable artifacts, and answers to every question it asks.">
+      
+      
+        <meta name="author" content="Mehdi Badjian">
+      
+      
+        <link rel="canonical" href="https://mehdibadjian.github.io/no-magic-smoke-fpga/sections/3.4_verification/">
+      
+      
+        <link rel="prev" href="../3.3_security/">
+      
+      
+        <link rel="next" href="../4.1_synthesis/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>3.4 Verification - No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#section-34-simulation-and-verification-the-digital-sandbox" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-header__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              3.4 Verification
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../1.1_pcb_layout/" class="md-tabs__link">
+          
+  
+  
+  Chapter 1: Board Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../2.1_timing_ballet/" class="md-tabs__link">
+          
+  
+  
+  Chapter 2: Constraints
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../3.1_rtl_coding/" class="md-tabs__link">
+          
+  
+  
+  Chapter 3: Design Creation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../4.1_synthesis/" class="md-tabs__link">
+          
+  
+  
+  Chapter 4: Implementation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../5.1_power/" class="md-tabs__link">
+          
+  
+  
+  Chapter 5: Power & Thermal
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../6.1_debug/" class="md-tabs__link">
+          
+  
+  
+  Chapter 6: Debug & Tuning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../references/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  References
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-nav__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 1: Board Planning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 1: Board Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.1_pcb_layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.1 Hardware Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.2_power_planning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.2 Power Delivery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.3_clocking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.3 Clocking Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.4_ssi_hbm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.4 I/O Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 2: Constraints
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 2: Constraints
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.1_timing_ballet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.1 Defining Clocks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.2_constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.2 I/O Delays
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.3_cdc_minefield/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.3 CDC Minefield
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 3: Design Creation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 3: Design Creation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.1_rtl_coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1 RTL Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.2_ip_integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 IP Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.3_security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Design Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Verification
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-simulation-mindset-finding-the-needle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Simulation Mindset: Finding the Needle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anatomy-of-a-testbench-the-virtual-lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anatomy of a Testbench: The Virtual Lab
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-the-waveform-starer-and-the-verification-engineer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: The Waveform Starer and the Verification Engineer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-checking-success-the-power-of-assertions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-Checking Success: The Power of Assertions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-coverage-map-how-much-is-enough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Coverage Map: How Much is Enough?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gate-level-reality-the-final-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gate-Level Reality: The Final Audit
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-clock-race-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The Clock Race Condition
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Do the Math">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coverage-closure-how-much-stimulus-does-a-goal-imply" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage closure: how much stimulus does a goal imply?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simulation-throughput-what-your-test-plan-actually-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simulation throughput: what your test plan actually costs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-the-sandbox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on the Sandbox
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 4: Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 4: Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.1_synthesis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.1 Synthesis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.2_placement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.2 Placement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.3_closure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.3 Closure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 5: Power & Thermal
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 5: Power & Thermal
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.1_power/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.1 Power Estimation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.2_thermal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.2 Thermal Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 6: Debug & Tuning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 6: Debug & Tuning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6.1_debug/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.1 Hardware Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6.2_tuning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.2 Performance Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-simulation-mindset-finding-the-needle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Simulation Mindset: Finding the Needle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anatomy-of-a-testbench-the-virtual-lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anatomy of a Testbench: The Virtual Lab
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-the-waveform-starer-and-the-verification-engineer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: The Waveform Starer and the Verification Engineer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-checking-success-the-power-of-assertions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-Checking Success: The Power of Assertions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-coverage-map-how-much-is-enough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Coverage Map: How Much is Enough?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gate-level-reality-the-final-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gate-Level Reality: The Final Audit
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-clock-race-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The Clock Race Condition
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Do the Math">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coverage-closure-how-much-stimulus-does-a-goal-imply" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage closure: how much stimulus does a goal imply?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simulation-throughput-what-your-test-plan-actually-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simulation throughput: what your test plan actually costs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-the-sandbox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on the Sandbox
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/edit/main/docs/sections/3.4_verification.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/raw/main/docs/sections/3.4_verification.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
+
+
+<h1 id="section-34-simulation-and-verification-the-digital-sandbox">Section 3.4: Simulation and Verification: The Digital Sandbox</h1>
+<p>If you’ve ever spent forty-eight hours straight in a dark lab, staring at an oscilloscope and wondering why your FPGA isn't working, you’ve learned a painful lesson: <strong>Hardware is a terrible place to debug.</strong> On hardware, everything is invisible. You can't see the internal signals, you can't stop time, and every change takes thirty minutes to compile.</p>
+<p>In the AMD UltraFast Methodology, we live by a simple rule: <strong>If it hasn't been simulated, it doesn't work.</strong> Simulation is your "Digital Sandbox." It’s a controlled, virtual environment where you can see every single wire, pause the clock, and inject errors at will. Finding a bug in simulation takes minutes. Finding that same bug in hardware can take weeks.</p>
+<h3 id="the-simulation-mindset-finding-the-needle">The Simulation Mindset: Finding the Needle</h3>
+<p>Verification isn't just about seeing if your code "works." It’s about trying to <strong>break</strong> it. You should be your own harshest critic. If your testbench only tests the "Happy Path" (where everything goes right), you haven't really verified anything. You need to test the "Sad Path"—the overflows, the resets, the illegal states, and the random delays.</p>
+<p>Think of simulation as a flight simulator. You don't want the pilot’s first experience with an engine failure to be at 30,000 feet. You want them to have experienced it a hundred times in the simulator first. Your FPGA logic is the same. Put it through the ringer in the digital sandbox so it’s ready for the real world.</p>
+<blockquote>
+<p><strong>Brain Power</strong>
+<strong>If your simulation passes but your hardware fails, what are the top three things you should check? (Hint: Think about timing, asynchronous signals, and power-up sequences.)</strong></p>
+</blockquote>
+<h3 id="anatomy-of-a-testbench-the-virtual-lab">Anatomy of a Testbench: The Virtual Lab</h3>
+<p>A testbench is a piece of HDL code that surrounds your design (the <strong>DUT</strong> or Design Under Test) and provides it with inputs. A good testbench has three distinct parts:</p>
+<ol>
+<li><strong>The Stimulus:</strong> The part that generates the input signals (clocks, resets, data packets).</li>
+<li><strong>The DUT:</strong> Your actual design, sitting in the middle of the lab.</li>
+<li><strong>The Checker:</strong> The part that watches the DUT’s outputs and compares them to the expected results.</li>
+</ol>
+<p>Too many engineers stop at step 1 and 2. They generate some inputs, look at the waveforms, and say, "Yeah, that looks about right." This is dangerous. Waveform staring is not verification. You need an automated checker that tells you—in plain English—if the test passed or failed.</p>
+<p><img alt="Automated Testbench Lab" src="../../assets/images/fig_3_4_lab.png" /></p>
+<h3 id="fireside-chat-the-waveform-starer-and-the-verification-engineer">Fireside Chat: The Waveform Starer and the Verification Engineer</h3>
+<p><strong>Waveform Starer:</strong> "I've been looking at these green lines for three hours. The data seems to be shifting correctly, and the enable signal is toggling. I think we’re good to go."</p>
+<p><strong>Verification Engineer:</strong> "Did you check if the packet header is correct? Did you verify the checksum on the output? What happens if the FIFO overflows mid-transaction?"</p>
+<p><strong>Waveform Starer:</strong> "Well... I didn't see any overflows in the ten microseconds I simulated. And I can't really read the hex values in the checksum very well."</p>
+<p><strong>Verification Engineer:</strong> "Exactly. That’s why I wrote a self-checking testbench. It ran 10,000 random transactions in the background while I was at lunch. It caught three corner-case failures that you never would have seen on a waveform. My testbench is the judge; the waveforms are just the evidence."</p>
+<h3 id="self-checking-success-the-power-of-assertions">Self-Checking Success: The Power of Assertions</h3>
+<p>A self-checking testbench uses <strong>Assertions</strong> to monitor the design. An assertion is a statement like: <em>"If 'valid' is high, 'data' must not be zero."</em> If that statement is ever false, the simulation stops and screams at you.</p>
+<p>SystemVerilog Assertions (SVA) are a powerful way to codify your design’s requirements. Instead of trying to imagine every possible failure, you just define the "Rules of the Road." If the design breaks a rule, the testbench catches it instantly. It turns verification from a subjective art into an objective science.</p>
+<h3 id="the-coverage-map-how-much-is-enough">The Coverage Map: How Much is Enough?</h3>
+<p>"How do I know when I'm done testing?" This is the million-dollar question. The answer is <strong>Code Coverage</strong>. Modern simulators can tell you exactly which lines of your code were executed and which weren't.</p>
+<p>If your coverage report shows that your "Error Handling" logic was never triggered, you haven't tested your error handling! You need to go back and write more stimulus to hit those "uncovered" areas. Aim for 100% statement and branch coverage for any critical block. If you haven't seen it run in simulation, you can't trust it in hardware.</p>
+<p><img alt="Code Coverage Map" src="../../assets/images/fig_3_4_coverage.png" /></p>
+<h3 id="gate-level-reality-the-final-audit">Gate-Level Reality: The Final Audit</h3>
+<p>Most of the time, we simulate at the RTL level (the raw code). It’s fast and easy to debug. But RTL simulation doesn't account for real-world timing delays or the physical layout of the chip. That’s where <strong>Gate-Level Simulation (GLS)</strong> comes in.</p>
+<p>GLS is slow—it can be 100x slower than RTL simulation. But it’s the only way to catch "gate-level" issues like timing violations on asynchronous paths or errors in the synthesis process itself. You don't need to run GLS for your whole design, but for critical interfaces (like a custom DDR4 controller), it’s the final audit before you release your product.</p>
+<h3 id="code-detective-the-clock-race-condition">Code Detective: The Clock Race Condition</h3>
+<p>A common mistake in testbenches is creating a "race condition" between the clock and the data.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">// Code Detective: Why is this data capture unreliable?</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">initial</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">8&#39;hAA</span><span class="p">;</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="p">#</span><span class="mi">10</span><span class="w"> </span><span class="n">clk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="p">#</span><span class="mi">10</span><span class="w"> </span><span class="n">clk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">8&#39;hBB</span><span class="p">;</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="p">#</span><span class="mi">10</span><span class="w"> </span><span class="n">clk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="k">end</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1">// Hint: When exactly does the &#39;clk&#39; rise relative to the &#39;data&#39; change?</span>
+</code></pre></div>
+<p>The flaw here is that the clock and the data are changing at the exact same simulation time step (<code>#10</code>). In a simulator, this can lead to "non-deterministic" behavior. Depending on the simulator's internal event queue, the DUT might see the "old" data or the "new" data.</p>
+<p>Be precise about <em>why</em>, because the standard actually defines this. Both the clock edge
+and the data change land in the same time slot's <strong>active region</strong>, and the ordering of
+two blocking assignments across different processes in the active region is explicitly
+unspecified. Your DUT's <code>always_ff</code> and your testbench's stimulus are racing, and which
+wins is a property of the simulator, not of your design.</p>
+<p><strong>The fix</strong> — three techniques, in increasing order of robustness:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// 1. Drive stimulus from non-blocking assignments. NBAs are scheduled in the</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1">//    NBA region, which is strictly after the active region, so the DUT samples</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1">//    the OLD value at the edge - exactly like real hardware.</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="k">initial</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="n">data</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mh">8&#39;hAA</span><span class="p">;</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="p">@(</span><span class="k">posedge</span><span class="w"> </span><span class="n">clk</span><span class="p">)</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mh">8&#39;hBB</span><span class="p">;</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="p">@(</span><span class="k">posedge</span><span class="w"> </span><span class="n">clk</span><span class="p">)</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mh">8&#39;hCC</span><span class="p">;</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="k">end</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c1">// 2. Better: drive from a clocking block, which makes the skews explicit and</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="c1">//    removes the question entirely.</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="k">clocking</span><span class="w"> </span><span class="n">cb</span><span class="w"> </span><span class="p">@(</span><span class="k">posedge</span><span class="w"> </span><span class="n">clk</span><span class="p">);</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="k">default</span><span class="w"> </span><span class="k">input</span><span class="w"> </span><span class="p">#</span><span class="mi">1</span><span class="n">step</span><span class="w"> </span><span class="k">output</span><span class="w"> </span><span class="p">#</span><span class="mi">2</span><span class="n">ns</span><span class="p">;</span><span class="w">   </span><span class="c1">// sample just before, drive 2 ns after</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="n">data</span><span class="p">;</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="n">result</span><span class="p">;</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="k">endclocking</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="k">initial</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">    </span><span class="p">##</span><span class="mi">1</span><span class="w"> </span><span class="n">cb</span><span class="p">.</span><span class="n">data</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mh">8&#39;hAA</span><span class="p">;</span><span class="w">               </span><span class="c1">// &#39;##&#39; advances by clocking-block cycles</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">    </span><span class="p">##</span><span class="mi">1</span><span class="w"> </span><span class="n">cb</span><span class="p">.</span><span class="n">data</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mh">8&#39;hBB</span><span class="p">;</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="k">end</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="c1">// 3. Best for anything non-trivial: generate the clock in one place, with a</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="c1">//    period parameter, and never write a bare &#39;#&#39; delay in stimulus again.</span>
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="k">localparam</span><span class="w"> </span><span class="kt">time</span><span class="w"> </span><span class="n">TCLK</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="n">ns</span><span class="p">;</span>
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="k">initial</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="w">    </span><span class="n">clk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mb">1&#39;b0</span><span class="p">;</span>
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="w">    </span><span class="k">forever</span><span class="w"> </span><span class="p">#(</span><span class="n">TCLK</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="n">clk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">clk</span><span class="p">;</span>
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="k">end</span>
+</code></pre></div>
+<p>The rule that prevents the whole class of bug: <strong>stimulus is driven <code>&lt;=</code> after the edge;
+checks are sampled just before the edge.</strong> A clocking block states both in one place,
+which is why every serious verification methodology uses one.</p>
+<h3 id="analogy-silicon">Analogy → Silicon</h3>
+<table>
+<thead>
+<tr>
+<th>In the story</th>
+<th>In the silicon / the testbench</th>
+<th>Where the analogy breaks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flight simulator</td>
+<td>RTL simulation of the DUT with generated stimulus</td>
+<td>A flight simulator models known physics; an RTL simulation models <em>your description</em>, so it cannot find a bug that exists equally in your RTL and your expectations</td>
+</tr>
+<tr>
+<td>The judge, not the evidence</td>
+<td>A <strong>scoreboard</strong>: a reference model plus an automated comparison</td>
+<td>Judges weigh grey areas; a scoreboard is binary, which is its value — it removes the human who wants the test to pass</td>
+</tr>
+<tr>
+<td>Rules of the road</td>
+<td><strong>SystemVerilog Assertions</strong> (<code>assert property</code>) checking temporal behaviour</td>
+<td>Road rules are enforced when observed; an assertion fires only if the stimulus reaches the situation, which is why coverage and assertions are a pair</td>
+</tr>
+<tr>
+<td>The coverage map</td>
+<td>Code coverage (statement, branch, toggle, FSM) and <strong>functional</strong> coverage (<code>covergroup</code>)</td>
+<td>A map shows territory you know exists; code coverage cannot show you a feature you never implemented, which is what functional coverage is for</td>
+</tr>
+<tr>
+<td>The final audit</td>
+<td>Gate-level simulation with SDF back-annotation</td>
+<td>An audit re-checks the same books; GLS checks <em>different</em> things — synthesis correctness, X-propagation at reset, asynchronous path behaviour</td>
+</tr>
+<tr>
+<td>Testing the "sad path"</td>
+<td>Error injection, backpressure, reset during transaction, protocol violations</td>
+<td>Sad paths sound exceptional; in a real system they are the <em>normal</em> case under load, and they are where most field bugs live</td>
+</tr>
+</tbody>
+</table>
+<h3 id="do-the-math">Do the Math</h3>
+<p>"How much simulation is enough?" has a numeric answer more often than people expect.</p>
+<h4 id="coverage-closure-how-much-stimulus-does-a-goal-imply">Coverage closure: how much stimulus does a goal imply?</h4>
+<p>Suppose you must cover every combination of a 4-bit opcode and 3 pipeline states, and
+your stimulus generator picks both uniformly at random.</p>
+<div class="arithmatex">\[\text{Bins} = 2^4 \times 3 = 48\]</div>
+<p>Random sampling until every bin is hit is the <strong>coupon collector's problem</strong>, whose
+expected number of draws is:</p>
+<div class="arithmatex">\[E[n] = N \times H_N = N \times \sum_{k=1}^{N} \frac{1}{k} \approx N(\ln N + \gamma)\]</div>
+<p>With <span class="arithmatex">\(N = 48\)</span> and <span class="arithmatex">\(\gamma \approx 0.5772\)</span>:</p>
+<div class="arithmatex">\[E[n] \approx 48 \times (\ln 48 + 0.5772) = 48 \times (3.871 + 0.577) = 48 \times 4.448 \approx 214\]</div>
+<p><strong>About 214 random transactions to hit all 48 bins on average</strong> — not 48. And that is the
+<em>mean</em>; the tail is long, so a 99 % confidence target needs roughly two to three times
+more. Two consequences:</p>
+<ul>
+<li><strong>Constrained-random with coverage feedback beats pure random by a large factor.</strong>
+  Once you are down to the last few bins, targeted stimulus finds them in tens of
+  transactions where random needs hundreds.</li>
+<li><strong>If your bin count is <span class="arithmatex">\(2^{32}\)</span>, no amount of random simulation will close it.</strong> That is
+  the signal to switch to formal property checking for that block, or to redefine the
+  coverage model around meaningful equivalence classes rather than raw values.</li>
+</ul>
+<h4 id="simulation-throughput-what-your-test-plan-actually-costs">Simulation throughput: what your test plan actually costs</h4>
+<p><strong>Givens</strong> — measure your own; these are typical orders of magnitude:</p>
+<table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RTL simulation speed</td>
+<td>5,000 DUT cycles per wall-clock second</td>
+</tr>
+<tr>
+<td>Gate-level with SDF</td>
+<td>50 cycles per wall-clock second</td>
+</tr>
+<tr>
+<td>Design clock</td>
+<td>400 MHz</td>
+</tr>
+<tr>
+<td>Scenario to verify</td>
+<td>10 ms of real time</td>
+</tr>
+</tbody>
+</table>
+<div class="arithmatex">\[\text{Cycles} = 10\times10^{-3}\ \text{s} \times 400\times10^{6}\ \text{Hz} = 4\times10^{6}\ \text{cycles}\]</div>
+<div class="arithmatex">\[T_{\text{RTL}} = \frac{4\times10^{6}}{5000} = 800\ \text{s} \approx 13\ \text{minutes}\]</div>
+<div class="arithmatex">\[T_{\text{GLS}} = \frac{4\times10^{6}}{50} = 80{,}000\ \text{s} \approx 22\ \text{hours}\]</div>
+<p><strong>Verdict: the 22-hour number is why "just run GLS on everything" is not a plan.</strong> GLS is
+for targeted questions — reset X-propagation, a specific asynchronous interface, the
+synthesis of one critical block — not for regression. And the 13-minute number tells you
+something useful too: a regression of 50 such scenarios is an overnight job, which means
+your nightly regression is a real thing you can have, and your per-commit smoke test needs
+to be a much smaller subset.</p>
+<h3 id="the-real-artifact">The Real Artifact</h3>
+<p>A self-checking testbench with the four parts that matter: a clocking block (no races), a
+reference model, a scoreboard, and assertions. This is the skeleton to copy.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// tb_fifo.sv - self-checking testbench for a synchronous FIFO.</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1">//</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1">// The four properties that separate this from waveform-staring:</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1">//   1. A clocking block, so stimulus and sampling cannot race the DUT.</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1">//   2. A reference model (a SystemVerilog queue) that is obviously correct.</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="c1">//   3. A scoreboard that compares every output beat and FAILS THE TEST itself.</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="c1">//   4. Assertions for the protocol rules that a scoreboard cannot see.</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="c1">//</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="c1">// Run: xsim / xvlog -sv tb_fifo.sv fifo.sv ; then check the exit status, not the log.</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="no">`timescale</span><span class="w"> </span><span class="mi">1</span><span class="n">ns</span><span class="o">/</span><span class="mi">1</span><span class="n">ps</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="k">module</span><span class="w"> </span><span class="n">tb_fifo</span><span class="p">;</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">    </span><span class="k">localparam</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">DW</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mi">32</span><span class="p">;</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">    </span><span class="k">localparam</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">DEPTH</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">    </span><span class="k">localparam</span><span class="w"> </span><span class="kt">time</span><span class="w"> </span><span class="n">TCLK</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="n">ns</span><span class="p">;</span><span class="w">          </span><span class="c1">// 250 MHz</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">    </span><span class="kt">logic</span><span class="w">          </span><span class="n">clk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mb">1&#39;b0</span><span class="p">,</span><span class="w"> </span><span class="n">rst_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mb">1&#39;b0</span><span class="p">;</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">    </span><span class="kt">logic</span><span class="w">          </span><span class="n">wr_en</span><span class="p">,</span><span class="w"> </span><span class="n">rd_en</span><span class="p">;</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">    </span><span class="kt">logic</span><span class="w"> </span><span class="p">[</span><span class="n">DW</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="n">wr_data</span><span class="p">,</span><span class="w"> </span><span class="n">rd_data</span><span class="p">;</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">    </span><span class="kt">logic</span><span class="w">          </span><span class="n">full</span><span class="p">,</span><span class="w"> </span><span class="n">empty</span><span class="p">;</span>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="w">    </span><span class="k">always</span><span class="w"> </span><span class="p">#(</span><span class="n">TCLK</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="n">clk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">clk</span><span class="p">;</span>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="w">    </span><span class="n">fifo</span><span class="w"> </span><span class="p">#(.</span><span class="n">DW</span><span class="p">(</span><span class="n">DW</span><span class="p">),</span><span class="w"> </span><span class="p">.</span><span class="n">DEPTH</span><span class="p">(</span><span class="n">DEPTH</span><span class="p">))</span><span class="w"> </span><span class="n">dut</span><span class="w"> </span><span class="p">(.</span><span class="o">*</span><span class="p">);</span>
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="w">    </span><span class="c1">//--------------------------------------------------------------------------</span>
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="w">    </span><span class="c1">// 1. Clocking block - drives 2 ns after the edge, samples 1step before it.</span>
+<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a><span class="w">    </span><span class="c1">//--------------------------------------------------------------------------</span>
+<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="w">    </span><span class="k">clocking</span><span class="w"> </span><span class="n">cb</span><span class="w"> </span><span class="p">@(</span><span class="k">posedge</span><span class="w"> </span><span class="n">clk</span><span class="p">);</span>
+<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="w">        </span><span class="k">default</span><span class="w"> </span><span class="k">input</span><span class="w"> </span><span class="p">#</span><span class="mi">1</span><span class="n">step</span><span class="w"> </span><span class="k">output</span><span class="w"> </span><span class="p">#</span><span class="mi">2</span><span class="n">ns</span><span class="p">;</span>
+<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="w">        </span><span class="k">output</span><span class="w"> </span><span class="n">wr_en</span><span class="p">,</span><span class="w"> </span><span class="n">wr_data</span><span class="p">,</span><span class="w"> </span><span class="n">rd_en</span><span class="p">;</span>
+<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a><span class="w">        </span><span class="k">input</span><span class="w">  </span><span class="n">rd_data</span><span class="p">,</span><span class="w"> </span><span class="n">full</span><span class="p">,</span><span class="w"> </span><span class="n">empty</span><span class="p">;</span>
+<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a><span class="w">    </span><span class="k">endclocking</span>
+<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a>
+<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a><span class="w">    </span><span class="c1">//--------------------------------------------------------------------------</span>
+<a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a><span class="w">    </span><span class="c1">// 2 + 3. Reference model and scoreboard.</span>
+<a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a><span class="w">    </span><span class="c1">//    The model is a queue. It is trivially correct, which is the point:</span>
+<a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a><span class="w">    </span><span class="c1">//    a reference model complex enough to have its own bugs is not a reference.</span>
+<a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a><span class="w">    </span><span class="c1">//--------------------------------------------------------------------------</span>
+<a id="__codelineno-2-42" name="__codelineno-2-42" href="#__codelineno-2-42"></a><span class="w">    </span><span class="kt">logic</span><span class="w"> </span><span class="p">[</span><span class="n">DW</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="p">[$];</span>
+<a id="__codelineno-2-43" name="__codelineno-2-43" href="#__codelineno-2-43"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="kt">unsigned</span><span class="w">   </span><span class="n">beats_checked</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<a id="__codelineno-2-44" name="__codelineno-2-44" href="#__codelineno-2-44"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="kt">unsigned</span><span class="w">   </span><span class="n">errors</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<a id="__codelineno-2-45" name="__codelineno-2-45" href="#__codelineno-2-45"></a>
+<a id="__codelineno-2-46" name="__codelineno-2-46" href="#__codelineno-2-46"></a><span class="w">    </span><span class="k">always</span><span class="w"> </span><span class="p">@(</span><span class="k">posedge</span><span class="w"> </span><span class="n">clk</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-2-47" name="__codelineno-2-47" href="#__codelineno-2-47"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rst_n</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-2-48" name="__codelineno-2-48" href="#__codelineno-2-48"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">wr_en</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">full</span><span class="p">)</span><span class="w"> </span><span class="n">model</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">wr_data</span><span class="p">);</span>
+<a id="__codelineno-2-49" name="__codelineno-2-49" href="#__codelineno-2-49"></a>
+<a id="__codelineno-2-50" name="__codelineno-2-50" href="#__codelineno-2-50"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rd_en</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">empty</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-2-51" name="__codelineno-2-51" href="#__codelineno-2-51"></a><span class="w">                </span><span class="k">automatic</span><span class="w"> </span><span class="kt">logic</span><span class="w"> </span><span class="p">[</span><span class="n">DW</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="n">expected</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model</span><span class="p">.</span><span class="n">pop_front</span><span class="p">();</span>
+<a id="__codelineno-2-52" name="__codelineno-2-52" href="#__codelineno-2-52"></a><span class="w">                </span><span class="n">beats_checked</span><span class="o">++</span><span class="p">;</span>
+<a id="__codelineno-2-53" name="__codelineno-2-53" href="#__codelineno-2-53"></a><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rd_data</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="n">expected</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-2-54" name="__codelineno-2-54" href="#__codelineno-2-54"></a><span class="w">                    </span><span class="n">errors</span><span class="o">++</span><span class="p">;</span>
+<a id="__codelineno-2-55" name="__codelineno-2-55" href="#__codelineno-2-55"></a><span class="w">                    </span><span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;beat %0d: got 0x%08x expected 0x%08x&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-56" name="__codelineno-2-56" href="#__codelineno-2-56"></a><span class="w">                           </span><span class="n">beats_checked</span><span class="p">,</span><span class="w"> </span><span class="n">rd_data</span><span class="p">,</span><span class="w"> </span><span class="n">expected</span><span class="p">);</span>
+<a id="__codelineno-2-57" name="__codelineno-2-57" href="#__codelineno-2-57"></a><span class="w">                </span><span class="k">end</span>
+<a id="__codelineno-2-58" name="__codelineno-2-58" href="#__codelineno-2-58"></a><span class="w">            </span><span class="k">end</span>
+<a id="__codelineno-2-59" name="__codelineno-2-59" href="#__codelineno-2-59"></a><span class="w">        </span><span class="k">end</span>
+<a id="__codelineno-2-60" name="__codelineno-2-60" href="#__codelineno-2-60"></a><span class="w">    </span><span class="k">end</span>
+<a id="__codelineno-2-61" name="__codelineno-2-61" href="#__codelineno-2-61"></a>
+<a id="__codelineno-2-62" name="__codelineno-2-62" href="#__codelineno-2-62"></a><span class="w">    </span><span class="c1">//--------------------------------------------------------------------------</span>
+<a id="__codelineno-2-63" name="__codelineno-2-63" href="#__codelineno-2-63"></a><span class="w">    </span><span class="c1">// 4. Assertions - the rules a scoreboard structurally cannot check, because</span>
+<a id="__codelineno-2-64" name="__codelineno-2-64" href="#__codelineno-2-64"></a><span class="w">    </span><span class="c1">//    they are about signals rather than about data.</span>
+<a id="__codelineno-2-65" name="__codelineno-2-65" href="#__codelineno-2-65"></a><span class="w">    </span><span class="c1">//--------------------------------------------------------------------------</span>
+<a id="__codelineno-2-66" name="__codelineno-2-66" href="#__codelineno-2-66"></a><span class="w">    </span><span class="c1">// Never write to a full FIFO.</span>
+<a id="__codelineno-2-67" name="__codelineno-2-67" href="#__codelineno-2-67"></a><span class="w">    </span><span class="k">assert</span><span class="w"> </span><span class="k">property</span><span class="w"> </span><span class="p">(@(</span><span class="k">posedge</span><span class="w"> </span><span class="n">clk</span><span class="p">)</span><span class="w"> </span><span class="k">disable</span><span class="w"> </span><span class="k">iff</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">rst_n</span><span class="p">)</span>
+<a id="__codelineno-2-68" name="__codelineno-2-68" href="#__codelineno-2-68"></a><span class="w">        </span><span class="o">!</span><span class="p">(</span><span class="n">wr_en</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">full</span><span class="p">))</span>
+<a id="__codelineno-2-69" name="__codelineno-2-69" href="#__codelineno-2-69"></a><span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;write while full&quot;</span><span class="p">);</span>
+<a id="__codelineno-2-70" name="__codelineno-2-70" href="#__codelineno-2-70"></a>
+<a id="__codelineno-2-71" name="__codelineno-2-71" href="#__codelineno-2-71"></a><span class="w">    </span><span class="c1">// Never read from an empty FIFO.</span>
+<a id="__codelineno-2-72" name="__codelineno-2-72" href="#__codelineno-2-72"></a><span class="w">    </span><span class="k">assert</span><span class="w"> </span><span class="k">property</span><span class="w"> </span><span class="p">(@(</span><span class="k">posedge</span><span class="w"> </span><span class="n">clk</span><span class="p">)</span><span class="w"> </span><span class="k">disable</span><span class="w"> </span><span class="k">iff</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">rst_n</span><span class="p">)</span>
+<a id="__codelineno-2-73" name="__codelineno-2-73" href="#__codelineno-2-73"></a><span class="w">        </span><span class="o">!</span><span class="p">(</span><span class="n">rd_en</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">empty</span><span class="p">))</span>
+<a id="__codelineno-2-74" name="__codelineno-2-74" href="#__codelineno-2-74"></a><span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;read while empty&quot;</span><span class="p">);</span>
+<a id="__codelineno-2-75" name="__codelineno-2-75" href="#__codelineno-2-75"></a>
+<a id="__codelineno-2-76" name="__codelineno-2-76" href="#__codelineno-2-76"></a><span class="w">    </span><span class="c1">// full and empty are mutually exclusive for a non-zero-depth FIFO.</span>
+<a id="__codelineno-2-77" name="__codelineno-2-77" href="#__codelineno-2-77"></a><span class="w">    </span><span class="k">assert</span><span class="w"> </span><span class="k">property</span><span class="w"> </span><span class="p">(@(</span><span class="k">posedge</span><span class="w"> </span><span class="n">clk</span><span class="p">)</span><span class="w"> </span><span class="k">disable</span><span class="w"> </span><span class="k">iff</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">rst_n</span><span class="p">)</span>
+<a id="__codelineno-2-78" name="__codelineno-2-78" href="#__codelineno-2-78"></a><span class="w">        </span><span class="o">!</span><span class="p">(</span><span class="n">full</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">empty</span><span class="p">))</span>
+<a id="__codelineno-2-79" name="__codelineno-2-79" href="#__codelineno-2-79"></a><span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;full and empty asserted together&quot;</span><span class="p">);</span>
+<a id="__codelineno-2-80" name="__codelineno-2-80" href="#__codelineno-2-80"></a>
+<a id="__codelineno-2-81" name="__codelineno-2-81" href="#__codelineno-2-81"></a><span class="w">    </span><span class="c1">// After a write to an empty FIFO, empty must deassert on the next cycle.</span>
+<a id="__codelineno-2-82" name="__codelineno-2-82" href="#__codelineno-2-82"></a><span class="w">    </span><span class="k">assert</span><span class="w"> </span><span class="k">property</span><span class="w"> </span><span class="p">(@(</span><span class="k">posedge</span><span class="w"> </span><span class="n">clk</span><span class="p">)</span><span class="w"> </span><span class="k">disable</span><span class="w"> </span><span class="k">iff</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">rst_n</span><span class="p">)</span>
+<a id="__codelineno-2-83" name="__codelineno-2-83" href="#__codelineno-2-83"></a><span class="w">        </span><span class="p">(</span><span class="n">empty</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">wr_en</span><span class="p">)</span><span class="w"> </span><span class="o">|=&gt;</span><span class="w"> </span><span class="o">!</span><span class="n">empty</span><span class="p">)</span>
+<a id="__codelineno-2-84" name="__codelineno-2-84" href="#__codelineno-2-84"></a><span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;empty did not clear after write&quot;</span><span class="p">);</span>
+<a id="__codelineno-2-85" name="__codelineno-2-85" href="#__codelineno-2-85"></a>
+<a id="__codelineno-2-86" name="__codelineno-2-86" href="#__codelineno-2-86"></a><span class="w">    </span><span class="c1">//--------------------------------------------------------------------------</span>
+<a id="__codelineno-2-87" name="__codelineno-2-87" href="#__codelineno-2-87"></a><span class="w">    </span><span class="c1">// 5. Functional coverage - what did we actually exercise?</span>
+<a id="__codelineno-2-88" name="__codelineno-2-88" href="#__codelineno-2-88"></a><span class="w">    </span><span class="c1">//--------------------------------------------------------------------------</span>
+<a id="__codelineno-2-89" name="__codelineno-2-89" href="#__codelineno-2-89"></a><span class="w">    </span><span class="k">covergroup</span><span class="w"> </span><span class="n">cg_fifo</span><span class="w"> </span><span class="p">@(</span><span class="k">posedge</span><span class="w"> </span><span class="n">clk</span><span class="p">);</span>
+<a id="__codelineno-2-90" name="__codelineno-2-90" href="#__codelineno-2-90"></a><span class="w">        </span><span class="n">cp_occupancy</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">coverpoint</span><span class="w"> </span><span class="n">model</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-91" name="__codelineno-2-91" href="#__codelineno-2-91"></a><span class="w">            </span><span class="k">bins</span><span class="w"> </span><span class="n">empty_c</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<a id="__codelineno-2-92" name="__codelineno-2-92" href="#__codelineno-2-92"></a><span class="w">            </span><span class="k">bins</span><span class="w"> </span><span class="n">low</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="p">{[</span><span class="mi">1</span><span class="o">:</span><span class="mi">3</span><span class="p">]};</span>
+<a id="__codelineno-2-93" name="__codelineno-2-93" href="#__codelineno-2-93"></a><span class="w">            </span><span class="k">bins</span><span class="w"> </span><span class="n">mid</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="p">{[</span><span class="mi">4</span><span class="o">:</span><span class="n">DEPTH</span><span class="o">-</span><span class="mi">4</span><span class="p">]};</span>
+<a id="__codelineno-2-94" name="__codelineno-2-94" href="#__codelineno-2-94"></a><span class="w">            </span><span class="k">bins</span><span class="w"> </span><span class="n">nearly_full</span><span class="o">=</span><span class="w"> </span><span class="p">{[</span><span class="n">DEPTH</span><span class="o">-</span><span class="mi">3</span><span class="o">:</span><span class="n">DEPTH</span><span class="o">-</span><span class="mi">1</span><span class="p">]};</span>
+<a id="__codelineno-2-95" name="__codelineno-2-95" href="#__codelineno-2-95"></a><span class="w">            </span><span class="k">bins</span><span class="w"> </span><span class="n">full_c</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">DEPTH</span><span class="p">};</span>
+<a id="__codelineno-2-96" name="__codelineno-2-96" href="#__codelineno-2-96"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-2-97" name="__codelineno-2-97" href="#__codelineno-2-97"></a><span class="w">        </span><span class="n">cp_ops</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">coverpoint</span><span class="w"> </span><span class="p">{</span><span class="n">wr_en</span><span class="p">,</span><span class="w"> </span><span class="n">rd_en</span><span class="p">}</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-98" name="__codelineno-2-98" href="#__codelineno-2-98"></a><span class="w">            </span><span class="k">bins</span><span class="w"> </span><span class="n">idle</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mb">2&#39;b00</span><span class="p">};</span>
+<a id="__codelineno-2-99" name="__codelineno-2-99" href="#__codelineno-2-99"></a><span class="w">            </span><span class="k">bins</span><span class="w"> </span><span class="n">read_only</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mb">2&#39;b01</span><span class="p">};</span>
+<a id="__codelineno-2-100" name="__codelineno-2-100" href="#__codelineno-2-100"></a><span class="w">            </span><span class="k">bins</span><span class="w"> </span><span class="n">write_only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mb">2&#39;b10</span><span class="p">};</span>
+<a id="__codelineno-2-101" name="__codelineno-2-101" href="#__codelineno-2-101"></a><span class="w">            </span><span class="k">bins</span><span class="w"> </span><span class="n">both</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mb">2&#39;b11</span><span class="p">};</span><span class="w">      </span><span class="c1">// simultaneous - the interesting one</span>
+<a id="__codelineno-2-102" name="__codelineno-2-102" href="#__codelineno-2-102"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-2-103" name="__codelineno-2-103" href="#__codelineno-2-103"></a><span class="w">        </span><span class="k">cross</span><span class="w"> </span><span class="n">cp_occupancy</span><span class="p">,</span><span class="w"> </span><span class="n">cp_ops</span><span class="p">;</span><span class="w">         </span><span class="c1">// full AND writing; empty AND reading</span>
+<a id="__codelineno-2-104" name="__codelineno-2-104" href="#__codelineno-2-104"></a><span class="w">    </span><span class="k">endgroup</span>
+<a id="__codelineno-2-105" name="__codelineno-2-105" href="#__codelineno-2-105"></a>
+<a id="__codelineno-2-106" name="__codelineno-2-106" href="#__codelineno-2-106"></a><span class="w">    </span><span class="n">cg_fifo</span><span class="w"> </span><span class="n">cov</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="p">();</span>
+<a id="__codelineno-2-107" name="__codelineno-2-107" href="#__codelineno-2-107"></a>
+<a id="__codelineno-2-108" name="__codelineno-2-108" href="#__codelineno-2-108"></a><span class="w">    </span><span class="c1">//--------------------------------------------------------------------------</span>
+<a id="__codelineno-2-109" name="__codelineno-2-109" href="#__codelineno-2-109"></a><span class="w">    </span><span class="c1">// 6. Stimulus - the SAD paths, deliberately. Note the backpressure and the</span>
+<a id="__codelineno-2-110" name="__codelineno-2-110" href="#__codelineno-2-110"></a><span class="w">    </span><span class="c1">//    reset in the middle, which is where the bugs are.</span>
+<a id="__codelineno-2-111" name="__codelineno-2-111" href="#__codelineno-2-111"></a><span class="w">    </span><span class="c1">//--------------------------------------------------------------------------</span>
+<a id="__codelineno-2-112" name="__codelineno-2-112" href="#__codelineno-2-112"></a><span class="w">    </span><span class="k">initial</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-2-113" name="__codelineno-2-113" href="#__codelineno-2-113"></a><span class="w">        </span><span class="n">cb</span><span class="p">.</span><span class="n">wr_en</span><span class="w">   </span><span class="o">&lt;=</span><span class="w"> </span><span class="mb">1&#39;b0</span><span class="p">;</span>
+<a id="__codelineno-2-114" name="__codelineno-2-114" href="#__codelineno-2-114"></a><span class="w">        </span><span class="n">cb</span><span class="p">.</span><span class="n">rd_en</span><span class="w">   </span><span class="o">&lt;=</span><span class="w"> </span><span class="mb">1&#39;b0</span><span class="p">;</span>
+<a id="__codelineno-2-115" name="__codelineno-2-115" href="#__codelineno-2-115"></a><span class="w">        </span><span class="k">repeat</span><span class="w"> </span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="p">@(</span><span class="n">cb</span><span class="p">);</span>
+<a id="__codelineno-2-116" name="__codelineno-2-116" href="#__codelineno-2-116"></a><span class="w">        </span><span class="n">rst_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mb">1&#39;b1</span><span class="p">;</span>
+<a id="__codelineno-2-117" name="__codelineno-2-117" href="#__codelineno-2-117"></a>
+<a id="__codelineno-2-118" name="__codelineno-2-118" href="#__codelineno-2-118"></a><span class="w">        </span><span class="c1">// Phase 1: fill it completely, including a write attempt while full.</span>
+<a id="__codelineno-2-119" name="__codelineno-2-119" href="#__codelineno-2-119"></a><span class="w">        </span><span class="k">repeat</span><span class="w"> </span><span class="p">(</span><span class="n">DEPTH</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-2-120" name="__codelineno-2-120" href="#__codelineno-2-120"></a><span class="w">            </span><span class="p">@(</span><span class="n">cb</span><span class="p">);</span>
+<a id="__codelineno-2-121" name="__codelineno-2-121" href="#__codelineno-2-121"></a><span class="w">            </span><span class="n">cb</span><span class="p">.</span><span class="n">wr_en</span><span class="w">   </span><span class="o">&lt;=</span><span class="w"> </span><span class="o">!</span><span class="n">full</span><span class="p">;</span>
+<a id="__codelineno-2-122" name="__codelineno-2-122" href="#__codelineno-2-122"></a><span class="w">            </span><span class="n">cb</span><span class="p">.</span><span class="n">wr_data</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="p">$</span><span class="n">urandom</span><span class="p">();</span>
+<a id="__codelineno-2-123" name="__codelineno-2-123" href="#__codelineno-2-123"></a><span class="w">        </span><span class="k">end</span>
+<a id="__codelineno-2-124" name="__codelineno-2-124" href="#__codelineno-2-124"></a>
+<a id="__codelineno-2-125" name="__codelineno-2-125" href="#__codelineno-2-125"></a><span class="w">        </span><span class="c1">// Phase 2: drain it completely, including a read attempt while empty.</span>
+<a id="__codelineno-2-126" name="__codelineno-2-126" href="#__codelineno-2-126"></a><span class="w">        </span><span class="p">@(</span><span class="n">cb</span><span class="p">);</span><span class="w"> </span><span class="n">cb</span><span class="p">.</span><span class="n">wr_en</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mb">1&#39;b0</span><span class="p">;</span>
+<a id="__codelineno-2-127" name="__codelineno-2-127" href="#__codelineno-2-127"></a><span class="w">        </span><span class="k">repeat</span><span class="w"> </span><span class="p">(</span><span class="n">DEPTH</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-2-128" name="__codelineno-2-128" href="#__codelineno-2-128"></a><span class="w">            </span><span class="p">@(</span><span class="n">cb</span><span class="p">);</span>
+<a id="__codelineno-2-129" name="__codelineno-2-129" href="#__codelineno-2-129"></a><span class="w">            </span><span class="n">cb</span><span class="p">.</span><span class="n">rd_en</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="o">!</span><span class="n">empty</span><span class="p">;</span>
+<a id="__codelineno-2-130" name="__codelineno-2-130" href="#__codelineno-2-130"></a><span class="w">        </span><span class="k">end</span>
+<a id="__codelineno-2-131" name="__codelineno-2-131" href="#__codelineno-2-131"></a>
+<a id="__codelineno-2-132" name="__codelineno-2-132" href="#__codelineno-2-132"></a><span class="w">        </span><span class="c1">// Phase 3: random concurrent traffic - the case that finds pointer bugs.</span>
+<a id="__codelineno-2-133" name="__codelineno-2-133" href="#__codelineno-2-133"></a><span class="w">        </span><span class="k">repeat</span><span class="w"> </span><span class="p">(</span><span class="mi">10_000</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-2-134" name="__codelineno-2-134" href="#__codelineno-2-134"></a><span class="w">            </span><span class="p">@(</span><span class="n">cb</span><span class="p">);</span>
+<a id="__codelineno-2-135" name="__codelineno-2-135" href="#__codelineno-2-135"></a><span class="w">            </span><span class="n">cb</span><span class="p">.</span><span class="n">wr_en</span><span class="w">   </span><span class="o">&lt;=</span><span class="w"> </span><span class="p">($</span><span class="n">urandom_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">99</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">60</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">full</span><span class="p">;</span>
+<a id="__codelineno-2-136" name="__codelineno-2-136" href="#__codelineno-2-136"></a><span class="w">            </span><span class="n">cb</span><span class="p">.</span><span class="n">rd_en</span><span class="w">   </span><span class="o">&lt;=</span><span class="w"> </span><span class="p">($</span><span class="n">urandom_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">99</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">55</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">empty</span><span class="p">;</span>
+<a id="__codelineno-2-137" name="__codelineno-2-137" href="#__codelineno-2-137"></a><span class="w">            </span><span class="n">cb</span><span class="p">.</span><span class="n">wr_data</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="p">$</span><span class="n">urandom</span><span class="p">();</span>
+<a id="__codelineno-2-138" name="__codelineno-2-138" href="#__codelineno-2-138"></a><span class="w">        </span><span class="k">end</span>
+<a id="__codelineno-2-139" name="__codelineno-2-139" href="#__codelineno-2-139"></a>
+<a id="__codelineno-2-140" name="__codelineno-2-140" href="#__codelineno-2-140"></a><span class="w">        </span><span class="c1">// Phase 4: reset in the middle of traffic. Almost nobody tests this,</span>
+<a id="__codelineno-2-141" name="__codelineno-2-141" href="#__codelineno-2-141"></a><span class="w">        </span><span class="c1">// and it is where &quot;works in sim, hangs in hardware&quot; comes from.</span>
+<a id="__codelineno-2-142" name="__codelineno-2-142" href="#__codelineno-2-142"></a><span class="w">        </span><span class="p">@(</span><span class="n">cb</span><span class="p">);</span><span class="w"> </span><span class="n">rst_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mb">1&#39;b0</span><span class="p">;</span>
+<a id="__codelineno-2-143" name="__codelineno-2-143" href="#__codelineno-2-143"></a><span class="w">        </span><span class="n">model</span><span class="p">.</span><span class="n">delete</span><span class="p">();</span>
+<a id="__codelineno-2-144" name="__codelineno-2-144" href="#__codelineno-2-144"></a><span class="w">        </span><span class="k">repeat</span><span class="w"> </span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="p">@(</span><span class="n">cb</span><span class="p">);</span><span class="w"> </span><span class="n">rst_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mb">1&#39;b1</span><span class="p">;</span>
+<a id="__codelineno-2-145" name="__codelineno-2-145" href="#__codelineno-2-145"></a>
+<a id="__codelineno-2-146" name="__codelineno-2-146" href="#__codelineno-2-146"></a><span class="w">        </span><span class="k">repeat</span><span class="w"> </span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-2-147" name="__codelineno-2-147" href="#__codelineno-2-147"></a><span class="w">            </span><span class="p">@(</span><span class="n">cb</span><span class="p">);</span>
+<a id="__codelineno-2-148" name="__codelineno-2-148" href="#__codelineno-2-148"></a><span class="w">            </span><span class="n">cb</span><span class="p">.</span><span class="n">wr_en</span><span class="w">   </span><span class="o">&lt;=</span><span class="w"> </span><span class="p">($</span><span class="n">urandom_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">99</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">full</span><span class="p">;</span>
+<a id="__codelineno-2-149" name="__codelineno-2-149" href="#__codelineno-2-149"></a><span class="w">            </span><span class="n">cb</span><span class="p">.</span><span class="n">rd_en</span><span class="w">   </span><span class="o">&lt;=</span><span class="w"> </span><span class="p">($</span><span class="n">urandom_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">99</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">empty</span><span class="p">;</span>
+<a id="__codelineno-2-150" name="__codelineno-2-150" href="#__codelineno-2-150"></a><span class="w">            </span><span class="n">cb</span><span class="p">.</span><span class="n">wr_data</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="p">$</span><span class="n">urandom</span><span class="p">();</span>
+<a id="__codelineno-2-151" name="__codelineno-2-151" href="#__codelineno-2-151"></a><span class="w">        </span><span class="k">end</span>
+<a id="__codelineno-2-152" name="__codelineno-2-152" href="#__codelineno-2-152"></a>
+<a id="__codelineno-2-153" name="__codelineno-2-153" href="#__codelineno-2-153"></a><span class="w">        </span><span class="c1">//----------------------------------------------------------------------</span>
+<a id="__codelineno-2-154" name="__codelineno-2-154" href="#__codelineno-2-154"></a><span class="w">        </span><span class="c1">// 7. The verdict. A testbench that does not decide is not a testbench.</span>
+<a id="__codelineno-2-155" name="__codelineno-2-155" href="#__codelineno-2-155"></a><span class="w">        </span><span class="c1">//----------------------------------------------------------------------</span>
+<a id="__codelineno-2-156" name="__codelineno-2-156" href="#__codelineno-2-156"></a><span class="w">        </span><span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;checked %0d beats, coverage %0.1f%%&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">beats_checked</span><span class="p">,</span><span class="w"> </span><span class="n">cov</span><span class="p">.</span><span class="n">get_coverage</span><span class="p">());</span>
+<a id="__codelineno-2-157" name="__codelineno-2-157" href="#__codelineno-2-157"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">errors</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-2-158" name="__codelineno-2-158" href="#__codelineno-2-158"></a><span class="w">            </span><span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;TEST FAILED: %0d mismatch(es)&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">errors</span><span class="p">);</span>
+<a id="__codelineno-2-159" name="__codelineno-2-159" href="#__codelineno-2-159"></a><span class="w">            </span><span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<a id="__codelineno-2-160" name="__codelineno-2-160" href="#__codelineno-2-160"></a><span class="w">        </span><span class="k">end</span>
+<a id="__codelineno-2-161" name="__codelineno-2-161" href="#__codelineno-2-161"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cov</span><span class="p">.</span><span class="n">get_coverage</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">95.0</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-2-162" name="__codelineno-2-162" href="#__codelineno-2-162"></a><span class="w">            </span><span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;TEST FAILED: coverage %0.1f%% below goal&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">cov</span><span class="p">.</span><span class="n">get_coverage</span><span class="p">());</span>
+<a id="__codelineno-2-163" name="__codelineno-2-163" href="#__codelineno-2-163"></a><span class="w">            </span><span class="p">$</span><span class="n">fatal</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<a id="__codelineno-2-164" name="__codelineno-2-164" href="#__codelineno-2-164"></a><span class="w">        </span><span class="k">end</span>
+<a id="__codelineno-2-165" name="__codelineno-2-165" href="#__codelineno-2-165"></a><span class="w">        </span><span class="p">$</span><span class="n">display</span><span class="p">(</span><span class="s">&quot;TEST PASSED&quot;</span><span class="p">);</span>
+<a id="__codelineno-2-166" name="__codelineno-2-166" href="#__codelineno-2-166"></a><span class="w">        </span><span class="p">$</span><span class="n">finish</span><span class="p">;</span>
+<a id="__codelineno-2-167" name="__codelineno-2-167" href="#__codelineno-2-167"></a><span class="w">    </span><span class="k">end</span>
+<a id="__codelineno-2-168" name="__codelineno-2-168" href="#__codelineno-2-168"></a>
+<a id="__codelineno-2-169" name="__codelineno-2-169" href="#__codelineno-2-169"></a><span class="k">endmodule</span>
+</code></pre></div>
+<p>The last block is the one people leave out. <strong>A testbench that prints results and exits
+zero cannot be run by CI</strong>, so it will be run by a human, occasionally, who will read the
+log optimistically. Make the testbench decide, and make failure an exit status.</p>
+<h3 id="sharpen-your-pencil">Sharpen Your Pencil</h3>
+<ol>
+<li>Your functional coverage model has 120 bins and your generator is uniform random.
+   Estimate the number of transactions needed to hit all of them. If each transaction is
+   50 cycles at 5,000 cycles/second of simulation, how long does that take?</li>
+<li>Your testbench passes. Then you add <code>assert property (@(posedge clk) $onehot(state))</code>
+   and it <em>still</em> passes. What has that told you, and what has it not?</li>
+<li>A block simulates perfectly and fails in hardware at reset. Name the three checks you
+   would run, in order, and say which of them RTL simulation structurally cannot perform.</li>
+</ol>
+<h3 id="final-thoughts-on-the-sandbox">Final Thoughts on the Sandbox</h3>
+<p>Verification is the unsung hero of FPGA design. It’s not as "cool" as writing high-speed RTL, but it’s what separates the professionals from the amateurs. Build a robust, self-checking virtual lab. Map your coverage. Test the sad paths. If you can conquer the digital sandbox, the hardware lab will be a walk in the park.</p>
+<h3 id="answers">Answers</h3>
+<p><strong>Brain Power</strong> — <em>Simulation passes, hardware fails. Top three things to check?</em></p>
+<p><strong>1. Constraints, not RTL.</strong> Simulation has no concept of timing closure. If the hardware
+fails intermittently, at temperature, or on some boards and not others, the first suspect
+is a path that is not meeting timing or — much more often — a path that was never
+<em>analysed</em>. Run <code>check_timing -verbose</code> and
+<code>report_timing_summary -report_unconstrained</code>, and look for <code>no_clock</code> and
+<code>unconstrained_internal_endpoints</code>. RTL simulation is structurally incapable of finding
+this class of bug, because it has no delays.</p>
+<p><strong>2. Asynchronous inputs and clock domain crossings.</strong> Simulation drives your
+asynchronous inputs from a testbench that is, itself, synchronous — so the input changes
+neatly between edges and never lands in the aperture. Real hardware has no such courtesy.
+Run <code>report_cdc -details</code> and treat Critical findings as bugs (Section 2.3). Set
+<code>ASYNC_REG TRUE</code> on your synchronizers, which additionally makes simulation <em>start</em>
+modelling metastability instead of hiding it.</p>
+<p><strong>3. Reset and power-up state.</strong> Two distinct sub-problems. First, X-propagation:
+simulation may initialise a register to <code>X</code> and your logic may accidentally depend on
+<code>X</code>-pessimism or <code>X</code>-optimism, whereas real flops come out of configuration at their
+<code>INIT</code> value. Second, reset <em>release</em>: if reset deasserts asynchronously, different parts
+of the design leave reset in different cycles, and a state machine can start in an illegal
+state. This is the classic "works in simulation, hangs on the bench" and it is why
+<code>xpm_cdc_sync_rst</code> exists.</p>
+<p>A useful fourth, if the failure is on the very first board: check that what you simulated
+is what you built. IP that is locked or out of date, a testbench instantiating a different
+parameterisation, or a top level that differs from the synthesised one all produce this
+exact symptom.</p>
+<p><strong>Sharpen Your Pencil #1</strong> — 120 bins, uniform random:</p>
+<div class="arithmatex">\[E[n] \approx N(\ln N + \gamma) = 120 \times (\ln 120 + 0.5772) = 120 \times (4.787 + 0.577) = 120 \times 5.364 \approx 644\]</div>
+<p>About <strong>644 transactions</strong> on average. At 50 cycles each:</p>
+<div class="arithmatex">\[644 \times 50 = 32{,}200\ \text{cycles} \quad \Longrightarrow \quad \frac{32{,}200}{5000} = 6.4\ \text{seconds}\]</div>
+<p>Trivial — which is the real lesson. <strong>Coverage closure on a well-sized model is cheap;
+it is the badly-sized model that is expensive.</strong> If your answer had come out in hours, the
+correct response would not be "run it overnight" but "my coverage model has too many
+bins," and the fix is to group values into equivalence classes that reflect what the
+design actually distinguishes.</p>
+<p>Note also the difference between the mean and the tail: the last few bins take
+disproportionately long under pure random, so budget 2–3× the mean, or use coverage
+feedback to steer the generator once you are above ~90 %.</p>
+<p><strong>Sharpen Your Pencil #2</strong> — The assertion passing tells you <strong>less than it appears to.</strong></p>
+<p>What it has told you: across all the stimulus you happened to run, the state register was
+never observed in a non-one-hot encoding.</p>
+<p>What it has <strong>not</strong> told you:</p>
+<ul>
+<li><strong>That the assertion can ever fail.</strong> An assertion that is never <em>reached</em> under
+  meaningful conditions passes vacuously. If your stimulus never drives the design into
+  the corner where two state bits could be set, the assertion is decoration.</li>
+<li><strong>That your state machine is one-hot at all.</strong> If synthesis chose a binary encoding
+  (which it will, unless you set <code>FSM_ENCODING</code>), the property may be checking a register
+  whose encoding does not match your assumption — and passing for the wrong reason.</li>
+<li><strong>That illegal transitions do not occur.</strong> <code>$onehot</code> checks the <em>state</em>, not the
+  <em>sequence</em>. A machine that jumps from <code>IDLE</code> directly to <code>DONE</code>, skipping the work, is
+  one-hot at every instant.</li>
+</ul>
+<p>What to do about it: check the assertion's <strong>coverage</strong>, not just its pass status. Most
+simulators report how many times each property was attempted and how many times it was
+vacuously satisfied. An assertion with zero non-vacuous attempts is a line of code that
+does nothing. And add the sequence property you actually meant:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">assert</span><span class="w"> </span><span class="k">property</span><span class="w"> </span><span class="p">(@(</span><span class="k">posedge</span><span class="w"> </span><span class="n">clk</span><span class="p">)</span><span class="w"> </span><span class="k">disable</span><span class="w"> </span><span class="k">iff</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">rst_n</span><span class="p">)</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="p">(</span><span class="n">state</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">IDLE</span><span class="p">)</span><span class="w"> </span><span class="o">|=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">state</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">IDLE</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">FETCH</span><span class="p">))</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="p">$</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;illegal transition out of IDLE&quot;</span><span class="p">);</span>
+</code></pre></div>
+<p><strong>Sharpen Your Pencil #3</strong> — Block simulates perfectly, fails in hardware at reset. In
+order:</p>
+<ol>
+<li><strong><code>report_cdc -details</code></strong>, looking specifically at the reset paths. The most likely
+   cause is asynchronous reset release: reset deasserts at an arbitrary point relative to
+   the clock, different registers leave reset in different cycles, and the state machine
+   starts in a state your RTL believes unreachable. RTL simulation <em>can</em> in principle find
+   this, but only if the testbench deliberately deasserts reset asynchronously — and
+   almost none do, because they release it on a clock edge.</li>
+<li><strong><code>check_timing -verbose</code></strong>, looking for <code>no_clock</code> and unconstrained endpoints on the
+   reset network, plus recovery/removal checks. A reset that is not timed can arrive
+   anywhere.</li>
+<li><strong>Gate-level simulation with SDF</strong>, targeted at reset only — a few hundred cycles, not
+   a regression. This is the one that RTL simulation <strong>structurally cannot perform</strong>,
+   because it requires real delays: recovery and removal violations, and X-propagation
+   through the actual synthesised netlist rather than through your source's initialisers.</li>
+</ol>
+<p>The structural answer to the question asked: <strong>RTL simulation cannot check timing.</strong> It
+has no delay model, so recovery/removal, setup/hold, and any failure whose mechanism is
+"the signal arrived at the wrong moment" is invisible to it by construction. That is not a
+weakness to work around; it is the reason static timing analysis and CDC analysis exist as
+separate tools, and why passing simulation is a necessary and thoroughly insufficient
+condition.</p>
+<h3 id="there-are-no-dumb-questions">There Are No Dumb Questions</h3>
+<p><strong>Q: Do I need UVM?</strong></p>
+<p>A: For a block with a handful of interfaces and a clear reference model — no. The
+testbench above has a scoreboard, assertions, functional coverage and a verdict, and it is
+one file. UVM earns its complexity when you need reusable verification components across
+many blocks and many projects, constrained-random sequences with layered control, and a
+team large enough that the standardisation is worth the learning curve. Reaching for UVM
+on a single FIFO is how verification gets a reputation for being slow.</p>
+<p><strong>Q: What is the difference between code coverage and functional coverage?</strong></p>
+<p>A: Code coverage asks "did every line, branch and expression execute?" — it is generated
+automatically from your RTL and it is a measure of <em>how much of what you wrote</em> you
+exercised. Functional coverage asks "did every scenario I care about occur?" — you write
+it by hand, and it measures <em>how much of what you meant</em> you exercised. 100 % code
+coverage with no functional coverage means you executed every line of a design that might
+implement the wrong thing. You need both, and functional coverage is the one that requires
+thought.</p>
+<p><strong>Q: My assertion fires but I think the design is right. What now?</strong></p>
+<p>A: One of three things is true, and it is worth determining which rather than commenting
+out the assertion: the design is wrong; the assertion is wrong; or the <em>specification</em> is
+ambiguous and you and the assertion's author interpreted it differently. The third is the
+most valuable outcome, because you have just found a specification bug at simulation time
+rather than at integration. Disabling an assertion without resolving which case you are in
+is the single most expensive shortcut in verification.</p>
+<p><strong>Q: How do I test a reset that happens mid-transaction?</strong></p>
+<p>A: Deliberately, as in Phase 4 of the artifact above — and asynchronously, at a random
+offset within the clock period, not aligned to an edge. Then check that the DUT and your
+reference model return to the same state. Most reset bugs are not "reset does not work"
+but "reset works, and the two sides of an interface disagree about whether it happened."</p>
+<p><strong>Q: Is gate-level simulation obsolete now that static timing analysis is good?</strong></p>
+<p>A: Mostly, for timing — STA covers far more paths, far faster, and exhaustively. GLS
+remains worth its cost for three specific things: X-propagation at power-up and reset,
+verifying that synthesis did not change behaviour (especially where you have used
+<code>DONT_TOUCH</code>, black boxes, or hand-instantiated primitives), and asynchronous interfaces
+whose behaviour depends on real delays. Run it targeted at those questions, not as a
+regression.</p>
+<h3 id="bullet-points">Bullet Points</h3>
+<ul>
+<li><strong>Coupon collector</strong>: hitting all <span class="arithmatex">\(N\)</span> coverage bins by uniform random takes
+  <span class="arithmatex">\(\approx N(\ln N + \gamma)\)</span> transactions, not <span class="arithmatex">\(N\)</span>. 48 bins → ~214 transactions.</li>
+<li><strong>If your bin count is astronomically large, no simulation will close it.</strong> Redefine the
+  model around equivalence classes, or use formal.</li>
+<li><strong>GLS is ~100× slower than RTL.</strong> 4 million cycles: 13 minutes RTL, 22 hours GLS. Use
+  GLS for targeted questions, never for regression.</li>
+<li><strong>The four parts of a real testbench</strong>: clocking block (no races), reference model,
+  scoreboard, assertions. Plus a verdict and a non-zero exit status.</li>
+<li><strong>Drive stimulus with <code>&lt;=</code> after the edge; sample just before it.</strong> A clocking block
+  states both. Bare <code>#</code> delays in stimulus race the DUT.</li>
+<li><strong>Assertions can pass vacuously.</strong> Check assertion coverage, not just pass status.</li>
+<li><strong>Test the sad paths</strong>: backpressure, full/empty boundaries, simultaneous read/write,
+  and reset in the middle of traffic.</li>
+<li><strong>RTL simulation cannot check timing</strong> — no delay model. Recovery/removal, setup/hold
+  and CDC failures are invisible to it by construction. <code>check_timing</code>, <code>report_cdc</code> and
+  STA are not optional extras.</li>
+</ul>
+<hr />
+<p>[REVIEW_STATUS: APPROVED BY PUBLISHER]</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../3.3_security/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 3.3 Design Security">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                3.3 Design Security
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../4.1_synthesis/" class="md-footer__link md-footer__link--next" aria-label="Next: 4.1 Synthesis">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                4.1 Synthesis
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2026 <a href="https://github.com/mehdibadjian">Mehdi Badjian</a> &middot; <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga">github.com/mehdibadjian/no-magic-smoke-fpga</a> &middot; content <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/blob/main/LICENSE-CODE">MIT</a> &middot; independent, unofficial guide - not affiliated with or endorsed by AMD, Inc.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" target="_blank" rel="noopener" title="Source and issues on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.footer", "content.code.copy", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

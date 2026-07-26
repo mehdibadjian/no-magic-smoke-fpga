@@ -1,0 +1,2361 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An independent, unofficial study companion to the AMD UltraFast Design Methodology. FPGA engineering taught Head First style, with the arithmetic left in - worked calculations, runnable artifacts, and answers to every question it asks.">
+      
+      
+        <meta name="author" content="Mehdi Badjian">
+      
+      
+        <link rel="canonical" href="https://mehdibadjian.github.io/no-magic-smoke-fpga/sections/3.2_ip_integration/">
+      
+      
+        <link rel="prev" href="../3.1_rtl_coding/">
+      
+      
+        <link rel="next" href="../3.3_security/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>3.2 IP Integration - No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#section-32-ip-integration-the-lego-blocks-of-design" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-header__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              3.2 IP Integration
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../1.1_pcb_layout/" class="md-tabs__link">
+          
+  
+  
+  Chapter 1: Board Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../2.1_timing_ballet/" class="md-tabs__link">
+          
+  
+  
+  Chapter 2: Constraints
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../3.1_rtl_coding/" class="md-tabs__link">
+          
+  
+  
+  Chapter 3: Design Creation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../4.1_synthesis/" class="md-tabs__link">
+          
+  
+  
+  Chapter 4: Implementation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../5.1_power/" class="md-tabs__link">
+          
+  
+  
+  Chapter 5: Power & Thermal
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../6.1_debug/" class="md-tabs__link">
+          
+  
+  
+  Chapter 6: Debug & Tuning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../references/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  References
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-nav__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 1: Board Planning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 1: Board Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.1_pcb_layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.1 Hardware Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.2_power_planning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.2 Power Delivery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.3_clocking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.3 Clocking Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.4_ssi_hbm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.4 I/O Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 2: Constraints
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 2: Constraints
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.1_timing_ballet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.1 Defining Clocks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.2_constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.2 I/O Delays
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.3_cdc_minefield/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.3 CDC Minefield
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 3: Design Creation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 3: Design Creation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.1_rtl_coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1 RTL Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 IP Integration
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 IP Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-re-invent-the-wheel-the-power-of-pre-verified-ip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Re-invent the Wheel? The Power of Pre-Verified IP
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-ip-integrator-ipi-designing-at-30000-feet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The IP Integrator (IPI): Designing at 30,000 Feet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-the-custom-coder-and-the-ip-architect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: The Custom Coder and the IP Architect
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-axi4-glue-the-universal-language" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The AXI4 Glue: The Universal Language
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hierarchy-management-dont-lose-the-plot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hierarchy Management: Don't Lose the Plot
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ip-versioning-the-legacy-debt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IP Versioning: The Legacy Debt
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-axi-handshake-flaw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The AXI Handshake Flaw
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-ip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on IP
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.3_security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Design Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.4_verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 4: Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 4: Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.1_synthesis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.1 Synthesis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.2_placement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.2 Placement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.3_closure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.3 Closure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 5: Power & Thermal
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 5: Power & Thermal
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.1_power/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.1 Power Estimation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.2_thermal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.2 Thermal Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 6: Debug & Tuning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 6: Debug & Tuning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6.1_debug/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.1 Hardware Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6.2_tuning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.2 Performance Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-re-invent-the-wheel-the-power-of-pre-verified-ip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Re-invent the Wheel? The Power of Pre-Verified IP
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-ip-integrator-ipi-designing-at-30000-feet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The IP Integrator (IPI): Designing at 30,000 Feet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-the-custom-coder-and-the-ip-architect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: The Custom Coder and the IP Architect
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-axi4-glue-the-universal-language" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The AXI4 Glue: The Universal Language
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hierarchy-management-dont-lose-the-plot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hierarchy Management: Don't Lose the Plot
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ip-versioning-the-legacy-debt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IP Versioning: The Legacy Debt
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-axi-handshake-flaw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The AXI Handshake Flaw
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-ip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on IP
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/edit/main/docs/sections/3.2_ip_integration.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/raw/main/docs/sections/3.2_ip_integration.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
+
+
+<h1 id="section-32-ip-integration-the-lego-blocks-of-design">Section 3.2: IP Integration: The Lego Blocks of Design</h1>
+<p>Imagine you’re building a massive Lego castle. You wouldn't start by manufacturing each individual plastic brick from scratch, would you? Of course not. You’d buy a set of pre-made bricks, windows, and doors, and focus your energy on the architecture. FPGA design is exactly the same. You <em>could</em> write your own 100G Ethernet MAC or your own DDR4 memory controller from raw Verilog, but unless you have a PhD in signal integrity and three years of free time, you shouldn't.</p>
+<p>In the AMD UltraFast Methodology, we lean heavily on <strong>Intellectual Property (IP) Cores</strong>. These are pre-verified, highly optimized blocks of logic provided by AMD or third parties. They are the "Lego blocks" of your design. Your job isn't to build the blocks; it’s to integrate them into a cohesive, high-performance system.</p>
+<h3 id="why-re-invent-the-wheel-the-power-of-pre-verified-ip">Why Re-invent the Wheel? The Power of Pre-Verified IP</h3>
+<p>When you use an AMD IP core—like a FIFO Generator or a Floating Point Operator—you aren't just getting code. You’re getting a piece of logic that has been tested on thousands of different hardware configurations. It’s been optimized by the engineers who actually built the silicon.</p>
+<p>Using IP cores reduces your risk and speeds up your time-to-market. It also ensures that you’re using the hardware resources efficiently. An AMD-provided memory controller will always use the dedicated hard-IP blocks more effectively than a custom-written one. Don't let your ego get in the way of a working design. Use the IP.</p>
+<blockquote>
+<p><strong>Brain Power</strong>
+<strong>If an IP core has a "Critical Warning" during synthesis but still generates a bitstream, should you ignore it? What are the risks of using an IP core with unconstrained internal paths?</strong></p>
+</blockquote>
+<h3 id="the-ip-integrator-ipi-designing-at-30000-feet">The IP Integrator (IPI): Designing at 30,000 Feet</h3>
+<p>Vivado’s <strong>IP Integrator (IPI)</strong> is a visual, block-based design environment. It allows you to "draw" your system by dragging IP cores onto a canvas and wiring them together. It’s like a sophisticated version of Microsoft Paint, but for silicon.</p>
+<p>The useful part of IPI is that it handles complex connections automatically. If you have two blocks that both use the AXI4 interface, IPI can "auto-connect" them, handling all the handshake signals, address mapping, and clocking requirements. It’s a massive productivity booster, but be careful—it’s easy to create a "spaghetti" design if you don't maintain a clean hierarchy.</p>
+<p><img alt="IP Core Lego Blocks" src="../../assets/images/fig_3_2_lego_ip.png" /></p>
+<h3 id="fireside-chat-the-custom-coder-and-the-ip-architect">Fireside Chat: The Custom Coder and the IP Architect</h3>
+<p><strong>Custom Coder:</strong> "I can't believe you're using a wizard to generate that FIFO. I wrote my own asynchronous Gray-coded FIFO in fifty lines of Verilog. It’s much more 'pure'."</p>
+<p><strong>IP Architect:</strong> "That’s great, but does your FIFO support ECC error correction? Does it have built-in safety features for empty/full flags across multiple SLR boundaries? Does it automatically map to the most efficient BRAM resources?"</p>
+<p><strong>Custom Coder:</strong> "Well... no. But I can add those features! It’ll only take me a week."</p>
+<p><strong>IP Architect:</strong> "I clicked a button and got all of that in five seconds. Now I can spend my week working on the actual signal processing algorithm that makes our product unique. You're building bricks; I'm building the castle."</p>
+<h3 id="the-axi4-glue-the-universal-language">The AXI4 Glue: The Universal Language</h3>
+<p>If IP cores are the Lego blocks, then <strong>AXI4</strong> is the universal "stud" that allows them to snap together. AXI4 is a standardized communication protocol that uses a simple handshake (VALID/READY) to move data. Almost every modern AMD IP core uses some version of AXI.</p>
+<p>By using AXI4 for your custom logic as well, you make your blocks "plug-and-play" with the rest of the AMD ecosystem. You don't have to invent a new bus protocol for every project. Just use AXI, and you can connect your logic to a DMA controller, a processor, or a memory interface with zero friction.</p>
+<h3 id="hierarchy-management-dont-lose-the-plot">Hierarchy Management: Don't Lose the Plot</h3>
+<p>As your design grows, it’s easy to end up with a "flat" design where hundreds of blocks are all sitting at the top level. This is a nightmare for debugging and for the tools. Vivado performs better when the design is organized into a clean <strong>Hierarchy</strong>.</p>
+<p>Group related IP cores into "Sub-systems" or "Hierarchical Blocks." Keep your high-speed data path in one area and your slow control logic in another. This not only makes the block diagram easier to read but also helps the implementation tools understand which blocks need to be placed near each other on the die.</p>
+<p><img alt="Modular vs Flat Design Library" src="../../assets/images/fig_3_2_library.png" /></p>
+<h3 id="ip-versioning-the-legacy-debt">IP Versioning: The Legacy Debt</h3>
+<p>One of the challenges of using IP is that AMD updates them frequently. When you move from Vivado 2022.1 to 2023.2, your IP cores will show up as "Locked" or "Out-of-Date."</p>
+<p>The UltraFast methodology recommends <strong>versioning your IP</strong>. Don't just upgrade blindly! Read the change logs. Sometimes an upgrade changes a port name or a timing requirement that could break your design. Treat your IP configuration files (.xci or .bd) with the same respect you give your source code. Check them into Git and never look back.</p>
+<h3 id="code-detective-the-axi-handshake-flaw">Code Detective: The AXI Handshake Flaw</h3>
+<p>Even with pre-built IP, you still have to write the logic that talks to them. A common mistake is a "deadlock" in the AXI handshake.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">// Code Detective: Why will this AXI transaction stall?</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">always</span><span class="w"> </span><span class="p">@(</span><span class="k">posedge</span><span class="w"> </span><span class="n">clk</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m_axi_wvalid</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m_axi_wready</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">            </span><span class="n">m_axi_wvalid</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span><span class="w"> </span><span class="c1">// Transaction complete</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">        </span><span class="k">end</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="k">end</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">data_ready_to_send</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">        </span><span class="n">m_axi_wvalid</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="k">end</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="k">end</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="c1">// Hint: What if &#39;m_axi_wready&#39; depends on &#39;m_axi_wvalid&#39; being high?</span>
+</code></pre></div>
+<p>The logic flaw here is a subtle violation of the AXI4 specification. The spec states that <strong><code>VALID</code> must not depend on <code>READY</code></strong>. If the destination block is waiting for <code>VALID</code> to go high before it asserts <code>READY</code>, and your source block is waiting for <code>READY</code> to be high before it asserts <code>VALID</code>, you have a permanent deadlock. Always assert <code>VALID</code> as soon as your data is ready, regardless of the <code>READY</code> state.</p>
+<p>Read the original code again with that rule in hand. The <code>else if</code> is the bug: <code>wvalid</code>
+can only be <em>set</em> in the branch reached when <code>wvalid</code> is already low, and the whole
+structure is a state machine whose next state is a function of <code>wready</code>. Synthesis will
+build exactly what you wrote, including the combinational dependency, and it will hang
+against any slave that waits for <code>VALID</code>.</p>
+<p><strong>The fix.</strong> Assert <code>VALID</code> from the data's availability alone, and use <code>VALID &amp;&amp; READY</code>
+only to <em>clear</em> it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// Corrected: VALID depends on data availability. READY only retires a beat.</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">always_ff</span><span class="w"> </span><span class="p">@(</span><span class="k">posedge</span><span class="w"> </span><span class="n">clk</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">rst_n</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">        </span><span class="n">m_axi_wvalid</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mb">1&#39;b0</span><span class="p">;</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="k">end</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m_axi_wvalid</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">m_axi_wready</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">        </span><span class="n">m_axi_wvalid</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">data_ready_to_send</span><span class="p">;</span><span class="w">   </span><span class="c1">// back-to-back beats stay possible</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="k">end</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">m_axi_wvalid</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">        </span><span class="n">m_axi_wvalid</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">data_ready_to_send</span><span class="p">;</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="k">end</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="k">end</span>
+</code></pre></div>
+<p>The four AXI handshake rules, which are worth committing to memory because every one of
+them has a characteristic failure signature:</p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Violate it and you get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>VALID</code> must not depend on <code>READY</code></td>
+<td>Deadlock against a slave that waits for <code>VALID</code></td>
+</tr>
+<tr>
+<td>Once <code>VALID</code> is asserted it must stay asserted until the handshake completes</td>
+<td>Dropped beats; the slave sees a beat that vanished</td>
+</tr>
+<tr>
+<td>Payload (<code>WDATA</code>, <code>WSTRB</code>, …) must stay stable while <code>VALID</code> is high and <code>READY</code> is low</td>
+<td>Corrupted data under backpressure only — passes every unthrottled test</td>
+</tr>
+<tr>
+<td><code>READY</code> <strong>may</strong> depend on <code>VALID</code></td>
+<td>(Legal, and the reason the first rule exists)</td>
+</tr>
+</tbody>
+</table>
+<p>You do not have to catch these by inspection. Vivado ships an AXI Protocol Checker, and
+in simulation it will name the rule and the cycle:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c"># Drop an AXI Protocol Checker on the interface in your block design, or in RTL:</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c">#   axi_protocol_checker_v2_0 - configure for AXI4/AXI4-Lite/AXI4-Stream</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c"># It flags PC-xx violations with the offending signal and timestamp, which turns</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c"># &quot;the DMA hangs sometimes&quot; into &quot;WVALID deasserted before WREADY at 41,220 ns&quot;.</span>
+</code></pre></div>
+<h3 id="analogy-silicon">Analogy → Silicon</h3>
+<table>
+<thead>
+<tr>
+<th>In the story</th>
+<th>In the silicon</th>
+<th>Where the analogy breaks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lego bricks</td>
+<td>Packaged IP: an <code>.xci</code> configuration plus generated output products</td>
+<td>Lego bricks are identical everywhere; an IP's generated netlist depends on the tool version, the part, and every configuration option — which is why <code>.xci</code> is the source and the netlist is not</td>
+</tr>
+<tr>
+<td>The universal stud that snaps together</td>
+<td>The <strong>AXI4</strong> family: AXI4 (memory-mapped, bursts), AXI4-Lite (single beats, registers), AXI4-Stream (no addresses, pure flow)</td>
+<td>Studs fit or they don't; two AXI interfaces can connect <em>and be wrong</em> — mismatched widths, clock domains, or burst support are all legal connections with terrible consequences</td>
+</tr>
+<tr>
+<td>Auto-connect drawing the wires</td>
+<td><code>apply_bd_automation</code> inserting interconnect, clock converters and width converters</td>
+<td>Drawing a wire is free; each inserted converter is real logic with real latency and real FIFO depth, and IPI does not tell you what it cost you</td>
+</tr>
+<tr>
+<td>Clean hierarchy vs spaghetti</td>
+<td><code>KEEP_HIERARCHY</code> and the module boundaries the implementation tools reason about</td>
+<td>Tidy diagrams are aesthetic; hierarchy is <em>functional</em> here, because it is what the placer uses to decide what belongs near what</td>
+</tr>
+<tr>
+<td>A castle you assemble</td>
+<td>A system whose performance is set by the interconnect topology, not by the blocks</td>
+<td>Castles are static; the interconnect arbitrates dynamically, so your throughput depends on traffic patterns you have to measure, not on a parts list</td>
+</tr>
+</tbody>
+</table>
+<h3 id="do-the-math">Do the Math</h3>
+<p>Auto-connect will happily join two AXI interfaces that cannot sustain each other's
+bandwidth. The arithmetic takes thirty seconds and is the single most useful check you can
+run on a block design.</p>
+<div class="arithmatex">\[BW = \frac{W_{\text{bits}} \times f}{8}\ \text{bytes/s}\]</div>
+<p><strong>Givens</strong> — a common Zynq/Alveo-style topology:</p>
+<table>
+<thead>
+<tr>
+<th>Block</th>
+<th>Data width</th>
+<th>Clock</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DMA read port</td>
+<td>64 bit</td>
+<td>100 MHz</td>
+</tr>
+<tr>
+<td>AXI Interconnect</td>
+<td>(converts)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>DDR4 memory controller port</td>
+<td>512 bit</td>
+<td>300 MHz</td>
+</tr>
+</tbody>
+</table>
+<div class="arithmatex">\[BW_{\text{DMA}} = \frac{64 \times 100\times10^{6}}{8} = 800\ \text{MB/s}\]</div>
+<div class="arithmatex">\[BW_{\text{DDR port}} = \frac{512 \times 300\times10^{6}}{8} = 19.2\ \text{GB/s}\]</div>
+<p>The interconnect inserts a width converter (8:1) and a clock converter. It works. But:</p>
+<div class="arithmatex">\[\frac{800\ \text{MB/s}}{19{,}200\ \text{MB/s}} = 4.2\ \%\]</div>
+<p><strong>Your DMA is using 4.2 % of the memory port it is attached to.</strong> If the system feels
+slow, no amount of tuning the memory controller will help — the bottleneck is a 64-bit
+port on a 100 MHz clock, and the fix is architectural: widen the DMA to 256 or 512 bits,
+or run it faster, or instantiate several.</p>
+<p>Now the subtler cost, the one that produces "it works but it's slow": <strong>burst efficiency
+across a width converter.</strong> A 64-bit master issuing an AXI burst of 16 beats moves</p>
+<div class="arithmatex">\[16 \times 8\ \text{bytes} = 128\ \text{bytes}\]</div>
+<p>An 8:1 upsizer packs eight 64-bit beats into one 512-bit beat, so those 128 bytes become
+2 beats on the wide side. Fine. But if your master issues bursts of <strong>4</strong> beats:</p>
+<div class="arithmatex">\[4 \times 8 = 32\ \text{bytes} = \tfrac{1}{2}\ \text{of one 512-bit beat}\]</div>
+<p>Every burst now leaves half of a wide beat unused, and the memory controller sees a
+stream of partial writes with byte strobes. Effective bandwidth:</p>
+<div class="arithmatex">\[19.2\ \text{GB/s} \times \tfrac{1}{2} \times 4.2\ \% \approx 0.4\ \text{GB/s}\]</div>
+<p><strong>Verdict: burst length is a first-class design parameter, not an IP wizard default.</strong>
+Match your master's burst length to the width ratio so that every wide beat is full —
+here, bursts of 8 or 16 rather than 4.</p>
+<h3 id="the-real-artifact">The Real Artifact</h3>
+<p>Two artifacts, because IP integration has two failure surfaces: the RTL you write to talk
+to IP, and the repository hygiene that decides whether your build is reproducible.</p>
+<p><strong>1. An AXI4-Stream source that obeys the rules.</strong> This is the shape every custom block
+should have — note that <code>tvalid</code> is a function of the FIFO's state and nothing else.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1">// axis_source.sv</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c1">//</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1">// A minimal, protocol-correct AXI4-Stream master. Three properties worth copying:</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1">//   * TVALID depends only on whether data exists. It NEVER reads TREADY.</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c1">//   * Payload is held stable across a stalled beat.</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="c1">//   * TLAST is generated from a packet counter, not from the consumer&#39;s behaviour.</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1">//</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="c1">// Verify with the AXI Protocol Checker in simulation, not by reading it.</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="k">module</span><span class="w"> </span><span class="n">axis_source</span><span class="w"> </span><span class="p">#(</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">    </span><span class="k">parameter</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">TDATA_W</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">64</span><span class="p">,</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">    </span><span class="k">parameter</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">PKT_BEATS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">256</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="p">)</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w">                </span><span class="n">clk</span><span class="p">,</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w">                </span><span class="n">rst_n</span><span class="p">,</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">    </span><span class="c1">// producer side</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w"> </span><span class="p">[</span><span class="n">TDATA_W</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="w">  </span><span class="n">din</span><span class="p">,</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w">                </span><span class="n">din_valid</span><span class="p">,</span>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="kt">logic</span><span class="w">                </span><span class="n">din_ready</span><span class="p">,</span>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="w">    </span><span class="c1">// AXI4-Stream master</span>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a><span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="kt">logic</span><span class="w"> </span><span class="p">[</span><span class="n">TDATA_W</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="w">  </span><span class="n">m_axis_tdata</span><span class="p">,</span>
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="kt">logic</span><span class="w"> </span><span class="p">[</span><span class="n">TDATA_W</span><span class="o">/</span><span class="mi">8</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="n">m_axis_tkeep</span><span class="p">,</span>
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="kt">logic</span><span class="w">                </span><span class="n">m_axis_tvalid</span><span class="p">,</span>
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w">                </span><span class="n">m_axis_tready</span><span class="p">,</span>
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a><span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="kt">logic</span><span class="w">                </span><span class="n">m_axis_tlast</span>
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a><span class="p">);</span>
+<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>
+<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a><span class="w">    </span><span class="k">localparam</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">CNT_W</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">$</span><span class="n">clog2</span><span class="p">(</span><span class="n">PKT_BEATS</span><span class="p">);</span>
+<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a><span class="w">    </span><span class="kt">logic</span><span class="w"> </span><span class="p">[</span><span class="n">CNT_W</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="n">beat_cnt</span><span class="p">;</span>
+<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>
+<a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a><span class="w">    </span><span class="c1">// A beat retires when both sides agree. This is the ONLY place TREADY appears.</span>
+<a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a><span class="w">    </span><span class="kt">wire</span><span class="w"> </span><span class="n">beat_done</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_axis_tvalid</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">m_axis_tready</span><span class="p">;</span>
+<a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a>
+<a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a><span class="w">    </span><span class="c1">// Accept from the producer whenever we are empty or retiring a beat.</span>
+<a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a><span class="w">    </span><span class="k">assign</span><span class="w"> </span><span class="n">din_ready</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">!</span><span class="n">m_axis_tvalid</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">m_axis_tready</span><span class="p">;</span>
+<a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a>
+<a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a><span class="w">    </span><span class="k">always_ff</span><span class="w"> </span><span class="p">@(</span><span class="k">posedge</span><span class="w"> </span><span class="n">clk</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-3-40" name="__codelineno-3-40" href="#__codelineno-3-40"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">rst_n</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-3-41" name="__codelineno-3-41" href="#__codelineno-3-41"></a><span class="w">            </span><span class="n">m_axis_tvalid</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mb">1&#39;b0</span><span class="p">;</span>
+<a id="__codelineno-3-42" name="__codelineno-3-42" href="#__codelineno-3-42"></a><span class="w">            </span><span class="n">beat_cnt</span><span class="w">      </span><span class="o">&lt;=</span><span class="w"> </span><span class="m">&#39;0</span><span class="p">;</span>
+<a id="__codelineno-3-43" name="__codelineno-3-43" href="#__codelineno-3-43"></a><span class="w">        </span><span class="k">end</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-3-44" name="__codelineno-3-44" href="#__codelineno-3-44"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">din_ready</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-3-45" name="__codelineno-3-45" href="#__codelineno-3-45"></a><span class="w">                </span><span class="c1">// TVALID follows data availability. No TREADY term. This is the rule.</span>
+<a id="__codelineno-3-46" name="__codelineno-3-46" href="#__codelineno-3-46"></a><span class="w">                </span><span class="n">m_axis_tvalid</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">din_valid</span><span class="p">;</span>
+<a id="__codelineno-3-47" name="__codelineno-3-47" href="#__codelineno-3-47"></a><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">din_valid</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-3-48" name="__codelineno-3-48" href="#__codelineno-3-48"></a><span class="w">                    </span><span class="n">m_axis_tdata</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">din</span><span class="p">;</span><span class="w">      </span><span class="c1">// payload updated only when accepted,</span>
+<a id="__codelineno-3-49" name="__codelineno-3-49" href="#__codelineno-3-49"></a><span class="w">                                              </span><span class="c1">// so it is stable across a stall</span>
+<a id="__codelineno-3-50" name="__codelineno-3-50" href="#__codelineno-3-50"></a><span class="w">                </span><span class="k">end</span>
+<a id="__codelineno-3-51" name="__codelineno-3-51" href="#__codelineno-3-51"></a><span class="w">            </span><span class="k">end</span>
+<a id="__codelineno-3-52" name="__codelineno-3-52" href="#__codelineno-3-52"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">beat_done</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-3-53" name="__codelineno-3-53" href="#__codelineno-3-53"></a><span class="w">                </span><span class="n">beat_cnt</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="p">(</span><span class="n">beat_cnt</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">PKT_BEATS</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="m">&#39;0</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">beat_cnt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mb">1&#39;b1</span><span class="p">;</span>
+<a id="__codelineno-3-54" name="__codelineno-3-54" href="#__codelineno-3-54"></a><span class="w">            </span><span class="k">end</span>
+<a id="__codelineno-3-55" name="__codelineno-3-55" href="#__codelineno-3-55"></a><span class="w">        </span><span class="k">end</span>
+<a id="__codelineno-3-56" name="__codelineno-3-56" href="#__codelineno-3-56"></a><span class="w">    </span><span class="k">end</span>
+<a id="__codelineno-3-57" name="__codelineno-3-57" href="#__codelineno-3-57"></a>
+<a id="__codelineno-3-58" name="__codelineno-3-58" href="#__codelineno-3-58"></a><span class="w">    </span><span class="k">assign</span><span class="w"> </span><span class="n">m_axis_tkeep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">&#39;1</span><span class="p">;</span><span class="w">                          </span><span class="c1">// all bytes valid</span>
+<a id="__codelineno-3-59" name="__codelineno-3-59" href="#__codelineno-3-59"></a><span class="w">    </span><span class="k">assign</span><span class="w"> </span><span class="n">m_axis_tlast</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">beat_cnt</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">PKT_BEATS</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+<a id="__codelineno-3-60" name="__codelineno-3-60" href="#__codelineno-3-60"></a>
+<a id="__codelineno-3-61" name="__codelineno-3-61" href="#__codelineno-3-61"></a><span class="k">endmodule</span>
+</code></pre></div>
+<p><strong>2. IP repository hygiene.</strong> The most common "it built last month" failure is an IP whose
+generated products no longer match its <code>.xci</code>. Fix it in the project script, not by hand.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c"># ip_manage.tcl - what to commit, what to regenerate, and how to fail loudly.</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c"># --- What belongs in git ------------------------------------------------------</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c">#   COMMIT:      *.xci  (the configuration - this is the source)</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c">#                *.bd   (block design)</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="c">#                this script and your constraints</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c">#   DO NOT COMMIT: *.dcp, generated HDL, *.veo/*.vho, ip_user_files/, .runs/</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="c"># Generated products are outputs of {xci, part, tool version}. Committing them</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="c"># creates a repo where the netlist and the config can silently disagree.</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="c"># --- Pin the tool version, loudly ---------------------------------------------</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="k">set</span><span class="w"> </span>required_version<span class="w"> </span><span class="s2">&quot;2023.2&quot;</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="k">if</span><span class="w"> </span><span class="k">{</span><span class="o">!</span><span class="k">[</span><span class="nb">string</span><span class="w"> </span>match<span class="w"> </span><span class="s2">&quot;$required_version*&quot;</span><span class="w"> </span><span class="k">[</span><span class="nv">version</span><span class="w"> </span><span class="o">-</span>short<span class="k">]]}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;WARNING: project was built with Vivado $required_version, you are on [version -short].&quot;</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;         IP will be upgraded. Read the change logs before you commit the result.&quot;</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="k">}</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="c"># --- Report anything locked or out of date, and refuse to build blind ---------</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="k">proc</span><span class="w"> </span>check_ip_status<span class="w"> </span><span class="k">{}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="w">    </span><span class="k">set</span><span class="w"> </span>stale<span class="w"> </span><span class="k">{}</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="w">    </span><span class="k">foreach</span><span class="w"> </span>ip<span class="w"> </span><span class="k">[</span><span class="nv">get_ips</span><span class="k">]</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="w">        </span><span class="k">set</span><span class="w"> </span>locked<span class="w">    </span><span class="k">[</span><span class="nv">get_property</span><span class="w"> </span>IS_LOCKED<span class="w">  </span><span class="nv">$ip</span><span class="k">]</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="w">        </span><span class="k">set</span><span class="w"> </span>upgrade<span class="w">   </span><span class="k">[</span><span class="nv">get_property</span><span class="w"> </span>UPGRADE_VERSIONS<span class="w"> </span><span class="nv">$ip</span><span class="k">]</span>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="k">{</span><span class="nv">$locked</span><span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a><span class="w">            </span><span class="nb">lappend</span><span class="w"> </span>stale<span class="w"> </span><span class="k">[</span><span class="nb">format</span><span class="w"> </span><span class="s2">&quot;%-28s LOCKED   (regenerate or upgrade)&quot;</span><span class="w"> </span><span class="nv">$ip</span><span class="k">]</span>
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a><span class="w">        </span><span class="k">}</span><span class="w"> </span><span class="k">elseif</span><span class="w"> </span><span class="k">{</span><span class="nv">$upgrade</span><span class="w"> </span><span class="nv">ne</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a><span class="w">            </span><span class="nb">lappend</span><span class="w"> </span>stale<span class="w"> </span><span class="k">[</span><span class="nb">format</span><span class="w"> </span><span class="s2">&quot;%-28s upgrade available: %s&quot;</span><span class="w"> </span><span class="nv">$ip</span><span class="w"> </span><span class="nv">$upgrade</span><span class="k">]</span>
+<a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a><span class="w">        </span><span class="k">}</span>
+<a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a><span class="w">    </span><span class="k">}</span>
+<a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="k">{[</span><span class="nb">llength</span><span class="w"> </span><span class="nv">$stale</span><span class="k">]}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a><span class="w">        </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;IP requiring attention:&quot;</span>
+<a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a><span class="w">        </span><span class="k">foreach</span><span class="w"> </span>line<span class="w"> </span><span class="nv">$stale</span><span class="w"> </span><span class="k">{</span><span class="w"> </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;  $line&quot;</span><span class="w"> </span><span class="k">}</span>
+<a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span>
+<a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a><span class="w">    </span><span class="k">}</span>
+<a id="__codelineno-4-35" name="__codelineno-4-35" href="#__codelineno-4-35"></a><span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;All IP current and unlocked.&quot;</span>
+<a id="__codelineno-4-36" name="__codelineno-4-36" href="#__codelineno-4-36"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span>
+<a id="__codelineno-4-37" name="__codelineno-4-37" href="#__codelineno-4-37"></a><span class="k">}</span>
+<a id="__codelineno-4-38" name="__codelineno-4-38" href="#__codelineno-4-38"></a>
+<a id="__codelineno-4-39" name="__codelineno-4-39" href="#__codelineno-4-39"></a><span class="c"># --- Regenerate deterministically ---------------------------------------------</span>
+<a id="__codelineno-4-40" name="__codelineno-4-40" href="#__codelineno-4-40"></a><span class="k">proc</span><span class="w"> </span>regenerate_all_ip<span class="w"> </span><span class="k">{}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-4-41" name="__codelineno-4-41" href="#__codelineno-4-41"></a><span class="w">    </span><span class="c"># upgrade_ip returns a report you should read rather than skim - a changed port</span>
+<a id="__codelineno-4-42" name="__codelineno-4-42" href="#__codelineno-4-42"></a><span class="w">    </span><span class="c"># or a changed default is a functional change, not a version bump.</span>
+<a id="__codelineno-4-43" name="__codelineno-4-43" href="#__codelineno-4-43"></a><span class="w">    </span><span class="nv">upgrade_ip</span><span class="w"> </span><span class="k">[</span><span class="nv">get_ips</span><span class="k">]</span>
+<a id="__codelineno-4-44" name="__codelineno-4-44" href="#__codelineno-4-44"></a><span class="w">    </span><span class="nv">generate_target</span><span class="w"> </span>all<span class="w"> </span><span class="k">[</span><span class="nv">get_ips</span><span class="k">]</span>
+<a id="__codelineno-4-45" name="__codelineno-4-45" href="#__codelineno-4-45"></a><span class="w">    </span><span class="nv">export_ip_user_files</span><span class="w"> </span><span class="o">-</span>of_objects<span class="w"> </span><span class="k">[</span><span class="nv">get_ips</span><span class="k">]</span><span class="w"> </span><span class="o">-</span>force
+<a id="__codelineno-4-46" name="__codelineno-4-46" href="#__codelineno-4-46"></a><span class="k">}</span>
+<a id="__codelineno-4-47" name="__codelineno-4-47" href="#__codelineno-4-47"></a>
+<a id="__codelineno-4-48" name="__codelineno-4-48" href="#__codelineno-4-48"></a><span class="nv">check_ip_status</span>
+</code></pre></div>
+<h3 id="sharpen-your-pencil">Sharpen Your Pencil</h3>
+<ol>
+<li>A 128-bit AXI master at 200 MHz feeds a 512-bit slave at 250 MHz. Compute both
+   bandwidths. What is the master's utilisation of the slave port, and what would you
+   change first?</li>
+<li>Your AXI4-Stream block passes every simulation, then hangs in hardware whenever the
+   downstream FIFO fills. Which of the four handshake rules is the prime suspect, and why
+   would an unthrottled testbench never catch it?</li>
+<li>A colleague commits the generated <code>.dcp</code> and Verilog for every IP "so the build is
+   reproducible." Give the strongest technical argument against this, and say what
+   actually makes a build reproducible.</li>
+</ol>
+<h3 id="final-thoughts-on-ip">Final Thoughts on IP</h3>
+<p>Integration is a skill in itself. It requires a high-level view of the system and a deep understanding of standard interfaces like AXI. By using AMD’s pre-verified IP, you free yourself from the drudgery of low-level implementation and allow yourself to focus on the high-level innovation. Build your castle with the best bricks available.</p>
+<h3 id="answers">Answers</h3>
+<p><strong>Brain Power</strong> — <em>An IP core throws a Critical Warning but still produces a bitstream.
+Ignore it?</em></p>
+<p>No — and the reason is structural rather than superstitious. A bitstream is produced
+whenever the tool can place and route <em>something</em>; it is not a statement that the design
+is correct. Critical Warnings from IP fall into a few families, and each has a distinct
+consequence:</p>
+<ul>
+<li><strong>"IP was generated for a different part / tool version."</strong> The netlist you are
+  implementing was built for different silicon or a different timing model. It may work.
+  It may also be using a primitive with different characteristics.</li>
+<li><strong>"Constraints not applied because the referenced object was not found."</strong> This is the
+  worst one and it is very common. The IP shipped an XDC that scopes to a cell name;
+  something in your hierarchy changed; the <code>get_cells</code> returned empty; the constraint
+  silently did nothing. <strong>Your IP's internal CDC and timing exceptions are now absent</strong> —
+  and since a missing constraint makes timing <em>easier</em>, your report looks better than
+  before.</li>
+<li><strong>"Unsupported configuration option."</strong> The wizard let you pick a combination the
+  netlist does not actually implement.</li>
+</ul>
+<p>The risk from unconstrained internal IP paths specifically: the IP's designers relied on
+those constraints for correctness, not merely for performance. A missing
+<code>set_max_delay -datapath_only</code> inside a vendor FIFO means its Gray-coded pointer crossing
+is now unbounded, and the FIFO's full/empty flags can be wrong. That is silent data
+corruption whose root cause is three levels down inside IP you did not write.</p>
+<p>The rule: <strong>treat Critical Warnings as build failures.</strong> If one is genuinely benign, waive
+it explicitly with a written justification, so the next person sees the reasoning instead
+of the noise.</p>
+<p><strong>Sharpen Your Pencil #1</strong> —</p>
+<div class="arithmatex">\[BW_{\text{master}} = \frac{128 \times 200\times10^{6}}{8} = 3.2\ \text{GB/s}\]</div>
+<div class="arithmatex">\[BW_{\text{slave}} = \frac{512 \times 250\times10^{6}}{8} = 16.0\ \text{GB/s}\]</div>
+<div class="arithmatex">\[\text{Utilisation} = \frac{3.2}{16.0} = 20\ \%\]</div>
+<p>What to change first: <strong>the data width, not the clock.</strong> Going from 128 to 512 bits is a
+4× improvement and is usually a parameter change plus a wider datapath; going from
+200 MHz to 250 MHz is a 1.25× improvement and is a timing closure project. Width is
+almost always the cheaper axis, which is the general lesson — when a bus is the
+bottleneck, widen before you accelerate.</p>
+<p>Second thing to check, once widened: burst length. At 512 bits on both sides the width
+converter disappears, and burst efficiency stops being a concern; at 128 bits into 512
+you need bursts that are multiples of 4 beats or you waste wide beats, as in the worked
+example.</p>
+<p><strong>Sharpen Your Pencil #2</strong> — Prime suspect: <strong>"payload must stay stable while <code>VALID</code> is
+high and <code>READY</code> is low."</strong></p>
+<p>Why simulation misses it: an unthrottled testbench holds <code>TREADY</code> high permanently. Every
+beat is accepted in the cycle it is offered, so <code>VALID</code> is never high with <code>READY</code> low —
+<strong>the stability rule is never exercised.</strong> The bug is invisible not because the test is
+short but because the test never creates the condition.</p>
+<p>In hardware, the downstream FIFO fills, <code>TREADY</code> drops, and your source keeps updating
+<code>TDATA</code> from its producer while <code>TVALID</code> remains asserted. The consumer eventually samples
+whatever happens to be on the bus, which is not the beat that was offered. Depending on
+the protocol above it, that presents as corrupted packets, a checksum failure, or a hang
+when a length field gets scrambled.</p>
+<p>The fix in the testbench is as important as the fix in the RTL: <strong>drive <code>TREADY</code> randomly</strong>
+with a configurable duty cycle, and include long stall bursts. A stream testbench that
+never applies backpressure has not tested the stream interface.</p>
+<p><strong>Sharpen Your Pencil #3</strong> — The strongest argument: <strong>generated products are a function
+of <code>{xci, part, tool version}</code>, and committing them creates two sources of truth that can
+disagree without any warning.</strong> Someone edits the <code>.xci</code> through the GUI, forgets to
+regenerate, commits, and now the repository contains a configuration that does not
+describe the netlist next to it. Every subsequent build is a coin flip about which one
+gets used, and the failure surfaces as behaviour that does not match the configuration
+anyone reads.</p>
+<p>Secondary arguments: generated output is large and binary, so it makes the repository
+slow and its diffs meaningless; and it does not survive a tool upgrade anyway, so it
+delivers reproducibility only for as long as nobody upgrades — which is exactly the period
+during which you did not need it.</p>
+<p>What actually makes a build reproducible:</p>
+<ol>
+<li><strong>Commit the sources</strong>: <code>.xci</code>, <code>.bd</code>, RTL, XDC, and the project-creation Tcl script.</li>
+<li><strong>Pin the tool version explicitly</strong> and fail the build loudly on a mismatch (the
+   <code>ip_manage.tcl</code> artifact above does this).</li>
+<li><strong>Build in CI from a clean checkout</strong>, so "works on my machine" cannot hide a file that
+   was never committed.</li>
+<li><strong>Archive the outputs you shipped</strong> — the bitstream, the reports, and the <code>.dcp</code> — as
+   <em>release artifacts</em> keyed to a commit hash. That gives you the ability to reproduce a
+   shipped product without making the netlist a source file.</li>
+</ol>
+<h3 id="there-are-no-dumb-questions">There Are No Dumb Questions</h3>
+<p><strong>Q: AXI4, AXI4-Lite, AXI4-Stream — how do I pick?</strong></p>
+<p>A: By what the data <em>is</em>. AXI4-Lite for control and status registers: single beats, no
+bursts, trivial to implement, and it is what a processor writes to. AXI4 (full) for
+memory-mapped bulk transfer: addresses, bursts, out-of-order responses — this is what
+DMAs and memory controllers speak. AXI4-Stream for data with no natural address: samples,
+packets, pixels, anything that flows. Using full AXI4 where a stream would do is the most
+common over-engineering in FPGA block designs; you pay for address channels and reordering
+logic to move data that only ever goes one way.</p>
+<p><strong>Q: IPI's auto-connect inserted five blocks I did not ask for. Is that bad?</strong></p>
+<p>A: It is bad if you do not know what they are. Open the block design and look: an AXI
+Interconnect (arbitration and routing), clock converters (an asynchronous FIFO per
+channel), width converters, protocol converters, and register slices (pipeline stages for
+timing) all get inserted silently. Each adds latency and resources. Auto-connect is a good
+first draft; the review step is to look at what it built and delete what you do not need.</p>
+<p><strong>Q: My IP shows as "Locked". What does that mean, and is it dangerous?</strong></p>
+<p>A: Locked means Vivado will not regenerate it — usually because it was generated by a
+different tool version or for a different part. You are implementing the old netlist. It is
+dangerous when the difference matters (a timing model change, a bug fix in the IP) and
+harmless when it does not, and you cannot tell which from the outside. Run
+<code>upgrade_ip [get_ips]</code>, read the change log, and re-verify. Shipping locked IP because
+upgrading is inconvenient is how you ship a known-fixed bug.</p>
+<p><strong>Q: Should I write my own FIFO or use the IP?</strong></p>
+<p>A: Use <code>xpm_fifo_async</code> / <code>xpm_fifo_sync</code> — they are the AXI-blessed macros, they come
+with correct CDC constraints, they map efficiently to BRAM/URAM, and they are the same in
+every project so reviewers already know them. The argument for a hand-written FIFO is
+almost always "I want to understand it," which is a good reason to <em>write</em> one and a bad
+reason to <em>ship</em> one.</p>
+<p><strong>Q: Do I need the AXI Protocol Checker if my design already works?</strong></p>
+<p>A: You need it precisely when your design "already works," because protocol violations
+mostly manifest under conditions your happy-path testbench does not produce —
+backpressure, near-simultaneous handshakes, resets mid-transaction. Instantiating it in
+simulation costs nothing at implementation time and converts "the DMA hangs occasionally"
+into a named rule and a timestamp.</p>
+<h3 id="bullet-points">Bullet Points</h3>
+<ul>
+<li><strong>Bandwidth</strong> <span class="arithmatex">\(= W_{\text{bits}} \times f / 8\)</span>. Compute both ends of every AXI
+  connection before you accept the auto-connect.</li>
+<li><strong>Widen before you accelerate.</strong> 128→512 bits is 4×; 200→250 MHz is 1.25× and a timing
+  project.</li>
+<li><strong>Burst length must match the width ratio</strong> across a converter, or every wide beat
+  ships half empty.</li>
+<li><strong>AXI handshake rules</strong>: <code>VALID</code> never depends on <code>READY</code>; <code>VALID</code> stays asserted until
+  the handshake; payload is stable while <code>VALID &amp;&amp; !READY</code>; <code>READY</code> <strong>may</strong> depend on
+  <code>VALID</code>.</li>
+<li><strong>Test with backpressure.</strong> A stream testbench that holds <code>TREADY</code> high has not tested
+  the stream interface.</li>
+<li><strong>Pick the protocol by what the data is</strong>: AXI4-Lite for registers, AXI4 for
+  memory-mapped bulk, AXI4-Stream for flow.</li>
+<li><strong>Commit <code>.xci</code> and <code>.bd</code>; do not commit generated products.</strong> Reproducibility comes
+  from pinned tool versions and CI builds from clean checkouts, not from committed
+  netlists.</li>
+<li><strong>Treat IP Critical Warnings as build failures.</strong> The dangerous ones are the constraints
+  that silently failed to apply — and missing constraints make your timing report <em>better</em>.</li>
+<li><strong>Commands</strong>: <code>get_ips</code>, <code>upgrade_ip</code>, <code>generate_target</code>, <code>report_ip_status</code>,
+  <code>validate_bd_design</code>, plus the AXI Protocol Checker in simulation.</li>
+</ul>
+<hr />
+<p>[REVIEW_STATUS: APPROVED BY PUBLISHER]</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../3.1_rtl_coding/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 3.1 RTL Coding">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                3.1 RTL Coding
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../3.3_security/" class="md-footer__link md-footer__link--next" aria-label="Next: 3.3 Design Security">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                3.3 Design Security
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2026 <a href="https://github.com/mehdibadjian">Mehdi Badjian</a> &middot; <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga">github.com/mehdibadjian/no-magic-smoke-fpga</a> &middot; content <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/blob/main/LICENSE-CODE">MIT</a> &middot; independent, unofficial guide - not affiliated with or endorsed by AMD, Inc.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" target="_blank" rel="noopener" title="Source and issues on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.footer", "content.code.copy", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

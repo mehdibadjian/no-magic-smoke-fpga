@@ -1,0 +1,2411 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An independent, unofficial study companion to the AMD UltraFast Design Methodology. FPGA engineering taught Head First style, with the arithmetic left in - worked calculations, runnable artifacts, and answers to every question it asks.">
+      
+      
+        <meta name="author" content="Mehdi Badjian">
+      
+      
+        <link rel="canonical" href="https://mehdibadjian.github.io/no-magic-smoke-fpga/sections/6.1_debug/">
+      
+      
+        <link rel="prev" href="../5.2_thermal/">
+      
+      
+        <link rel="next" href="../6.2_tuning/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>6.1 Hardware Debugging - No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#section-61-hardware-debugging-the-digital-stethoscope" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-header__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              6.1 Hardware Debugging
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../1.1_pcb_layout/" class="md-tabs__link">
+          
+  
+  
+  Chapter 1: Board Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../2.1_timing_ballet/" class="md-tabs__link">
+          
+  
+  
+  Chapter 2: Constraints
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../3.1_rtl_coding/" class="md-tabs__link">
+          
+  
+  
+  Chapter 3: Design Creation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../4.1_synthesis/" class="md-tabs__link">
+          
+  
+  
+  Chapter 4: Implementation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../5.1_power/" class="md-tabs__link">
+          
+  
+  
+  Chapter 5: Power & Thermal
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Chapter 6: Debug & Tuning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../references/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  References
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-nav__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 1: Board Planning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 1: Board Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.1_pcb_layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.1 Hardware Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.2_power_planning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.2 Power Delivery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.3_clocking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.3 Clocking Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.4_ssi_hbm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.4 I/O Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 2: Constraints
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 2: Constraints
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.1_timing_ballet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.1 Defining Clocks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.2_constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.2 I/O Delays
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.3_cdc_minefield/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.3 CDC Minefield
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 3: Design Creation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 3: Design Creation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.1_rtl_coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1 RTL Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.2_ip_integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 IP Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.3_security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Design Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.4_verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 4: Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 4: Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.1_synthesis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.1 Synthesis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.2_placement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.2 Placement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.3_closure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.3 Closure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 5: Power & Thermal
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 5: Power & Thermal
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.1_power/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.1 Power Estimation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.2_thermal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.2 Thermal Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 6: Debug & Tuning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 6: Debug & Tuning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.1 Hardware Debugging
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.1 Hardware Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-digital-stethoscope-peering-inside" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Digital Stethoscope: Peering Inside
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-ila-your-high-speed-waveform-capture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The ILA: Your High-Speed Waveform Capture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-the-lab-tech-and-the-remote-engineer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: The Lab Tech and the Remote Engineer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-vio-pushing-buttons-from-your-keyboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The VIO: Pushing Buttons from Your Keyboard
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-strategies-finding-the-needle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging Strategies: Finding the Needle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-ila-clock-trap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The ILA Clock Trap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Do the Math">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-an-ila-costs-and-therefore-what-you-can-afford-to-see" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What an ILA costs, and therefore what you can afford to see
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-long-a-window-is-that-really" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How long a window is that, really?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-the-stethoscope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on the Stethoscope
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6.2_tuning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.2 Performance Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-digital-stethoscope-peering-inside" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Digital Stethoscope: Peering Inside
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-ila-your-high-speed-waveform-capture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The ILA: Your High-Speed Waveform Capture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-the-lab-tech-and-the-remote-engineer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: The Lab Tech and the Remote Engineer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-vio-pushing-buttons-from-your-keyboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The VIO: Pushing Buttons from Your Keyboard
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-strategies-finding-the-needle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging Strategies: Finding the Needle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-ila-clock-trap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The ILA Clock Trap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Do the Math">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-an-ila-costs-and-therefore-what-you-can-afford-to-see" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What an ILA costs, and therefore what you can afford to see
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-long-a-window-is-that-really" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How long a window is that, really?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-the-stethoscope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on the Stethoscope
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/edit/main/docs/sections/6.1_debug.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/raw/main/docs/sections/6.1_debug.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
+
+
+<h1 id="section-61-hardware-debugging-the-digital-stethoscope">Section 6.1: Hardware Debugging: The Digital Stethoscope</h1>
+<p>You’ve simulated your code, you’ve met timing, and you’ve managed the heat. Now comes the moment of truth: you load your bitstream onto the real hardware, and... nothing happens. Or worse, it works for ten minutes and then mysteriously crashes. This is the "Hard Truth" of FPGA design. No matter how much you simulate, there are always bugs that only appear in the real world.</p>
+<p>In the AMD UltraFast Methodology, we don't just "guess" what's wrong. we use <strong>Hardware Debugging</strong> tools to look inside the chip. These tools are your "Digital Stethoscope," allowing you to listen to the heartbeat of your design without even touching a physical probe to the board.</p>
+<h3 id="the-digital-stethoscope-peering-inside">The Digital Stethoscope: Peering Inside</h3>
+<p>Inside every AMD FPGA, there are dedicated resources for debugging. You can "tap" into any internal signal and bring it out to a virtual dashboard on your computer. This means you can see the state of your state machines, the values in your counters, and the handshakes on your AXI buses—all in real-time, while the chip is running at full speed.</p>
+<p>Debugging on hardware is a superpower. It allows you to catch the "Ghost Bugs" that only appear when the real world gets messy. But remember: every signal you debug uses a tiny bit of the FPGA's resources. Use your stethoscope wisely.</p>
+<blockquote>
+<p><strong>Brain Power</strong>
+<strong>If you add a 1024-sample ILA to a 64-bit bus, how many bits of BRAM are you consuming? If your FPGA is already 95% full, will you still be able to add a large debug core?</strong></p>
+</blockquote>
+<h3 id="the-ila-your-high-speed-waveform-capture">The ILA: Your High-Speed Waveform Capture</h3>
+<p>The <strong>Integrated Logic Analyzer (ILA)</strong> is the workhorse of FPGA debugging. It’s a piece of IP that you drop into your design. It "samples" your signals on every clock edge and stores the data in the FPGA’s internal BRAM. When a specific "Trigger Condition" is met (like an error flag going high), the ILA sends that data back to Vivado, where it’s displayed as a waveform.</p>
+<p>Think of the ILA as a high-speed security camera. It’s always watching, but it only "saves" the footage when it sees something suspicious. By setting the right trigger, you can capture the exact moment your logic fails, even if it only happens once every three hours.</p>
+<p><img alt="Digital Detective ILA" src="../../assets/images/fig_6_1_detective.png" /></p>
+<h3 id="fireside-chat-the-lab-tech-and-the-remote-engineer">Fireside Chat: The Lab Tech and the Remote Engineer</h3>
+<p><strong>Lab Tech:</strong> "I’ve been trying to trigger on this 'Packet Error' for two hours. I’ve got the oscilloscope probes hooked up to the output pins, but I can't see what's happening inside the FPGA. I think the bug is in the CRC calculation."</p>
+<p><strong>Remote Engineer:</strong> "Stop wasting your time with probes. I’ve just instantiated an ILA core on the CRC logic. I’m sitting in my home office, five hundred miles away, and I can see the exact state of the CRC registers on my screen. Look at this... the third bit is flipping incorrectly because of a timing violation."</p>
+<p><strong>Lab Tech:</strong> "Wait, you can see that from home? Without any probes?"</p>
+<p><strong>Remote Engineer:</strong> "Yep. JTAG-over-IP. The ILA is my eyes and ears. I don't need to be in the lab to find a logic bug. I just need a network connection and a good trigger condition. Welcome to the future of debugging."</p>
+<h3 id="the-vio-pushing-buttons-from-your-keyboard">The VIO: Pushing Buttons from Your Keyboard</h3>
+<p>Sometimes you don't need to see high-speed waveforms; you just need to "push a button" or "flip a switch" inside the chip. That’s what the <strong>Virtual I/O (VIO)</strong> core is for.</p>
+<p>The VIO allows you to create virtual buttons and sliders in the Vivado dashboard. You can use them to reset a specific module, change a configuration register, or force an error condition. It’s like having a physical control panel for your FPGA, but it lives entirely on your computer screen. VIOs are great for "Sanity Checking" your design during the first few hours of board bring-up.</p>
+<h3 id="debugging-strategies-finding-the-needle">Debugging Strategies: Finding the Needle</h3>
+<p>The biggest challenge with hardware debugging is the <strong>Data Limit</strong>. Because the ILA uses internal BRAM, you can only capture a few thousand samples at a time. If your bug happens over a long period, you’ll never see it in a single capture.</p>
+<p>To find the "Needle in the Haystack," you need a clever strategy:</p>
+<ol>
+<li><strong>Iterative Triggers:</strong> Start with a broad trigger and narrow it down as you learn more.</li>
+<li><strong>State Machine Debugging:</strong> Bring the 'Current State' signal into the ILA. It’s the single most useful signal for finding logic errors.</li>
+<li><strong>Capture Control:</strong> Use the "Storage Qualification" feature to only capture data when a specific condition is met (like <code>valid == 1</code>). This allows you to "stretch" your small BRAM buffer across a long period.</li>
+</ol>
+<p><img alt="Finding the Bug Needle" src="../../assets/images/fig_6_1_needle.png" /></p>
+<h3 id="code-detective-the-ila-clock-trap">Code Detective: The ILA Clock Trap</h3>
+<p>You must connect your ILA core to a clock signal. If you pick the wrong one, your debug data will be garbage.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c"># Code Detective: Why will this ILA produce confusing results?</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c"># The design has a 400MHz data path and a 10MHz control path.</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c"># The user connects the ILA to the 10MHz clock but probes the 400MHz signals.</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c"># Hint: What happens when you sample a fast signal with a slow clock?</span>
+</code></pre></div>
+<p>The flaw here is <strong>Under-sampling</strong>. If you sample a 400MHz signal with a 10MHz clock, you're only seeing one out of every forty transitions.</p>
+<p>But under-sampling is the <em>benign</em> half of the problem. The dangerous half is that the ILA
+is now performing an <strong>unsynchronized clock domain crossing on every probe</strong>. The 400 MHz
+signals are asynchronous to the 10 MHz sample clock, so each captured bit can go metastable
+independently — and a multi-bit bus captured this way tears exactly as described in
+Section 2.3. <strong>The waveform you are shown will contain values that never existed in the
+design</strong>, and you will spend a day debugging them.</p>
+<p><strong>The fix:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c"># Corrected: one ILA per clock domain, each clocked by the domain it probes.</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c"># --- Fast domain ---------------------------------------------------------------</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nv">create_debug_core</span><span class="w"> </span>u_ila_400<span class="w"> </span>ila
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nv">set_property</span><span class="w"> </span>C_DATA_DEPTH<span class="w">  </span><span class="mi">1024</span><span class="w">      </span><span class="k">[</span><span class="nv">get_debug_cores</span><span class="w"> </span>u_ila_400<span class="k">]</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nv">set_property</span><span class="w"> </span>C_TRIGIN_EN<span class="w">   </span>false<span class="w">     </span><span class="k">[</span><span class="nv">get_debug_cores</span><span class="w"> </span>u_ila_400<span class="k">]</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="nv">set_property</span><span class="w"> </span>C_ADV_TRIGGER<span class="w"> </span>true<span class="w">      </span><span class="k">[</span><span class="nv">get_debug_cores</span><span class="w"> </span>u_ila_400<span class="k">]</span><span class="w">   </span><span class="k">;</span><span class="c"># multi-state trigger</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="nv">connect_debug_port</span><span class="w"> </span>u_ila_400<span class="o">/</span>clk<span class="w"> </span><span class="k">[</span><span class="nv">get_nets</span><span class="w"> </span>clk_400<span class="k">]</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="nv">create_debug_port</span><span class="w"> </span>u_ila_400<span class="w"> </span>probe
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="nv">set_property</span><span class="w"> </span>PROBE_TYPE<span class="w"> </span>DATA_AND_TRIGGER<span class="w"> </span><span class="k">[</span><span class="nv">get_debug_ports</span><span class="w"> </span>u_ila_400<span class="o">/</span>probe0<span class="k">]</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="nv">set_property</span><span class="w"> </span>PORT_WIDTH<span class="w"> </span><span class="mi">64</span><span class="w">               </span><span class="k">[</span><span class="nv">get_debug_ports</span><span class="w"> </span>u_ila_400<span class="o">/</span>probe0<span class="k">]</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="nv">connect_debug_port</span><span class="w"> </span>u_ila_400<span class="o">/</span>probe0<span class="w"> </span><span class="k">[</span><span class="nv">get_nets</span><span class="w"> </span><span class="k">[</span><span class="nb">list</span><span class="w"> </span><span class="k">{</span><span class="nv">dsp_result</span><span class="k">[</span><span class="o">*</span><span class="k">]}]]</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="c"># --- Slow domain ---------------------------------------------------------------</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="nv">create_debug_core</span><span class="w"> </span>u_ila_10<span class="w"> </span>ila
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="nv">set_property</span><span class="w"> </span>C_DATA_DEPTH<span class="w"> </span><span class="mi">4096</span><span class="w">       </span><span class="k">[</span><span class="nv">get_debug_cores</span><span class="w"> </span>u_ila_10<span class="k">]</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="nv">connect_debug_port</span><span class="w"> </span>u_ila_10<span class="o">/</span>clk<span class="w"> </span><span class="k">[</span><span class="nv">get_nets</span><span class="w"> </span>clk_10<span class="k">]</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="c"># --- Correlate them with cross-triggering rather than a shared clock ------------</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="c"># This is what you actually wanted: one domain&#39;s event triggering the other&#39;s</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="c"># capture, WITHOUT sampling one domain&#39;s signals on the other&#39;s clock.</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="nv">set_property</span><span class="w"> </span>C_TRIGOUT_EN<span class="w"> </span>true<span class="w"> </span><span class="k">[</span><span class="nv">get_debug_cores</span><span class="w"> </span>u_ila_400<span class="k">]</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="nv">set_property</span><span class="w"> </span>C_TRIGIN_EN<span class="w">  </span>true<span class="w"> </span><span class="k">[</span><span class="nv">get_debug_cores</span><span class="w"> </span>u_ila_10<span class="k">]</span>
+</code></pre></div>
+<p>If you genuinely need a fast-domain signal visible in a slow-domain capture, cross it
+properly first — with an <code>xpm_cdc_single</code> or <code>xpm_cdc_handshake</code> — and probe the
+<em>synchronized</em> version. You lose timing detail, which is honest, instead of gaining
+fictional values, which is not.</p>
+<h3 id="analogy-silicon">Analogy → Silicon</h3>
+<table>
+<thead>
+<tr>
+<th>In the story</th>
+<th>In the silicon</th>
+<th>Where the analogy breaks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Digital stethoscope</td>
+<td>The <strong>ILA</strong> core: probes, a trigger comparator, and a BRAM capture buffer</td>
+<td>A stethoscope is passive; an ILA consumes BRAM, LUTs and routing, and inserting one <em>changes the design you are debugging</em></td>
+</tr>
+<tr>
+<td>Security camera saving only suspicious footage</td>
+<td>Trigger conditions plus <strong>capture control</strong> / storage qualification</td>
+<td>A camera's storage is effectively unlimited; an ILA's buffer is a handful of BRAMs, and the arithmetic below decides what you can see</td>
+</tr>
+<tr>
+<td>Virtual control panel</td>
+<td>The <strong>VIO</strong> core: fabric-driven inputs and outputs, updated over JTAG</td>
+<td>Real panel switches are instantaneous; VIO updates are asynchronous to your design and arrive whenever JTAG gets round to it — never use a VIO output as a synchronous control without synchronizing it</td>
+</tr>
+<tr>
+<td>Watching a race by blinking</td>
+<td>Sampling one clock domain with another domain's clock</td>
+<td>Blinking loses information; this <em>fabricates</em> information, because an unsynchronized multi-bit capture shows values that never existed</td>
+</tr>
+<tr>
+<td>Finding a needle</td>
+<td>Iterative trigger refinement and multi-state trigger sequences</td>
+<td>Needles are static; the bug moves as you add probes, because probes change placement, routing and timing</td>
+</tr>
+</tbody>
+</table>
+<h3 id="do-the-math">Do the Math</h3>
+<h4 id="what-an-ila-costs-and-therefore-what-you-can-afford-to-see">What an ILA costs, and therefore what you can afford to see</h4>
+<p>The capture buffer is real BRAM, and the arithmetic is exact:</p>
+<div class="arithmatex">\[\text{Storage bits} = \text{probe width (total)} \times \text{capture depth}\]</div>
+<div class="arithmatex">\[\text{BRAMs} = \left\lceil \frac{\text{Storage bits}}{36{,}864} \right\rceil \quad (\text{one RAMB36E2} = 36\ \text{Kb})\]</div>
+<p><strong>Givens:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Probes</td>
+<td>one 64-bit bus, one 32-bit counter, 8 single-bit control signals</td>
+</tr>
+<tr>
+<td>Capture depth</td>
+<td>1024 samples</td>
+</tr>
+</tbody>
+</table>
+<div class="arithmatex">\[W_{\text{total}} = 64 + 32 + 8 = 104\ \text{bits}\]</div>
+<div class="arithmatex">\[\text{Storage} = 104 \times 1024 = 106{,}496\ \text{bits} = 104\ \text{Kb}\]</div>
+<div class="arithmatex">\[\text{BRAMs} = \left\lceil \frac{106{,}496}{36{,}864} \right\rceil = \lceil 2.89 \rceil = 3\ \text{BRAMs}\]</div>
+<p>Now the number that changes behaviour. Ask for a deeper window:</p>
+<table>
+<thead>
+<tr>
+<th>Depth</th>
+<th>Storage</th>
+<th>BRAMs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1,024</td>
+<td>104 Kb</td>
+<td>3</td>
+</tr>
+<tr>
+<td>8,192</td>
+<td>832 Kb</td>
+<td>23</td>
+</tr>
+<tr>
+<td>32,768</td>
+<td>3,328 Kb</td>
+<td>91</td>
+</tr>
+<tr>
+<td>131,072</td>
+<td>13,312 Kb</td>
+<td>362</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Depth is linear in BRAM, and BRAM is the resource you are most likely to be short of.</strong>
+On a device with 600 BRAMs where your design already uses 480, a 32K-deep capture of 104
+bits is affordable and a 128K-deep one is not, regardless of how much you would like it.</p>
+<h4 id="how-long-a-window-is-that-really">How long a window is that, really?</h4>
+<div class="arithmatex">\[T_{\text{window}} = \frac{\text{depth}}{f_{\text{sample}}}\]</div>
+<p>At 400 MHz:</p>
+<div class="arithmatex">\[\frac{1024}{400\times10^{6}} = 2.56\ \mu\text{s}\]</div>
+<p><strong>2.56 microseconds.</strong> If your bug occurs once every three hours, the probability that a
+blind capture contains it is:</p>
+<div class="arithmatex">\[\frac{2.56\times10^{-6}}{10{,}800} = 2.4\times10^{-10}\]</div>
+<p>Which is the entire argument for triggering: <strong>you are not capturing more, you are
+capturing at the right moment.</strong> And it is also the argument for <em>storage qualification</em> —
+if the interesting events are the 1 % of cycles where <code>valid</code> is high, qualifying the
+capture on <code>valid</code> stretches the same 1024 samples across 100× more real time:</p>
+<div class="arithmatex">\[T_{\text{effective}} \approx \frac{1024}{0.01 \times 400\times10^{6}} = 256\ \mu\text{s}\]</div>
+<p>Same three BRAMs, a hundred times the coverage.</p>
+<h3 id="the-real-artifact">The Real Artifact</h3>
+<p>The debug flow that keeps the probes out of your RTL, plus a VIO used correctly.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c">#==============================================================================</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c"># debug.tcl - insert debug on the synthesised netlist, not in the source.</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c">#</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c"># Why not `(* mark_debug *)` in RTL? Because attributes in source get committed,</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c"># forgotten, and shipped. Netlist-based insertion lives in a script you can</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="c"># exclude from a production build with one flag.</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="c">#</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="c"># Usage:</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="c">#   synth_design ...</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="c">#   source debug.tcl            ;# only when DEBUG_BUILD is set</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="c">#   opt_design; place_design; route_design</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="c">#==============================================================================</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="k">if</span><span class="w"> </span><span class="k">{</span><span class="o">!</span><span class="k">[</span><span class="nb">info</span><span class="w"> </span>exists<span class="w"> </span><span class="o">::</span>env<span class="k">(</span><span class="nv">DEBUG_BUILD</span><span class="k">)]}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;INFO: production build - no debug cores inserted.&quot;</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">    </span><span class="k">return</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="k">}</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="c"># 1. An ILA per clock domain. Never share a clock between domains - see the</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="c">#    Code Detective above for what that actually does to your waveforms.</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="k">proc</span><span class="w"> </span>add_ila<span class="w"> </span><span class="k">{</span><span class="nv">name</span><span class="w"> </span>clk_net<span class="w"> </span>depth<span class="w"> </span>probes<span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="w">    </span><span class="nv">create_debug_core</span><span class="w"> </span><span class="nv">$name</span><span class="w"> </span>ila
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="w">    </span><span class="nv">set_property</span><span class="w"> </span>C_DATA_DEPTH<span class="w">   </span><span class="nv">$depth</span><span class="w"> </span><span class="k">[</span><span class="nv">get_debug_cores</span><span class="w"> </span><span class="nv">$name</span><span class="k">]</span>
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="w">    </span><span class="nv">set_property</span><span class="w"> </span>C_TRIGIN_EN<span class="w">    </span>true<span class="w">   </span><span class="k">[</span><span class="nv">get_debug_cores</span><span class="w"> </span><span class="nv">$name</span><span class="k">]</span>
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="w">    </span><span class="nv">set_property</span><span class="w"> </span>C_TRIGOUT_EN<span class="w">   </span>true<span class="w">   </span><span class="k">[</span><span class="nv">get_debug_cores</span><span class="w"> </span><span class="nv">$name</span><span class="k">]</span>
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="w">    </span><span class="nv">set_property</span><span class="w"> </span>C_ADV_TRIGGER<span class="w">  </span>true<span class="w">   </span><span class="k">[</span><span class="nv">get_debug_cores</span><span class="w"> </span><span class="nv">$name</span><span class="k">]</span>
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="w">    </span><span class="nv">set_property</span><span class="w"> </span>C_EN_STRG_QUAL<span class="w"> </span>true<span class="w">   </span><span class="k">[</span><span class="nv">get_debug_cores</span><span class="w"> </span><span class="nv">$name</span><span class="k">]</span><span class="w">   </span><span class="k">;</span><span class="c"># capture control</span>
+<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a><span class="w">    </span><span class="nv">set_property</span><span class="w"> </span>ALL_PROBE_SAME_MU<span class="w"> </span>true<span class="w"> </span><span class="k">[</span><span class="nv">get_debug_cores</span><span class="w"> </span><span class="nv">$name</span><span class="k">]</span>
+<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="w">    </span><span class="nv">connect_debug_port</span><span class="w"> </span><span class="nv">$name</span><span class="o">/</span>clk<span class="w"> </span><span class="k">[</span><span class="nv">get_nets</span><span class="w"> </span><span class="nv">$clk_net</span><span class="k">]</span>
+<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a>
+<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="w">    </span><span class="k">set</span><span class="w"> </span>idx<span class="w"> </span><span class="mi">0</span>
+<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a><span class="w">    </span><span class="k">foreach</span><span class="w"> </span><span class="k">{</span><span class="nv">pattern</span><span class="w"> </span>width<span class="k">}</span><span class="w"> </span><span class="nv">$probes</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="k">{</span><span class="nv">$idx</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">0</span><span class="k">}</span><span class="w"> </span><span class="k">{</span><span class="w"> </span><span class="nv">create_debug_port</span><span class="w"> </span><span class="nv">$name</span><span class="w"> </span>probe<span class="w"> </span><span class="k">}</span>
+<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a><span class="w">        </span><span class="k">set</span><span class="w"> </span>port<span class="w"> </span><span class="s2">&quot;$name/probe$idx&quot;</span>
+<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a><span class="w">        </span><span class="nv">set_property</span><span class="w"> </span>PROBE_TYPE<span class="w"> </span>DATA_AND_TRIGGER<span class="w"> </span><span class="k">[</span><span class="nv">get_debug_ports</span><span class="w"> </span><span class="nv">$port</span><span class="k">]</span>
+<a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a><span class="w">        </span><span class="nv">set_property</span><span class="w"> </span>PORT_WIDTH<span class="w"> </span><span class="nv">$width</span><span class="w">           </span><span class="k">[</span><span class="nv">get_debug_ports</span><span class="w"> </span><span class="nv">$port</span><span class="k">]</span>
+<a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a><span class="w">        </span><span class="nv">connect_debug_port</span><span class="w"> </span><span class="nv">$port</span><span class="w"> </span><span class="k">[</span><span class="nv">get_nets</span><span class="w"> </span><span class="k">[</span><span class="nb">list</span><span class="w"> </span><span class="nv">$pattern</span><span class="k">]]</span>
+<a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a><span class="w">        </span><span class="nb">incr</span><span class="w"> </span>idx
+<a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a><span class="w">    </span><span class="k">}</span>
+<a id="__codelineno-2-42" name="__codelineno-2-42" href="#__codelineno-2-42"></a><span class="k">}</span>
+<a id="__codelineno-2-43" name="__codelineno-2-43" href="#__codelineno-2-43"></a>
+<a id="__codelineno-2-44" name="__codelineno-2-44" href="#__codelineno-2-44"></a><span class="c"># The single most useful probe in any design is the state machine&#39;s state vector.</span>
+<a id="__codelineno-2-45" name="__codelineno-2-45" href="#__codelineno-2-45"></a><span class="c"># Probe it first, every time. Most &quot;impossible&quot; behaviour is a state machine in a</span>
+<a id="__codelineno-2-46" name="__codelineno-2-46" href="#__codelineno-2-46"></a><span class="c"># state you did not know it could reach.</span>
+<a id="__codelineno-2-47" name="__codelineno-2-47" href="#__codelineno-2-47"></a><span class="nv">add_ila</span><span class="w"> </span>u_ila_400<span class="w"> </span>clk_400<span class="w"> </span><span class="mi">1024</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-2-48" name="__codelineno-2-48" href="#__codelineno-2-48"></a><span class="w">    </span><span class="k">{</span><span class="nv">axi_state</span><span class="k">[</span><span class="o">*</span><span class="k">]}</span><span class="w">      </span><span class="nv">4</span>
+<a id="__codelineno-2-49" name="__codelineno-2-49" href="#__codelineno-2-49"></a><span class="w">    </span><span class="k">{</span><span class="nv">dsp_result</span><span class="k">[</span><span class="o">*</span><span class="k">]}</span><span class="w">    </span><span class="nv">64</span>
+<a id="__codelineno-2-50" name="__codelineno-2-50" href="#__codelineno-2-50"></a><span class="w">    </span><span class="k">{</span><span class="nv">sample_valid</span><span class="k">}</span><span class="w">      </span><span class="nv">1</span>
+<a id="__codelineno-2-51" name="__codelineno-2-51" href="#__codelineno-2-51"></a><span class="w">    </span><span class="k">{</span><span class="nv">fifo_full</span><span class="k">}</span><span class="w">         </span><span class="nv">1</span>
+<a id="__codelineno-2-52" name="__codelineno-2-52" href="#__codelineno-2-52"></a><span class="w">    </span><span class="k">{</span><span class="nv">fifo_empty</span><span class="k">}</span><span class="w">        </span><span class="nv">1</span>
+<a id="__codelineno-2-53" name="__codelineno-2-53" href="#__codelineno-2-53"></a><span class="k">}</span>
+<a id="__codelineno-2-54" name="__codelineno-2-54" href="#__codelineno-2-54"></a>
+<a id="__codelineno-2-55" name="__codelineno-2-55" href="#__codelineno-2-55"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-2-56" name="__codelineno-2-56" href="#__codelineno-2-56"></a><span class="c"># 2. Capture control - the technique from &quot;Do the Math&quot; that buys 100x the</span>
+<a id="__codelineno-2-57" name="__codelineno-2-57" href="#__codelineno-2-57"></a><span class="c">#    time window for free. Set the storage qualifier in the hardware manager:</span>
+<a id="__codelineno-2-58" name="__codelineno-2-58" href="#__codelineno-2-58"></a><span class="c">#      set_property CONTROL.CAPTURE_MODE BASIC [get_hw_ilas hw_ila_1]</span>
+<a id="__codelineno-2-59" name="__codelineno-2-59" href="#__codelineno-2-59"></a><span class="c">#      set_property CONTROL.TRIGGER_POSITION 512 [get_hw_ilas hw_ila_1]</span>
+<a id="__codelineno-2-60" name="__codelineno-2-60" href="#__codelineno-2-60"></a><span class="c">#    TRIGGER_POSITION in the middle gives you PRE-trigger history, which is</span>
+<a id="__codelineno-2-61" name="__codelineno-2-61" href="#__codelineno-2-61"></a><span class="c">#    usually where the cause is - the trigger is the symptom.</span>
+<a id="__codelineno-2-62" name="__codelineno-2-62" href="#__codelineno-2-62"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-2-63" name="__codelineno-2-63" href="#__codelineno-2-63"></a>
+<a id="__codelineno-2-64" name="__codelineno-2-64" href="#__codelineno-2-64"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-2-65" name="__codelineno-2-65" href="#__codelineno-2-65"></a><span class="c"># 3. Keep the probed nets alive through implementation.</span>
+<a id="__codelineno-2-66" name="__codelineno-2-66" href="#__codelineno-2-66"></a><span class="c">#    Without this, opt_design may merge or remove the very net you are probing.</span>
+<a id="__codelineno-2-67" name="__codelineno-2-67" href="#__codelineno-2-67"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-2-68" name="__codelineno-2-68" href="#__codelineno-2-68"></a><span class="nv">set_property</span><span class="w"> </span>MARK_DEBUG<span class="w"> </span>true<span class="w"> </span><span class="k">[</span><span class="nv">get_nets</span><span class="w"> </span><span class="o">-</span>hier<span class="w"> </span><span class="o">-</span>filter<span class="w"> </span><span class="k">{</span><span class="nv">NAME</span><span class="w"> </span><span class="err">=</span><span class="o">~</span><span class="w"> </span><span class="s2">&quot;*axi_state*&quot;</span><span class="k">}]</span>
+<a id="__codelineno-2-69" name="__codelineno-2-69" href="#__codelineno-2-69"></a>
+<a id="__codelineno-2-70" name="__codelineno-2-70" href="#__codelineno-2-70"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-2-71" name="__codelineno-2-71" href="#__codelineno-2-71"></a><span class="c"># 4. Save the probe file. Without it the hardware manager shows probe0, probe1...</span>
+<a id="__codelineno-2-72" name="__codelineno-2-72" href="#__codelineno-2-72"></a><span class="c">#    with no names, and you will spend the session counting bits.</span>
+<a id="__codelineno-2-73" name="__codelineno-2-73" href="#__codelineno-2-73"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-2-74" name="__codelineno-2-74" href="#__codelineno-2-74"></a><span class="nv">write_debug_probes</span><span class="w"> </span><span class="o">-</span>force<span class="w"> </span>.<span class="o">/</span>build<span class="o">/</span>debug_nets.ltx
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1">// vio_control.sv - a VIO used safely.</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c1">//</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1">// The trap: VIO outputs change whenever the JTAG chain gets round to updating</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1">// them. They are asynchronous to your fabric clock, and they are NOT glitch free</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c1">// across a multi-bit field. Treat every VIO output as an asynchronous input from</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="c1">// another chip, because functionally that is exactly what it is.</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="k">module</span><span class="w"> </span><span class="n">vio_control</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w">        </span><span class="n">clk</span><span class="p">,</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w">        </span><span class="n">rst_n</span><span class="p">,</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="kt">logic</span><span class="w">        </span><span class="n">soft_reset</span><span class="p">,</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="kt">logic</span><span class="w"> </span><span class="p">[</span><span class="mi">7</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="w">  </span><span class="n">test_mode</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="p">);</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">    </span><span class="kt">logic</span><span class="w">       </span><span class="n">vio_reset_async</span><span class="p">;</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">    </span><span class="kt">logic</span><span class="w"> </span><span class="p">[</span><span class="mi">7</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="n">vio_mode_async</span><span class="p">;</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="w">    </span><span class="n">vio_0</span><span class="w"> </span><span class="n">u_vio</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="w">        </span><span class="p">.</span><span class="n">clk</span><span class="w">        </span><span class="p">(</span><span class="n">clk</span><span class="p">),</span>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="w">        </span><span class="p">.</span><span class="n">probe_out0</span><span class="w"> </span><span class="p">(</span><span class="n">vio_reset_async</span><span class="p">),</span>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="w">        </span><span class="p">.</span><span class="n">probe_out1</span><span class="w"> </span><span class="p">(</span><span class="n">vio_mode_async</span><span class="p">)</span>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="w">    </span><span class="p">);</span>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="w">    </span><span class="c1">// Single bit: a plain synchronizer is enough.</span>
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="w">    </span><span class="n">xpm_cdc_single</span><span class="w"> </span><span class="p">#(.</span><span class="n">DEST_SYNC_FF</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="p">.</span><span class="n">SRC_INPUT_REG</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="n">u_sync_rst</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a><span class="w">        </span><span class="p">.</span><span class="n">src_clk</span><span class="w"> </span><span class="p">(</span><span class="mb">1&#39;b0</span><span class="p">),</span><span class="w"> </span><span class="p">.</span><span class="n">src_in</span><span class="w"> </span><span class="p">(</span><span class="n">vio_reset_async</span><span class="p">),</span>
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a><span class="w">        </span><span class="p">.</span><span class="n">dest_clk</span><span class="p">(</span><span class="n">clk</span><span class="p">),</span><span class="w">  </span><span class="p">.</span><span class="n">dest_out</span><span class="p">(</span><span class="n">soft_reset</span><span class="p">)</span>
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a><span class="w">    </span><span class="p">);</span>
+<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>
+<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a><span class="w">    </span><span class="c1">// Multi-bit COHERENT field: independent synchronizers would let it tear,</span>
+<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a><span class="w">    </span><span class="c1">// and a torn test_mode is a test mode you never selected. Handshake it.</span>
+<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a><span class="w">    </span><span class="n">xpm_cdc_handshake</span><span class="w"> </span><span class="p">#(</span>
+<a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a><span class="w">        </span><span class="p">.</span><span class="n">WIDTH</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="w"> </span><span class="p">.</span><span class="n">DEST_SYNC_FF</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="p">.</span><span class="n">SRC_SYNC_FF</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="p">.</span><span class="n">DEST_EXT_HSK</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a><span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="n">u_sync_mode</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a><span class="w">        </span><span class="p">.</span><span class="n">src_clk</span><span class="w"> </span><span class="p">(</span><span class="n">clk</span><span class="p">),</span><span class="w"> </span><span class="p">.</span><span class="n">src_in</span><span class="w"> </span><span class="p">(</span><span class="n">vio_mode_async</span><span class="p">),</span><span class="w"> </span><span class="p">.</span><span class="n">src_send</span><span class="p">(</span><span class="mb">1&#39;b1</span><span class="p">),</span><span class="w"> </span><span class="p">.</span><span class="n">src_rcv</span><span class="p">(),</span>
+<a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a><span class="w">        </span><span class="p">.</span><span class="n">dest_clk</span><span class="p">(</span><span class="n">clk</span><span class="p">),</span><span class="w"> </span><span class="p">.</span><span class="n">dest_out</span><span class="p">(</span><span class="n">test_mode</span><span class="p">),</span><span class="w">     </span><span class="p">.</span><span class="n">dest_req</span><span class="p">(),</span><span class="w"> </span><span class="p">.</span><span class="n">dest_ack</span><span class="p">(</span><span class="mb">1&#39;b0</span><span class="p">)</span>
+<a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a><span class="w">    </span><span class="p">);</span>
+<a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a>
+<a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a><span class="k">endmodule</span>
+</code></pre></div>
+<h3 id="sharpen-your-pencil">Sharpen Your Pencil</h3>
+<ol>
+<li>You want to probe a 256-bit AXI data bus plus 12 control signals at 8,192 samples deep.
+   Compute the storage and the BRAM cost. Your design has 92 BRAMs free. What do you do?</li>
+<li>Your bug appears roughly once an hour. Your capture window is 1024 samples at 250 MHz.
+   Compute the window duration and the probability a blind capture catches it. Name the
+   two techniques that change this and say which one to try first.</li>
+<li>You add an ILA to investigate a timing-related failure and the failure disappears.
+   Give the two most likely explanations, and say how you would investigate without the
+   ILA.</li>
+</ol>
+<h3 id="final-thoughts-on-the-stethoscope">Final Thoughts on the Stethoscope</h3>
+<p>Hardware debugging is where the "Digital Dream" meets the "Physical Reality." It requires patience, logic, and the right tools. By mastering the ILA and the VIO, and by using clever triggering strategies, you can peel back the layers of the silicon and see exactly what your logic is doing. Find the ghosts, fix the bugs, and get your design to the finish line.</p>
+<h3 id="answers">Answers</h3>
+<p><strong>Brain Power</strong> — <em>A 1024-sample ILA on a 64-bit bus: how many BRAM bits? And can you add
+one at 95 % utilisation?</em></p>
+<div class="arithmatex">\[\text{Storage} = 64\ \text{bits} \times 1024\ \text{samples} = 65{,}536\ \text{bits} = 64\ \text{Kb}\]</div>
+<div class="arithmatex">\[\text{BRAMs} = \left\lceil \frac{65{,}536}{36{,}864} \right\rceil = \lceil 1.78 \rceil = 2\ \text{RAMB36E2}\]</div>
+<p>Two BRAMs — and note the rounding: you asked for 1.78 and you pay for 2. The ILA's own
+trigger comparators, control logic and JTAG interface cost LUTs and flops on top of that,
+typically a few hundred of each per core.</p>
+<p><strong>At 95 % utilisation, the honest answer is: probably, but not usefully.</strong> Two BRAMs may
+well exist. The problem is everything else:</p>
+<ul>
+<li><strong>Routing.</strong> Probes are nets from wherever the signal lives to wherever the ILA lands.
+  At 95 % utilisation the routing resources to carry 64 bits across the die may simply not
+  be there, and the design will fail to route.</li>
+<li><strong>Timing.</strong> Adding an ILA changes placement, which changes routing, which changes every
+  path in the neighbourhood. At 95 % utilisation a design that closed at +0.020 ns will
+  very likely not close with an ILA in it.</li>
+<li><strong>The observer effect.</strong> If it does close, it closes <em>differently</em> — so you may be
+  debugging a design that no longer exhibits the bug (see <em>Sharpen Your Pencil #3</em>).</li>
+</ul>
+<p>What to do instead when the device is nearly full: probe fewer signals (a state vector and
+two control bits beat a 64-bit bus for most bugs), use a shallower buffer with better
+triggering, or — the technique people forget — <strong>remove functionality temporarily.</strong> A
+build with one processing channel instead of eight has room for instrumentation and
+usually reproduces the bug.</p>
+<p><strong>Sharpen Your Pencil #1</strong> — 256 + 12 = 268 bits, 8,192 deep:</p>
+<div class="arithmatex">\[\text{Storage} = 268 \times 8192 = 2{,}195{,}456\ \text{bits} = 2{,}144\ \text{Kb}\]</div>
+<div class="arithmatex">\[\text{BRAMs} = \left\lceil \frac{2{,}195{,}456}{36{,}864} \right\rceil = \lceil 59.6 \rceil = 60\ \text{BRAMs}\]</div>
+<p>You have 92 free, so it <strong>fits</strong> — using 65 % of your remaining BRAM on debug.</p>
+<p>Whether you <em>should</em> is a different question, and the answer is usually no. What to do
+instead:</p>
+<ul>
+<li><strong>Do you need all 256 data bits?</strong> For a protocol or state bug, the control signals,
+  the <code>TLAST</code>/<code>TKEEP</code>, and 32 bits of data are almost always enough to find it. Dropping to
+  44 bits total takes you to 10 BRAMs.</li>
+<li><strong>Do you need 8,192 samples?</strong> With a good trigger, 1,024 usually suffices. Depth
+  compensates for a bad trigger; a good trigger is cheaper.</li>
+<li><strong>Use storage qualification</strong> on <code>TVALID</code> — most AXI-Stream buses are idle most of the
+  time, and qualifying discards the idle cycles for free.</li>
+</ul>
+<p>A reasonable final answer: 44 bits × 2,048 samples with capture control ≈ 3 BRAMs, and it
+will show you more useful cycles than the 60-BRAM version.</p>
+<p><strong>Sharpen Your Pencil #2</strong> — 1024 samples at 250 MHz:</p>
+<div class="arithmatex">\[T_{\text{window}} = \frac{1024}{250\times10^{6}} = 4.096\ \mu\text{s}\]</div>
+<div class="arithmatex">\[P(\text{catch}) = \frac{4.096\times10^{-6}}{3600} = 1.14\times10^{-9}\]</div>
+<p>About one in 880 million. You would be capturing for roughly 28 years to expect one hit.</p>
+<p>The two techniques:</p>
+<ol>
+<li><strong>Triggering.</strong> Configure the ILA to arm on the condition that accompanies the failure —
+   an error flag, an unexpected state, a FIFO overflow, a protocol violation. This changes
+   the problem from "sample randomly" to "sample at the moment of interest," and it takes
+   <span class="arithmatex">\(P\)</span> from <span class="arithmatex">\(10^{-9}\)</span> to 1.</li>
+<li><strong>Storage qualification / capture control.</strong> Discard uninteresting cycles so the same
+   buffer covers more real time.</li>
+</ol>
+<p><strong>Try triggering first</strong>, and it is not close. Storage qualification multiplies your window
+by perhaps 100×, taking <span class="arithmatex">\(10^{-9}\)</span> to <span class="arithmatex">\(10^{-7}\)</span> — still hopeless. Triggering makes the
+capture deterministic. Qualification is what you add <em>afterwards</em>, to get more context
+around a trigger you have already got working.</p>
+<p>If you cannot define a trigger — "it just goes wrong eventually" — that is itself the
+finding: build one. Add an assertion in fabric (a checker that compares against an expected
+invariant) and trigger the ILA on the assertion firing. That converts an unobservable
+intermittent bug into a reproducible capture, and it is the single highest-value debug
+technique in this section.</p>
+<p><strong>Sharpen Your Pencil #3</strong> — Adding an ILA makes the failure disappear.</p>
+<p>The two most likely explanations:</p>
+<ol>
+<li><strong>The insertion changed placement and routing, and the timing-marginal path moved.</strong>
+   The ILA displaced logic, the placer rearranged the neighbourhood, and the path that was
+   failing by 20 ps now has 50 ps of slack. The bug is still in the design — it is in a
+   <em>different</em> path now, or it is waiting for the next build to reappear. This is the
+   overwhelmingly common case.</li>
+<li><strong><code>MARK_DEBUG</code> prevented an optimisation that was itself the bug.</strong> Probing a net stops
+   it being merged, retimed or absorbed. If the failure depended on that optimisation — say,
+   a net being merged with another that had different timing — preserving it removes the
+   symptom.</li>
+</ol>
+<p>How to investigate without the ILA:</p>
+<ul>
+<li><strong>Static timing analysis, properly.</strong> <code>report_timing_summary -check_timing_verbose
+  -report_unconstrained</code> on the <em>non-ILA</em> build. A failure that changes with placement is
+  a timing failure, and STA analyses every path rather than the handful you can probe. Look
+  hardest at what <code>check_timing</code> says is <em>unconstrained</em>.</li>
+<li><strong><code>report_cdc -details</code>.</strong> Failures that appear and disappear with placement are very
+  often CDC, because routing changes alter the resolution time in the MTBF equation
+  (Section 2.3). CDC failures also never show up in WNS, so a green timing report does not
+  clear them.</li>
+<li><strong>Build variance as a signal.</strong> Implement the design several times with different
+  directives or <code>-seed</code> values. If the failure comes and goes across builds, you have
+  confirmed a marginality rather than a logic bug, and you should stop probing and start
+  fixing margin.</li>
+<li><strong>Non-invasive observation.</strong> Add a counter that increments on the error condition and
+  read it over an existing interface (AXI-Lite register, UART, even a <code>VIO</code> input, which
+  is far cheaper than an ILA). You lose the waveform and keep the design intact — often the
+  right trade for a marginality.</li>
+</ul>
+<p>The meta-lesson: <strong>when instrumentation changes the behaviour, the instrumentation has
+told you something.</strong> "It disappears when I add an ILA" is not a dead end; it is strong
+evidence that the bug is timing or CDC marginality rather than logic, and that redirects
+the whole investigation.</p>
+<h3 id="there-are-no-dumb-questions">There Are No Dumb Questions</h3>
+<p><strong>Q: <code>MARK_DEBUG</code> in RTL, or <code>create_debug_core</code> in a Tcl script?</strong></p>
+<p>A: The script, for anything beyond a quick experiment. RTL attributes get committed and
+forgotten, and eventually one ships — blocking optimisation in a production build for a
+debug session someone finished a year ago. Netlist insertion lives in a file you can gate
+on an environment variable, as in the artifact above. Use RTL attributes when you need to
+probe a signal that optimisation would otherwise delete before you can reach it.</p>
+<p><strong>Q: Why does my ILA show <code>X</code> on some probes?</strong></p>
+<p>A: Usually because the net was optimised away and the probe is connected to nothing, or
+because the design has not come out of reset in that domain. Check the implementation log
+for messages about debug nets being removed, and confirm the ILA's clock is actually
+running — an ILA on a gated clock (Section 5.1) captures nothing while the clock is
+stopped, which looks identical to a dead design.</p>
+<p><strong>Q: Can I leave debug cores in a production bitstream?</strong></p>
+<p>A: You can, and there are two reasons to think carefully. It costs resources and timing
+margin permanently. More importantly, it leaves a JTAG-accessible window into your
+design's internal state, which is a security consideration if you have gone to the trouble
+of encrypting the bitstream (Section 3.3). Some products deliberately keep a minimal ILA
+for field diagnosis; that is a decision to make explicitly, not by forgetting to remove it.</p>
+<p><strong>Q: What is the single most useful signal to probe?</strong></p>
+<p>A: The state vector of whatever state machine governs the failing behaviour. Most
+"impossible" hardware behaviour resolves to a state machine sitting in a state you did not
+know it could reach, or cycling between two states because a condition never clears. Probe
+<code>state</code> first, add data later.</p>
+<p><strong>Q: The bug only happens in the field, not on my bench. Now what?</strong></p>
+<p>A: Instrument for <em>statistics</em> rather than waveforms. Counters for error events, a
+minimum/maximum tracker for a FIFO occupancy, a sticky flag for each error class, all
+readable over an existing management interface. Sticky and cumulative beats a waveform you
+will never be present to capture — the same argument as the sticky alarms in Sections 1.2
+and 5.2. Then use the field data to build a bench reproduction.</p>
+<h3 id="bullet-points">Bullet Points</h3>
+<ul>
+<li><strong>ILA storage</strong> <span class="arithmatex">\(=\)</span> total probe width × depth. <strong>One <code>RAMB36E2</code> = 36 Kb.</strong> Round up.</li>
+<li>104 bits × 1024 = <strong>3 BRAMs</strong>. 268 bits × 8192 = <strong>60 BRAMs</strong>. Depth is linear and
+  expensive.</li>
+<li><strong>Window duration</strong> <span class="arithmatex">\(=\)</span> depth <span class="arithmatex">\(/ f_{\text{sample}}\)</span>. 1024 at 400 MHz is <strong>2.56 µs</strong> — so
+  a blind capture of an hourly bug is hopeless. <strong>Trigger first, qualify second.</strong></li>
+<li><strong>Storage qualification</strong> stretches the same buffer over ~100× more time on a bus that is
+  idle 99 % of the time.</li>
+<li><strong>Set <code>TRIGGER_POSITION</code> mid-buffer</strong> so you capture the cause, not just the symptom.</li>
+<li><strong>One ILA per clock domain.</strong> Sampling a fast domain with a slow clock is an
+  unsynchronized CDC that fabricates values. Cross-trigger between cores instead.</li>
+<li><strong>VIO outputs are asynchronous.</strong> Synchronize single bits with <code>xpm_cdc_single</code>, coherent
+  fields with <code>xpm_cdc_handshake</code>.</li>
+<li><strong>Probe the state vector first.</strong> It finds more bugs than any data bus.</li>
+<li><strong>If the bug disappears when you add an ILA</strong>, you have learned it is timing or CDC
+  marginality. Switch to <code>report_timing_summary -check_timing_verbose</code> and <code>report_cdc</code>.</li>
+<li><strong>Commands</strong>: <code>create_debug_core</code>, <code>create_debug_port</code>, <code>connect_debug_port</code>,
+  <code>set_property MARK_DEBUG</code>, <code>write_debug_probes</code>, and <code>CONTROL.CAPTURE_MODE</code> /
+  <code>CONTROL.TRIGGER_POSITION</code> in the hardware manager.</li>
+</ul>
+<hr />
+<p>[REVIEW_STATUS: APPROVED BY PUBLISHER]</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../5.2_thermal/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 5.2 Thermal Design">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                5.2 Thermal Design
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../6.2_tuning/" class="md-footer__link md-footer__link--next" aria-label="Next: 6.2 Performance Tuning">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                6.2 Performance Tuning
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2026 <a href="https://github.com/mehdibadjian">Mehdi Badjian</a> &middot; <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga">github.com/mehdibadjian/no-magic-smoke-fpga</a> &middot; content <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/blob/main/LICENSE-CODE">MIT</a> &middot; independent, unofficial guide - not affiliated with or endorsed by AMD, Inc.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" target="_blank" rel="noopener" title="Source and issues on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.footer", "content.code.copy", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

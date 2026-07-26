@@ -1,0 +1,2416 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An independent, unofficial study companion to the AMD UltraFast Design Methodology. FPGA engineering taught Head First style, with the arithmetic left in - worked calculations, runnable artifacts, and answers to every question it asks.">
+      
+      
+        <meta name="author" content="Mehdi Badjian">
+      
+      
+        <link rel="canonical" href="https://mehdibadjian.github.io/no-magic-smoke-fpga/sections/1.4_ssi_hbm/">
+      
+      
+        <link rel="prev" href="../1.3_clocking/">
+      
+      
+        <link rel="next" href="../2.1_timing_ballet/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>1.4 I/O Planning - No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#section-14-the-heavy-hitters-ssi-and-hbm-devices-for-the-brave" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-header__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              1.4 I/O Planning
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../1.1_pcb_layout/" class="md-tabs__link">
+          
+  
+  
+  Chapter 1: Board Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../2.1_timing_ballet/" class="md-tabs__link">
+          
+  
+  
+  Chapter 2: Constraints
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../3.1_rtl_coding/" class="md-tabs__link">
+          
+  
+  
+  Chapter 3: Design Creation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../4.1_synthesis/" class="md-tabs__link">
+          
+  
+  
+  Chapter 4: Implementation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../5.1_power/" class="md-tabs__link">
+          
+  
+  
+  Chapter 5: Power & Thermal
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../6.1_debug/" class="md-tabs__link">
+          
+  
+  
+  Chapter 6: Debug & Tuning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../references/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  References
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-nav__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 1: Board Planning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 1: Board Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.1_pcb_layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.1 Hardware Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.2_power_planning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.2 Power Delivery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.3_clocking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.3 Clocking Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.4 I/O Planning
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.4 I/O Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ssi-three-chips-in-a-trench-coat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SSI: Three Chips in a Trench Coat
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossing-the-chasm-the-slr-latency-trap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Crossing the Chasm: The SLR Latency Trap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-the-logic-and-the-interposer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: The Logic and the Interposer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbm-the-firehose-of-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HBM: The Firehose of Data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-analogy-the-logistics-hub" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Analogy: The Logistics Hub
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#technical-deep-dive-slr-dominant-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technical Deep Dive: SLR Dominant Constraints
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-slr-crossing-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The SLR Crossing Check
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thermal-density-the-heat-of-the-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Thermal Density: The Heat of the Stack
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Do the Math">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-can-this-path-cross-an-slr-at-all" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Can this path cross an SLR at all?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-will-you-actually-get-the-hbm-bandwidth-you-are-paying-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Will you actually get the HBM bandwidth you are paying for?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-the-giants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on the Giants
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 2: Constraints
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 2: Constraints
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.1_timing_ballet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.1 Defining Clocks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.2_constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.2 I/O Delays
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.3_cdc_minefield/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.3 CDC Minefield
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 3: Design Creation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 3: Design Creation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.1_rtl_coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1 RTL Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.2_ip_integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 IP Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.3_security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Design Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.4_verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 4: Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 4: Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.1_synthesis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.1 Synthesis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.2_placement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.2 Placement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.3_closure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.3 Closure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 5: Power & Thermal
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 5: Power & Thermal
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.1_power/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.1 Power Estimation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.2_thermal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.2 Thermal Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 6: Debug & Tuning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 6: Debug & Tuning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6.1_debug/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.1 Hardware Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6.2_tuning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.2 Performance Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ssi-three-chips-in-a-trench-coat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SSI: Three Chips in a Trench Coat
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossing-the-chasm-the-slr-latency-trap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Crossing the Chasm: The SLR Latency Trap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-the-logic-and-the-interposer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: The Logic and the Interposer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbm-the-firehose-of-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HBM: The Firehose of Data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-analogy-the-logistics-hub" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Analogy: The Logistics Hub
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#technical-deep-dive-slr-dominant-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technical Deep Dive: SLR Dominant Constraints
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-slr-crossing-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The SLR Crossing Check
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thermal-density-the-heat-of-the-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Thermal Density: The Heat of the Stack
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Do the Math">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-can-this-path-cross-an-slr-at-all" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Can this path cross an SLR at all?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-will-you-actually-get-the-hbm-bandwidth-you-are-paying-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Will you actually get the HBM bandwidth you are paying for?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-the-giants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on the Giants
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/edit/main/docs/sections/1.4_ssi_hbm.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/raw/main/docs/sections/1.4_ssi_hbm.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
+
+
+<h1 id="section-14-the-heavy-hitters-ssi-and-hbm-devices-for-the-brave">Section 1.4: The Heavy Hitters: SSI and HBM Devices for the Brave</h1>
+<p>You’ve mastered the basics of board layout and clocking. You’re feeling pretty good about your single-die FPGA. But then, your boss walks in and says, "We need more. More gates, more memory, more bandwidth. We’re moving to an SSI device with HBM." Suddenly, your simple design just got a whole lot more "interesting."</p>
+<p>Welcome to the world of silicon megastructures. Dealing with Stacked Silicon Interconnect (SSI) and High-Bandwidth Memory (HBM) is like moving from building a house to architecting a skyscraper. The rules are the same, but the scale is terrifying. If you don't respect the physics of these heavy hitters, your design will collapse under its own weight.</p>
+<h3 id="ssi-three-chips-in-a-trench-coat">SSI: Three Chips in a Trench Coat</h3>
+<p>Imagine you need a chip so big it’s impossible to manufacture in one piece. AMD’s solution is Stacked Silicon Interconnect (SSI) technology. They take multiple smaller dies—called Super Logic Regions (SLRs)—and mount them on a high-speed silicon interposer. To your software, it looks like one giant FPGA. But to your timing constraints, it’s a series of walled cities.</p>
+<p>The catch is the "inter-SLR" crossing. When a signal travels from SLR0 to SLR1, it has to go through specialized routing tracks called Super Long Lines (SLLs). These tracks have much higher latency than local routing. If you treat an SSI device like a flat, uniform piece of silicon, your timing closure will be a nightmare of epic proportions.</p>
+<blockquote>
+<p><strong>Brain Power</strong>
+<strong>If a signal crossing an SLR boundary takes 2 nanoseconds, but your clock period is only 2.5 nanoseconds, how much time do you have left for actual logic and routing on either side? How does this change your pipeline strategy?</strong></p>
+</blockquote>
+<h3 id="crossing-the-chasm-the-slr-latency-trap">Crossing the Chasm: The SLR Latency Trap</h3>
+<p>The most common mistake in SSI design is trying to cross SLR boundaries at the last second. You can’t just let a 512-bit bus roam freely across the die. You have to treat SLR boundaries like international borders—you need to plan your crossing, check your luggage, and maybe wait in line.</p>
+<p>This is where pipelining becomes your best friend. Every signal that crosses an SLR boundary should be registered on both sides. Think of it like a relay race; you don't just throw the baton across the field. You hand it off to a runner who is already at the boundary. If you don't pipeline your SLR crossings, your WNS (Worst Negative Slack) will look like a disaster movie.</p>
+<p><img alt="SSI SLR Bridge Checkpoint" src="../../assets/images/fig_1_4_bridge.png" /></p>
+<h3 id="fireside-chat-the-logic-and-the-interposer">Fireside Chat: The Logic and the Interposer</h3>
+<p><strong>Local Logic:</strong> "Hey, I sent that data to the DSP block in the next SLR like five picoseconds ago. Why hasn't it arrived yet?"</p>
+<p><strong>Silicon Interposer:</strong> "Patience, kid! I'm a giant sheet of silicon, not a teleporter. You’re trying to send 1,000 signals across a 5-millimeter gap. Do you know how much capacitance I have to deal with?"</p>
+<p><strong>Local Logic:</strong> "But the tools said this was all one chip! I didn't think I had to wait."</p>
+<p><strong>Silicon Interposer:</strong> "The tools lied to make you feel better. I’m the trench coat holding these chips together. If you don't give me a register to hold onto while I move your data, I'm going to drop it. Register your crossings, or suffer the consequences."</p>
+<h3 id="hbm-the-firehose-of-data">HBM: The Firehose of Data</h3>
+<p>If SSI is about scale, HBM is about speed. Traditional DDR4 memory sits on the PCB, inches away from the FPGA. High-Bandwidth Memory (HBM) sits right on the silicon interposer, mere micrometers away from the logic die. It’s like moving your refrigerator into your bedroom so you don't have to walk to the kitchen.</p>
+<p>The bandwidth is staggering—terabits per second. But with great power comes great complexity. The HBM interface is a hard IP block that sits at the bottom of the die. If your data-processing logic is sitting at the top of the die, you’ve just created a massive routing bottleneck. You have to plan your floorplan so your "thirsty" logic is as close to the HBM "fountain" as possible.</p>
+<h3 id="the-analogy-the-logistics-hub">The Analogy: The Logistics Hub</h3>
+<p>Think of an SSI device as a massive logistics hub with several large warehouses (SLRs). Inside each warehouse, robots can move things incredibly fast. But moving something from Warehouse A to Warehouse B requires a specialized conveyor belt (SLL) that takes more time.</p>
+<p>HBM is like having a high-speed automated storage system (ASRS) built into the foundation of the hub. It’s incredibly fast, but every robot in the hub wants to use it at the same time. If all your robots are at the far end of the hub, they’ll spend all their time traveling to the storage system instead of doing work. You have to position your most active robots right next to the HBM entrance.</p>
+<h3 id="technical-deep-dive-slr-dominant-constraints">Technical Deep Dive: SLR Dominant Constraints</h3>
+<p>In an SSI design, the location of your I/O pins determines which SLR your logic should live in. If you have a PCIe interface in SLR0 but your memory controller is in SLR2, your data is going to be spending a lot of time on the inter-SLR "highways." This creates congestion and kills your performance.</p>
+<p>To fix this, we use "Pblocks" and "Logic Locking." You manually tell Vivado, "This logic belongs in SLR1, and it cannot leave." By forcing the tools to respect the physical boundaries of the silicon, you reduce the number of inter-SLR crossings and keep your high-speed paths short and sweet. Floorplanning isn't just for experts; it's the only way to survive the Heavy Hitters.</p>
+<p><img alt="SSI City Map with Pblocks" src="../../assets/images/fig_1_4_city_map.png" /></p>
+<h3 id="code-detective-the-slr-crossing-check">Code Detective: The SLR Crossing Check</h3>
+<p>You can use Tcl to find paths that are crossing SLR boundaries without being properly pipelined. This is a crucial check for SSI designs.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c"># Code Detective: Why is this path check incomplete?</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">set</span><span class="w"> </span>cross_paths<span class="w"> </span><span class="k">[</span><span class="nv">get_paths</span><span class="w"> </span><span class="o">-</span>from<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span><span class="o">-</span>hier<span class="w"> </span><span class="o">*</span><span class="k">]</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span><span class="o">-</span>hier<span class="w"> </span><span class="o">*</span><span class="k">]</span><span class="w"> </span><span class="o">-</span>filter<span class="w"> </span><span class="k">{</span><span class="nv">FROM_SLR</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span>TO_SLR<span class="k">}]</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">foreach</span><span class="w"> </span>path<span class="w"> </span><span class="nv">$cross_paths</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="k">set</span><span class="w"> </span>delay<span class="w"> </span><span class="k">[</span><span class="nv">get_property</span><span class="w"> </span>DATAPATH_DELAY<span class="w"> </span><span class="nv">$path</span><span class="k">]</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="k">{</span><span class="w"> </span><span class="nv">$delay</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">2.0</span><span class="w"> </span><span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">        </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;ERROR: High latency SLR crossing found: $path&quot;</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="k">}</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="k">}</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c"># Hint: Does this check for the presence of a register (FD) at the boundary?</span>
+</code></pre></div>
+<p>The logic flaw here is that it only checks the <strong>delay</strong>, not the <strong>structure</strong>. A path might have a low delay today and still be un-registered, making it entirely dependent on the placer's mood — one incremental change and it collapses.</p>
+<p><strong>The fix.</strong> Ask the structural question directly: for every path that changes SLR, is it
+a register-to-register hop with no logic in between, and did it land on a Laguna site?</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c"># Corrected: structural audit of every inter-SLR path, not a delay threshold.</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c"># Run on a placed or routed design.</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="k">proc</span><span class="w"> </span>audit_slr_crossings<span class="w"> </span><span class="k">{{</span><span class="nv">max_paths</span><span class="w"> </span><span class="mi">5000</span><span class="k">}}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="k">set</span><span class="w"> </span>unregistered<span class="w"> </span><span class="mi">0</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="k">set</span><span class="w"> </span>no_laguna<span class="w">    </span><span class="mi">0</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="k">set</span><span class="w"> </span>total<span class="w">        </span><span class="mi">0</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="k">foreach</span><span class="w"> </span>path<span class="w"> </span><span class="k">[</span><span class="nv">get_timing_paths</span><span class="w"> </span><span class="o">-</span>max_paths<span class="w"> </span><span class="nv">$max_paths</span><span class="w"> </span><span class="o">-</span>nworst<span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">-</span>setup<span class="k">]</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">        </span><span class="k">set</span><span class="w"> </span>src_cell<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span><span class="o">-</span>of_objects<span class="w"> </span><span class="k">[</span><span class="nv">get_property</span><span class="w"> </span>STARTPOINT_PIN<span class="w"> </span><span class="nv">$path</span><span class="k">]]</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">        </span><span class="k">set</span><span class="w"> </span>dst_cell<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span><span class="o">-</span>of_objects<span class="w"> </span><span class="k">[</span><span class="nv">get_property</span><span class="w"> </span>ENDPOINT_PIN<span class="w">   </span><span class="nv">$path</span><span class="k">]]</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="k">{</span><span class="nv">$src_cell</span><span class="w"> </span><span class="nv">eq</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nv">$dst_cell</span><span class="w"> </span><span class="ow">eq</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="k">}</span><span class="w"> </span><span class="k">{</span><span class="w"> </span><span class="k">continue</span><span class="w"> </span><span class="k">}</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">        </span><span class="k">set</span><span class="w"> </span>src_slr<span class="w"> </span><span class="k">[</span><span class="nv">get_property</span><span class="w"> </span>NAME<span class="w"> </span><span class="k">[</span><span class="nv">get_slrs</span><span class="w"> </span><span class="o">-</span>of_objects<span class="w"> </span><span class="nv">$src_cell</span><span class="k">]]</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">        </span><span class="k">set</span><span class="w"> </span>dst_slr<span class="w"> </span><span class="k">[</span><span class="nv">get_property</span><span class="w"> </span>NAME<span class="w"> </span><span class="k">[</span><span class="nv">get_slrs</span><span class="w"> </span><span class="o">-</span>of_objects<span class="w"> </span><span class="nv">$dst_cell</span><span class="k">]]</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="k">{</span><span class="nv">$src_slr</span><span class="w"> </span><span class="nv">eq</span><span class="w"> </span><span class="nv">$dst_slr</span><span class="k">}</span><span class="w"> </span><span class="k">{</span><span class="w"> </span><span class="k">continue</span><span class="w"> </span><span class="k">}</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">        </span><span class="nb">incr</span><span class="w"> </span>total
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">        </span><span class="c"># Levels of logic between the two registers. Anything above zero means you</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">        </span><span class="c"># are asking combinational logic AND an SLL hop to fit in one period.</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">        </span><span class="k">set</span><span class="w"> </span>levels<span class="w"> </span><span class="k">[</span><span class="nv">get_property</span><span class="w"> </span>LOGIC_LEVELS<span class="w"> </span><span class="nv">$path</span><span class="k">]</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">        </span><span class="k">set</span><span class="w"> </span>src_loc<span class="w"> </span><span class="k">[</span><span class="nv">get_property</span><span class="w"> </span>LOC<span class="w"> </span><span class="nv">$src_cell</span><span class="k">]</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">        </span><span class="k">set</span><span class="w"> </span>dst_loc<span class="w"> </span><span class="k">[</span><span class="nv">get_property</span><span class="w"> </span>LOC<span class="w"> </span><span class="nv">$dst_cell</span><span class="k">]</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="k">{</span><span class="nv">$levels</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">0</span><span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">            </span><span class="nb">incr</span><span class="w"> </span>unregistered
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">            </span><span class="nb">puts</span><span class="w"> </span><span class="k">[</span><span class="nb">format</span><span class="w"> </span><span class="s2">&quot;LOGIC   %2d level(s)  %s -&gt; %s  slack %.3f ns&quot;</span><span class="w"> </span><span class="err">\</span>
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="w">                  </span><span class="nv">$levels</span><span class="w"> </span><span class="nv">$src_slr</span><span class="w"> </span><span class="nv">$dst_slr</span><span class="w"> </span><span class="k">[</span><span class="nv">get_property</span><span class="w"> </span>SLACK<span class="w"> </span><span class="nv">$path</span><span class="k">]]</span>
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="w">        </span><span class="k">}</span>
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="k">{</span><span class="o">!</span><span class="k">[</span><span class="nb">string</span><span class="w"> </span>match<span class="w"> </span><span class="s2">&quot;LAGUNA_*&quot;</span><span class="w"> </span><span class="nv">$src_loc</span><span class="k">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="k">[</span><span class="nb">string</span><span class="w"> </span>match<span class="w"> </span><span class="s2">&quot;LAGUNA_*&quot;</span><span class="w"> </span><span class="nv">$dst_loc</span><span class="k">]}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="w">            </span><span class="nb">incr</span><span class="w"> </span>no_laguna
+<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a><span class="w">            </span><span class="nb">puts</span><span class="w"> </span><span class="k">[</span><span class="nb">format</span><span class="w"> </span><span class="s2">&quot;NO-SLL  %s -&gt; %s  (routed through fabric, not a Laguna site)&quot;</span><span class="w"> </span><span class="err">\</span>
+<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a><span class="w">                  </span><span class="k">[</span><span class="nv">get_property</span><span class="w"> </span>NAME<span class="w"> </span><span class="nv">$src_cell</span><span class="k">]</span><span class="w"> </span><span class="k">[</span><span class="nv">get_property</span><span class="w"> </span>NAME<span class="w"> </span><span class="nv">$dst_cell</span><span class="k">]]</span>
+<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a><span class="w">        </span><span class="k">}</span>
+<a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a><span class="w">    </span><span class="k">}</span>
+<a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>
+<a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a><span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;\n$total inter-SLR path(s): $unregistered with logic, $no_laguna not on Laguna&quot;</span>
+<a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="k">{</span><span class="nv">$unregistered</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">$no_laguna</span><span class="k">}]</span>
+<a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a><span class="k">}</span>
+</code></pre></div>
+<p><code>LOGIC_LEVELS &gt; 0</code> on an SLR crossing is the finding that matters. The delay check in the
+original only tells you the path is fast <em>today</em>; the structural check tells you whether
+it will still be fast after the next placement run.</p>
+<h3 id="thermal-density-the-heat-of-the-stack">Thermal Density: The Heat of the Stack</h3>
+<p>When you pack that many gates and that much memory into a single package, you create a thermal hotspot. HBM chips are particularly sensitive to heat. If the FPGA die gets too hot, the HBM stack will throttle its performance or even shut down to protect itself.</p>
+<p>Your power planning from Section 1.2 becomes even more critical here. You need an aggressive cooling solution—usually a high-performance heat sink with active airflow or even liquid cooling. You also need to distribute your logic so you don't have all your "hot" DSP blocks in one corner. Spread the work, spread the heat, and keep the silicon happy.</p>
+<h3 id="analogy-silicon">Analogy → Silicon</h3>
+<table>
+<thead>
+<tr>
+<th>In the story</th>
+<th>In the silicon</th>
+<th>Where the analogy breaks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Three chips in a trench coat</td>
+<td>Multiple SLR dies on a passive silicon interposer</td>
+<td>The trench coat is cosmetic; the interposer is a real electrical component with real per-crossing delay you must budget for</td>
+</tr>
+<tr>
+<td>Walled cities / border crossing</td>
+<td>The SLR boundary, crossed via <strong>SLLs</strong> terminating in <strong>Laguna</strong> register sites</td>
+<td>Borders are checkpoints you can queue at; SLLs are a <em>fixed, finite</em> resource — run out and the design will not route, no matter how long you wait</td>
+</tr>
+<tr>
+<td>Relay race baton hand-off</td>
+<td>A <code>USER_SLL_REG</code> register pair: one Laguna TX flop, one Laguna RX flop</td>
+<td>Runners can hand off mid-stride; the crossing consumes a whole clock period, so you budget a full cycle, not a fraction</td>
+</tr>
+<tr>
+<td>Warehouses with fast internal robots</td>
+<td>Intra-SLR routing, which is ordinary fabric interconnect</td>
+<td>Warehouse throughput is uniform; intra-SLR delay still varies enormously with distance and congestion</td>
+</tr>
+<tr>
+<td>Fridge moved into the bedroom</td>
+<td>HBM stacks on the same interposer as the logic die</td>
+<td>You can walk to any fridge; HBM is reachable only through the hard controller at the bottom of the die, so <em>physical proximity in your floorplan</em> determines whether you get the bandwidth</td>
+</tr>
+<tr>
+<td>Every robot wanting the storage system at once</td>
+<td>32 independent AXI ports into the HBM controller</td>
+<td>Robots queue politely; AXI ports contend through a switch, and a badly distributed access pattern can leave most of the bandwidth idle while one port saturates</td>
+</tr>
+</tbody>
+</table>
+<h3 id="do-the-math">Do the Math</h3>
+<p>Two calculations decide whether an SSI+HBM design is viable, and both are quick.</p>
+<h4 id="1-can-this-path-cross-an-slr-at-all">1. Can this path cross an SLR at all?</h4>
+<p>The setup equation for a register-to-register path is:</p>
+<div class="arithmatex">\[T_{\text{available}} = T_{\text{clk}} - T_{co} - T_{\text{setup}} - T_{\text{uncertainty}}\]</div>
+<p><strong>Givens</strong> (take <span class="arithmatex">\(T_{co}\)</span>, <span class="arithmatex">\(T_{setup}\)</span> and the SLL delay from your own timing report —
+these are stand-ins to make the arithmetic concrete):</p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(T_{\text{clk}}\)</span></td>
+<td>400 MHz target</td>
+<td>2.500 ns</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(T_{co}\)</span></td>
+<td>Clock-to-out of the launch flop</td>
+<td>0.100 ns</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(T_{\text{setup}}\)</span></td>
+<td>Setup of the capture flop</td>
+<td>0.050 ns</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(T_{\text{uncertainty}}\)</span></td>
+<td>Jitter + skew allowance</td>
+<td>0.050 ns</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(T_{SLL}\)</span></td>
+<td>Assumed inter-SLR crossing delay</td>
+<td>2.000 ns</td>
+</tr>
+</tbody>
+</table>
+<div class="arithmatex">\[T_{\text{available}} = 2.500 - 0.100 - 0.050 - 0.050 = 2.300\ \text{ns}\]</div>
+<div class="arithmatex">\[T_{\text{left for logic}} = 2.300 - 2.000 = 0.300\ \text{ns}\]</div>
+<p><strong>300 picoseconds.</strong> On UltraScale+ that is roughly one LUT delay plus its net — and only
+if the placer is generous. The verdict is unambiguous: <strong>an SLR crossing gets a clock
+cycle to itself.</strong> Register directly into the boundary, cross, register out, and do your
+logic in the cycles either side. There is no version of this where you also squeeze in a
+32-bit comparator.</p>
+<h4 id="2-will-you-actually-get-the-hbm-bandwidth-you-are-paying-for">2. Will you actually get the HBM bandwidth you are paying for?</h4>
+<p>The HBM controller presents a set of independent AXI ports. Bandwidth is simply
+ports × width × frequency:</p>
+<p><strong>Givens</strong> (Virtex UltraScale+ HBM, two stacks — check your device and IP configuration):</p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(N\)</span></td>
+<td>AXI ports</td>
+<td>32</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(W\)</span></td>
+<td>Port data width</td>
+<td>256 bit</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(f_{HBM}\)</span></td>
+<td>HBM AXI clock</td>
+<td>450 MHz</td>
+</tr>
+</tbody>
+</table>
+<div class="arithmatex">\[BW_{\text{port}} = \frac{256\ \text{bit} \times 450 \times 10^6}{8} = 14.4\ \text{GB/s}\]</div>
+<div class="arithmatex">\[BW_{\text{total}} = 32 \times 14.4 = 460.8\ \text{GB/s}\]</div>
+<p>Now the number nobody computes until it is too late. Suppose your processing fabric
+closes timing at <strong>250 MHz</strong>, not 450 MHz, and you clock the AXI ports from your fabric
+clock:</p>
+<div class="arithmatex">\[BW_{\text{port}} = \frac{256 \times 250 \times 10^6}{8} = 8.0\ \text{GB/s}, \qquad BW_{\text{total}} = 256\ \text{GB/s}\]</div>
+<div class="arithmatex">\[\text{Bandwidth lost} = \frac{460.8 - 256}{460.8} = 44\ \%\]</div>
+<p><strong>You just threw away 44 % of the most expensive feature of the device by missing timing
+by 200 MHz.</strong> The alternatives are all architectural, which is why this belongs in
+<em>planning</em> and not in <em>closure</em>: run the AXI ports at the HBM clock and cross into your
+slower fabric domain through the controller's own clock conversion, or widen your fabric
+datapath to 512 bits so that 250 MHz still moves 16 GB/s per stream.</p>
+<p>Sanity check the other direction too. If one processing kernel consumes 512 bits per
+cycle at 300 MHz:</p>
+<div class="arithmatex">\[512 \times 300\times10^6 / 8 = 19.2\ \text{GB/s} \quad \Longrightarrow \quad \frac{460.8}{19.2} = 24 \text{ kernels to saturate HBM}\]</div>
+<p>If your design has four kernels, HBM is not your bottleneck and you should stop
+optimising it.</p>
+<h3 id="the-real-artifact">The Real Artifact</h3>
+<p>An SSI floorplan is a constraint file, not a wish. Here is a complete one for a
+three-SLR device: logic pinned per SLR, crossings forced onto Laguna registers, and the
+audit commands that prove it worked.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c"># ssi_floorplan.xdc</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c">#</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c"># Device: three-SLR UltraScale+ part. Adjust the CLOCKREGION ranges to your device -</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c"># get them from the Device view, or with:</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c">#     get_property GRID_POINTS [get_slrs SLR0]</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="c">#</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="c"># Architecture being enforced:</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="c">#   SLR0 - PCIe / host interface (its GT sites are here, so the logic must be too)</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="c">#   SLR1 - processing kernels</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="c">#   SLR2 - memory interface and buffering</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="c"># The point of the floorplan is that data crosses each boundary exactly once, in a</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="c"># pipeline stage that exists for no other purpose.</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="c"># ---- 1. Pin each subsystem to its SLR -------------------------------------------</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="nv">create_pblock</span><span class="w"> </span>pblk_host
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="nv">add_cells_to_pblock</span><span class="w"> </span>pblk_host<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span><span class="o">-</span>hier<span class="w"> </span><span class="o">-</span>filter<span class="w"> </span><span class="k">{</span><span class="nv">NAME</span><span class="w"> </span><span class="err">=</span><span class="o">~</span><span class="w"> </span><span class="s2">&quot;*u_pcie_subsys*&quot;</span><span class="k">}]</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="nv">resize_pblock</span><span class="w"> </span>pblk_host<span class="w"> </span><span class="o">-</span>add<span class="w"> </span>CLOCKREGION_X0Y0:CLOCKREGION_X7Y3
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="nv">create_pblock</span><span class="w"> </span>pblk_kernels
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="nv">add_cells_to_pblock</span><span class="w"> </span>pblk_kernels<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span><span class="o">-</span>hier<span class="w"> </span><span class="o">-</span>filter<span class="w"> </span><span class="k">{</span><span class="nv">NAME</span><span class="w"> </span><span class="err">=</span><span class="o">~</span><span class="w"> </span><span class="s2">&quot;*u_kernel_*&quot;</span><span class="k">}]</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="nv">resize_pblock</span><span class="w"> </span>pblk_kernels<span class="w"> </span><span class="o">-</span>add<span class="w"> </span>CLOCKREGION_X0Y4:CLOCKREGION_X7Y7
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="nv">create_pblock</span><span class="w"> </span>pblk_mem
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="nv">add_cells_to_pblock</span><span class="w"> </span>pblk_mem<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span><span class="o">-</span>hier<span class="w"> </span><span class="o">-</span>filter<span class="w"> </span><span class="k">{</span><span class="nv">NAME</span><span class="w"> </span><span class="err">=</span><span class="o">~</span><span class="w"> </span><span class="s2">&quot;*u_mem_subsys*&quot;</span><span class="k">}]</span>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="nv">resize_pblock</span><span class="w"> </span>pblk_mem<span class="w"> </span><span class="o">-</span>add<span class="w"> </span>CLOCKREGION_X0Y8:CLOCKREGION_X7Y11
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="c"># Leave EXCLUDE_PLACEMENT off: a soft pblock lets the placer relieve congestion at the</span>
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="c"># edges. Turn it on only if you have proven the placer is escaping when it should not.</span>
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="nv">set_property</span><span class="w"> </span>CONTAIN_ROUTING<span class="w"> </span>false<span class="w"> </span><span class="k">[</span><span class="nv">get_pblocks</span><span class="w"> </span>pblk_kernels<span class="k">]</span>
+<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>
+<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="c"># ---- 2. Force the crossings onto Laguna registers --------------------------------</span>
+<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="c"># These registers exist for one purpose: to be the flop on each side of an SLL hop.</span>
+<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="c"># Naming the crossing pipeline explicitly in RTL (see below) makes this constraint</span>
+<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a><span class="c"># a one-liner instead of a hand-maintained list.</span>
+<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a><span class="nv">set_property</span><span class="w"> </span>USER_SLL_REG<span class="w"> </span>TRUE<span class="w"> </span><span class="err">\</span>
+<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a><span class="w">    </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span><span class="o">-</span>hier<span class="w"> </span><span class="o">-</span>filter<span class="w"> </span><span class="k">{</span><span class="nv">NAME</span><span class="w"> </span><span class="err">=</span><span class="o">~</span><span class="w"> </span><span class="s2">&quot;*slr_hop_reg*&quot;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>IS_SEQUENTIAL<span class="k">}]</span>
+<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a>
+<a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a><span class="c"># ---- 3. Keep the clock tree from spanning what it does not need to ---------------</span>
+<a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a><span class="nv">set_property</span><span class="w"> </span>CLOCK_DELAY_GROUP<span class="w"> </span>kernel_grp<span class="w"> </span><span class="err">\</span>
+<a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a><span class="w">    </span><span class="k">[</span><span class="nv">get_nets</span><span class="w"> </span><span class="o">-</span>of_objects<span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span>u_clk_gen<span class="o">/</span>u_b312<span class="o">/</span>O<span class="k">]]</span>
+<a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a>
+<a id="__codelineno-2-42" name="__codelineno-2-42" href="#__codelineno-2-42"></a><span class="c"># ---- 4. Prove it, after place_design -------------------------------------------</span>
+<a id="__codelineno-2-43" name="__codelineno-2-43" href="#__codelineno-2-43"></a><span class="c">#   report_design_analysis -complexity -congestion</span>
+<a id="__codelineno-2-44" name="__codelineno-2-44" href="#__codelineno-2-44"></a><span class="c">#       -&gt; per-SLR utilisation and congestion levels; anything &gt;= 5 needs attention</span>
+<a id="__codelineno-2-45" name="__codelineno-2-45" href="#__codelineno-2-45"></a><span class="c">#   report_utilization -slr</span>
+<a id="__codelineno-2-46" name="__codelineno-2-46" href="#__codelineno-2-46"></a><span class="c">#       -&gt; did the pblocks actually hold, or did logic leak across?</span>
+<a id="__codelineno-2-47" name="__codelineno-2-47" href="#__codelineno-2-47"></a><span class="c">#   audit_slr_crossings</span>
+<a id="__codelineno-2-48" name="__codelineno-2-48" href="#__codelineno-2-48"></a><span class="c">#       -&gt; the structural check from Code Detective above</span>
+<a id="__codelineno-2-49" name="__codelineno-2-49" href="#__codelineno-2-49"></a><span class="c">#   report_qor_suggestions</span>
+<a id="__codelineno-2-50" name="__codelineno-2-50" href="#__codelineno-2-50"></a><span class="c">#       -&gt; Vivado&#39;s own opinion, including SLR-crossing pipelining advice</span>
+</code></pre></div>
+<p>And the RTL pattern the constraint above depends on — a crossing that is <em>nothing but</em> a
+crossing:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1">// slr_hop.sv - one clock period, dedicated entirely to getting across the boundary.</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c1">//</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1">// The naming matters: &quot;slr_hop_reg&quot; is what the USER_SLL_REG constraint matches on.</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1">// Do not put logic in here. Not a mux, not an enable term, not a parity bit. The</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c1">// arithmetic in &quot;Do the Math&quot; showed the budget is ~300 ps; there is nothing to spend.</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="k">module</span><span class="w"> </span><span class="n">slr_hop</span><span class="w"> </span><span class="p">#(</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="k">parameter</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">WIDTH</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">512</span><span class="p">,</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="k">parameter</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">STAGES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w">        </span><span class="c1">// 1 flop each side of the boundary</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="p">)</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w">             </span><span class="n">clk</span><span class="p">,</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w"> </span><span class="p">[</span><span class="n">WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="n">din</span><span class="p">,</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="kt">logic</span><span class="w"> </span><span class="p">[</span><span class="n">WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="n">dout</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="p">);</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">    </span><span class="p">(</span><span class="o">*</span><span class="w"> </span><span class="n">dont_touch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="kt">logic</span><span class="w"> </span><span class="p">[</span><span class="n">WIDTH</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="n">slr_hop_reg</span><span class="w"> </span><span class="p">[</span><span class="n">STAGES</span><span class="p">];</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">    </span><span class="k">always_ff</span><span class="w"> </span><span class="p">@(</span><span class="k">posedge</span><span class="w"> </span><span class="n">clk</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="w">        </span><span class="n">slr_hop_reg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">din</span><span class="p">;</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">STAGES</span><span class="p">;</span><span class="w"> </span><span class="n">s</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="k">begin</span>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="w">            </span><span class="n">slr_hop_reg</span><span class="p">[</span><span class="n">s</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">slr_hop_reg</span><span class="p">[</span><span class="n">s</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="w">        </span><span class="k">end</span>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="w">    </span><span class="k">end</span>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="w">    </span><span class="k">assign</span><span class="w"> </span><span class="n">dout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">slr_hop_reg</span><span class="p">[</span><span class="n">STAGES</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="k">endmodule</span>
+</code></pre></div>
+<p>The <code>dont_touch</code> is doing real work here: without it, synthesis sees a chain of registers
+with no logic between them and cheerfully absorbs it into an SRL or optimises a stage
+away — deleting the exact structure the floorplan depends on.</p>
+<h3 id="sharpen-your-pencil">Sharpen Your Pencil</h3>
+<ol>
+<li>Your design targets 300 MHz (3.333 ns). Using the same <span class="arithmatex">\(T_{co}\)</span>, <span class="arithmatex">\(T_{\text{setup}}\)</span>
+   and <span class="arithmatex">\(T_{\text{uncertainty}}\)</span> as the worked example, and an assumed 2.0 ns SLL delay,
+   how much time is left for logic on an SLR crossing? Does the conclusion change?</li>
+<li>You have four processing kernels, each consuming 512 bits per cycle at 400 MHz.
+   What fraction of a 460.8 GB/s HBM subsystem do they use? What would you do with the
+   answer if your manager asks whether to buy the HBM part or the cheaper non-HBM one?</li>
+<li><code>report_utilization -slr</code> shows SLR1 at 91 % LUT utilisation and SLR0 at 43 %. Your
+   pblocks are set as in the artifact above. Name the first thing you would change, and
+   the report you would use to confirm it helped.</li>
+</ol>
+<h3 id="final-thoughts-on-the-giants">Final Thoughts on the Giants</h3>
+<p>Designing with SSI and HBM is the "Final Boss" of hardware architecture. It requires a deep understanding of the physical reality of the chip. You can't just write code; you have to be a city planner, a logistics expert, and a thermal engineer all at once. But when you see that terabit-per-second data flowing through your design, it’s all worth it.</p>
+<h3 id="answers">Answers</h3>
+<p><strong>Brain Power</strong> — <em>2 ns SLL crossing, 2.5 ns clock period: what is left, and how does it
+change your pipeline strategy?</em></p>
+<p>This is the calculation worked in full above. The naive subtraction gives
+<span class="arithmatex">\(2.5 - 2.0 = 0.5\)</span> ns, but that answer is wrong because it forgets the flop overheads.
+The real budget is:</p>
+<div class="arithmatex">\[2.500 - T_{co}(0.100) - T_{\text{setup}}(0.050) - T_{\text{uncertainty}}(0.050) - T_{SLL}(2.000) = 0.300\ \text{ns}\]</div>
+<p>300 ps — about one LUT and its net, and only if placement cooperates.</p>
+<p>The strategy change: stop thinking of the crossing as <em>part of</em> a path and start
+thinking of it as <em>a pipeline stage of its own</em>. Concretely:</p>
+<ul>
+<li>Insert a dedicated register immediately before and immediately after every boundary,
+  with no logic between them (the <code>slr_hop</code> module above).</li>
+<li>Budget the crossing as <strong>one full clock cycle of latency</strong>, and account for it in your
+  protocol — an AXI handshake across an SLR needs its <code>READY</code> path pipelined too, or you
+  have just halved your throughput while fixing your timing.</li>
+<li>Cross <strong>once</strong>. A dataflow that ping-pongs between SLR0 and SLR1 four times costs four
+  cycles and four sets of SLL resources. Reorganise the floorplan so the data flows one
+  way through the die.</li>
+</ul>
+<p><strong>Sharpen Your Pencil #1</strong> — At 300 MHz, <span class="arithmatex">\(T_{\text{clk}} = 3.333\)</span> ns:</p>
+<div class="arithmatex">\[3.333 - 0.100 - 0.050 - 0.050 - 2.000 = 1.133\ \text{ns}\]</div>
+<p>1.133 ns is real room — perhaps three to four levels of logic. So the <em>arithmetic</em>
+changes: at 300 MHz you could legally put logic in the crossing path.</p>
+<p><strong>The conclusion does not change.</strong> You still should not. The 2.0 ns SLL figure is an
+assumption, and the actual delay depends on where the placer puts the two flops and how
+congested the boundary is; a crossing that fits today at 1.133 ns of slack is one
+incremental compile away from not fitting. A dedicated hop stage costs you one cycle of
+latency and buys you a path that is immune to placement variation. That trade is almost
+always correct, and it is what <code>report_qor_suggestions</code> will tell you to do anyway.</p>
+<p><strong>Sharpen Your Pencil #2</strong> — Per kernel:</p>
+<div class="arithmatex">\[\frac{512\ \text{bit} \times 400\times10^6}{8} = 25.6\ \text{GB/s}\]</div>
+<p>Four kernels: <span class="arithmatex">\(4 \times 25.6 = 102.4\)</span> GB/s.</p>
+<div class="arithmatex">\[\frac{102.4}{460.8} = 22\ \%\]</div>
+<p>You are using just over a fifth of the HBM subsystem. What to tell your manager: <strong>the
+HBM part is not justified by this design as it stands.</strong> 102.4 GB/s is within reach of a
+conventional DDR4 memory subsystem on a much cheaper device.</p>
+<p>The honest follow-up is the interesting one, though: is four kernels a requirement or an
+artefact? If the design is four kernels because that is all that fits, HBM is the wrong
+question and device size is the right one. If it is four kernels because that is all the
+work there is, buy the cheaper part. If the roadmap says sixteen kernels next year, the
+answer flips — 16 × 25.6 = 409.6 GB/s, which is 89 % of HBM and nowhere near DDR4.</p>
+<p><strong>Sharpen Your Pencil #3</strong> — SLR1 at 91 % and SLR0 at 43 % is not a routing problem, it
+is a <em>partitioning</em> problem. At 91 % the placer has almost no freedom, congestion will be
+severe, and timing closure in SLR1 will dominate every run you do from here on.</p>
+<p>First change: <strong>move work, not boundaries.</strong> Take one or two kernels out of
+<code>pblk_kernels</code> and give them to SLR0, which is sitting half empty, then re-pipeline the
+extra crossings that creates. Resist the temptation to simply grow <code>pblk_kernels</code> into
+SLR0's clock regions — a pblock spanning an SLR boundary invites the placer to split
+tightly coupled logic across the die at arbitrary points, which is precisely the failure
+mode you floorplanned to avoid.</p>
+<p>Confirm with <code>report_utilization -slr</code> (did the balance actually move?) and
+<code>report_design_analysis -congestion</code> (did the congestion level in SLR1 drop below 5?).
+Then re-run <code>audit_slr_crossings</code> to check the extra crossings you just created are all
+registered.</p>
+<h3 id="there-are-no-dumb-questions">There Are No Dumb Questions</h3>
+<p><strong>Q: Are Laguna registers something I instantiate?</strong></p>
+<p>A: No — they are ordinary registers that the placer <em>puts on Laguna sites</em>, which are the
+flops physically adjacent to the SLL routing. You influence it with <code>USER_SLL_REG TRUE</code>,
+which tells the placer "this register is a boundary-crossing register, treat it as a
+candidate for a Laguna site." Vivado also does this on its own when it recognises a
+registered crossing, which is another argument for making your crossings structurally
+obvious.</p>
+<p><strong>Q: How many SLLs do I actually have?</strong></p>
+<p>A: A fixed number per boundary, in the tens of thousands, and it is device specific — get
+it from your device's data sheet rather than from any book, including this one. What
+matters operationally is that it is <em>finite and unshared</em>: a 512-bit bus crossing in both
+directions consumes over a thousand of them before you have done anything clever, and
+<code>report_design_analysis</code> prints how many you used.</p>
+<p><strong>Q: My design fits in one SLR. Do I still need to care?</strong></p>
+<p>A: You need to make sure it <em>stays</em> in one SLR. Nothing forces the placer to respect a
+boundary it was never told about; a design that fits comfortably can still be scattered
+across two SLRs because that happened to shorten some data path. One pblock at the top
+level costs you nothing and removes the entire class of problem. Check with
+<code>report_utilization -slr</code> — if a design you believe is single-SLR shows logic in two,
+that is your answer.</p>
+<p><strong>Q: Does HBM remove the need for a floorplan?</strong></p>
+<p>A: It intensifies it. The HBM controller is hard IP at one edge of the die. Logic that
+talks to it and sits at the far edge pays the distance on every access, and — because
+there are 32 ports — you can create 32 simultaneous long-distance routes through the
+middle of your design. HBM designs are the ones where floorplanning stops being optional
+soonest.</p>
+<h3 id="bullet-points">Bullet Points</h3>
+<ul>
+<li><strong>SLR crossing budget</strong>: <span class="arithmatex">\(T_{\text{clk}} - T_{co} - T_{\text{setup}} - T_{\text{uncertainty}} - T_{SLL}\)</span>.
+  At 400 MHz with a 2 ns SLL, that leaves ~300 ps. <strong>Give the crossing its own cycle.</strong></li>
+<li><strong>Cross once, in one direction.</strong> Every extra crossing is a cycle of latency and a
+  block of SLL resources.</li>
+<li><strong>Structural, not delay-based, checking</strong>: <code>LOGIC_LEVELS &gt; 0</code> on an inter-SLR path is
+  the defect. Fast today ≠ safe tomorrow.</li>
+<li><strong><code>dont_touch</code> your hop registers</strong>, or synthesis will absorb them into an SRL and
+  silently delete your floorplan's assumptions.</li>
+<li><strong>HBM bandwidth</strong> = ports × width × frequency. 32 × 256 bit × 450 MHz = <strong>460.8 GB/s</strong>.
+  Clocking those ports from a 250 MHz fabric domain throws away 44 % of it.</li>
+<li><strong>Compute your demand before buying the part</strong>: kernels × width × frequency ÷ 8. If you
+  are under ~25 % of HBM, the device choice is probably wrong.</li>
+<li><strong>Constraints</strong>: <code>create_pblock</code> / <code>add_cells_to_pblock</code> / <code>resize_pblock</code>,
+  <code>USER_SLL_REG</code>, <code>CONTAIN_ROUTING</code>, <code>CLOCK_DELAY_GROUP</code>.</li>
+<li><strong>Reports</strong>: <code>report_utilization -slr</code>, <code>report_design_analysis -complexity -congestion</code>,
+  <code>report_qor_suggestions</code>, and <code>get_slrs -of_objects [get_cells ...]</code> for ad-hoc queries.</li>
+</ul>
+<hr />
+<p>[REVIEW_STATUS: APPROVED BY PUBLISHER]</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../1.3_clocking/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 1.3 Clocking Architecture">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                1.3 Clocking Architecture
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../2.1_timing_ballet/" class="md-footer__link md-footer__link--next" aria-label="Next: 2.1 Defining Clocks">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                2.1 Defining Clocks
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2026 <a href="https://github.com/mehdibadjian">Mehdi Badjian</a> &middot; <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga">github.com/mehdibadjian/no-magic-smoke-fpga</a> &middot; content <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/blob/main/LICENSE-CODE">MIT</a> &middot; independent, unofficial guide - not affiliated with or endorsed by AMD, Inc.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" target="_blank" rel="noopener" title="Source and issues on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.footer", "content.code.copy", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2408 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An independent, unofficial study companion to the AMD UltraFast Design Methodology. FPGA engineering taught Head First style, with the arithmetic left in - worked calculations, runnable artifacts, and answers to every question it asks.">
+      
+      
+        <meta name="author" content="Mehdi Badjian">
+      
+      
+        <link rel="canonical" href="https://mehdibadjian.github.io/no-magic-smoke-fpga/sections/4.2_placement/">
+      
+      
+        <link rel="prev" href="../4.1_synthesis/">
+      
+      
+        <link rel="next" href="../4.3_closure/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>4.2 Placement - No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#section-42-placement-and-routing-the-digital-tetris" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-header__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              4.2 Placement
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../1.1_pcb_layout/" class="md-tabs__link">
+          
+  
+  
+  Chapter 1: Board Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../2.1_timing_ballet/" class="md-tabs__link">
+          
+  
+  
+  Chapter 2: Constraints
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../3.1_rtl_coding/" class="md-tabs__link">
+          
+  
+  
+  Chapter 3: Design Creation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../4.1_synthesis/" class="md-tabs__link">
+          
+  
+  
+  Chapter 4: Implementation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../5.1_power/" class="md-tabs__link">
+          
+  
+  
+  Chapter 5: Power & Thermal
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../6.1_debug/" class="md-tabs__link">
+          
+  
+  
+  Chapter 6: Debug & Tuning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../references/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  References
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-nav__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 1: Board Planning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 1: Board Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.1_pcb_layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.1 Hardware Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.2_power_planning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.2 Power Delivery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.3_clocking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.3 Clocking Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.4_ssi_hbm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.4 I/O Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 2: Constraints
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 2: Constraints
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.1_timing_ballet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.1 Defining Clocks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.2_constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.2 I/O Delays
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.3_cdc_minefield/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.3 CDC Minefield
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 3: Design Creation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 3: Design Creation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.1_rtl_coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1 RTL Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.2_ip_integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 IP Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.3_security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Design Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.4_verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 4: Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 4: Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.1_synthesis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.1 Synthesis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.2 Placement
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.2 Placement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#digital-tetris-the-physical-grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Digital Tetris: The Physical Grid
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#congestion-the-traffic-jam-from-hell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Congestion: The Traffic Jam from Hell
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-the-floorplanner-and-the-auto-router" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: The Floorplanner and the Auto-Router
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#slr-crossings-the-great-divide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SLR Crossings: The Great Divide
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pblocks-the-zoning-laws-of-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PBLOCKS: The Zoning Laws of Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-unbuffered-clock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The Unbuffered Clock
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Do the Math">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utilisation-versus-routability-why-99-fails-and-75-does-not" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilisation versus routability: why 99 % fails and 75 % does not
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reading-congestion-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading congestion levels
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-the-grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on the Grid
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.3_closure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.3 Closure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 5: Power & Thermal
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 5: Power & Thermal
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.1_power/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.1 Power Estimation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.2_thermal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.2 Thermal Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 6: Debug & Tuning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 6: Debug & Tuning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6.1_debug/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.1 Hardware Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6.2_tuning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.2 Performance Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#digital-tetris-the-physical-grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Digital Tetris: The Physical Grid
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#congestion-the-traffic-jam-from-hell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Congestion: The Traffic Jam from Hell
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-the-floorplanner-and-the-auto-router" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: The Floorplanner and the Auto-Router
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#slr-crossings-the-great-divide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SLR Crossings: The Great Divide
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pblocks-the-zoning-laws-of-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PBLOCKS: The Zoning Laws of Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-unbuffered-clock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The Unbuffered Clock
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Do the Math">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utilisation-versus-routability-why-99-fails-and-75-does-not" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilisation versus routability: why 99 % fails and 75 % does not
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reading-congestion-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading congestion levels
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-the-grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on the Grid
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/edit/main/docs/sections/4.2_placement.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/raw/main/docs/sections/4.2_placement.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
+
+
+<h1 id="section-42-placement-and-routing-the-digital-tetris">Section 4.2: Placement and Routing: The Digital Tetris</h1>
+<p>If synthesis is the forge where your logic is created, then <strong>Placement and Routing (P&amp;R)</strong> is the game of Digital Tetris where those pieces are fitted onto the physical silicon. In an AMD FPGA, you have millions of tiny "slots" (LUTs, registers, and interconnects). Your logic blocks need to be placed in these slots and then connected by a complex web of tiny copper wires.</p>
+<p>This isn't just about making things fit; it's about making them fit <strong>perfectly</strong>. If two blocks that talk to each other are placed on opposite sides of the chip, the wire connecting them will be long and slow. In the high-speed world of FPGA design, every millimeter of wire adds nanoseconds of delay.</p>
+<h3 id="digital-tetris-the-physical-grid">Digital Tetris: The Physical Grid</h3>
+<p>The placement engine’s job is to group related logic together. It looks at your design and tries to keep "clusters" of logic in the same neighborhood. This is why a clean hierarchy (from Section 3.2) is so important—it gives the tool a hint about which blocks should stay together.</p>
+<p>But sometimes, the "Tetris pieces" don't fit easily. If you have a design that is 95% full, the tool has almost no room to move things around. This leads to "Sub-optimal Placement," where the tool is forced to put critical components far apart just to make them fit. <strong>Aim for 70-80% utilization</strong> for a comfortable design; anything higher is playing Tetris on "Expert" mode.</p>
+<blockquote>
+<p><strong>Brain Power</strong>
+<strong>Why does a design with 99% utilization often fail timing, even if the logic itself is very simple? (Hint: Think about the routing 'channels' between the logic blocks.)</strong></p>
+</blockquote>
+<h3 id="congestion-the-traffic-jam-from-hell">Congestion: The Traffic Jam from Hell</h3>
+<p><strong>Congestion</strong> is the number one enemy of routing. It happens when too many wires are trying to pass through the same narrow area of the chip. Imagine a ten-lane highway that suddenly narrows down to a single-lane bridge. That bridge is a "Congestion Hotspot."</p>
+<p>When the routing engine hits a hotspot, it has to "detour" wires around the area. These detours make the wires longer, which increases delay and kills your timing. To avoid congestion, keep your logic modular and avoid "Global" signals that have to touch every single block. If you see congestion in your reports, you might need to spread your logic out manually.</p>
+<p><img alt="Routing Congestion Traffic Jam" src="../../assets/images/fig_4_2_congestion.png" /></p>
+<h3 id="fireside-chat-the-floorplanner-and-the-auto-router">Fireside Chat: The Floorplanner and the Auto-Router</h3>
+<p><strong>Floorplanner:</strong> "I’ve spent all morning creating PBLOCKs for the DSP engine. I’ve locked it down to the bottom-left corner of the chip to keep it away from the noisy PCIe interface."</p>
+<p><strong>Auto-Router:</strong> "That’s cute. But by locking that logic down, you’ve created a massive bottleneck at the edge of your PBLOCK. I’m trying to route 512 wires out of that corner, and there just isn't enough copper."</p>
+<p><strong>Floorplanner:</strong> "But if I don't lock it down, you'll scatter the logic all over the die and I’ll never meet my 400MHz target!"</p>
+<p><strong>Auto-Router:</strong> "I’m not a child. If you give me a 'Soft Constraint' instead of a 'Hard PBLOCK,' I can move things around just enough to clear the congestion while still keeping the logic relatively close together. Give me some breathing room, and I’ll give you a design that meets timing."</p>
+<h3 id="slr-crossings-the-great-divide">SLR Crossings: The Great Divide</h3>
+<p>In larger AMD FPGAs (the "UltraScale+" family), the chip is actually made of multiple separate silicon dies called <strong>Super Logic Regions (SLRs)</strong>. These dies are connected by a special high-speed bridge called a <strong>Super Long Line (SLL)</strong>.</p>
+<p>Crossing an SLR boundary is a big deal. It adds a significant amount of delay—equivalent to several nanoseconds. If you have a critical path that crosses an SLR, you <strong>must</strong> pipeline it. This means putting a register on both sides of the boundary to "catch" the data and give the tools a full clock cycle to make the jump. Ignore this, and the "Great Divide" will swallow your timing whole.</p>
+<h3 id="pblocks-the-zoning-laws-of-silicon">PBLOCKS: The Zoning Laws of Silicon</h3>
+<p>Sometimes the auto-placement engine needs a little help. <strong>PBLOCKs (Physical Blocks)</strong> are manual constraints where you tell Vivado, "This specific module must stay within this specific rectangular area of the silicon."</p>
+<p>Think of PBLOCKs as zoning laws. You’re telling the tool where the "Industrial Zone" (the high-speed math) and the "Residential Zone" (the slow control logic) should be. PBLOCKs are powerful, but they are also dangerous. If you make a PBLOCK too small, you create congestion. If you make it too big, you waste area. Use them as a last resort when the auto-tools are failing.</p>
+<p><img alt="PBLOCK Boundary Drawing" src="../../assets/images/fig_4_2_pblocks.png" /></p>
+<h3 id="code-detective-the-unbuffered-clock">Code Detective: The Unbuffered Clock</h3>
+<p>A common routing disaster is an "Unbuffered Clock." In an FPGA, clocks must use dedicated "Global Clock" lines.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c"># Code Detective: Why will this lead to a routing failure?</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">set_property</span><span class="w"> </span>PACKAGE_PIN<span class="w"> </span>A10<span class="w"> </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span>my_clock<span class="k">]</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c"># No BUFG or IBUFG instantiated in the HDL...</span>
+</code></pre></div>
+<p>The flaw here is that the clock signal is being treated like a regular data signal. Instead of using the dedicated, low-skew high-speed clock network, the tool will try to route the clock through the regular "fabric" wires. This creates massive <strong>Clock Skew</strong>, where different parts of your design see the clock edge at different times.</p>
+<p>In practice Vivado will usually stop you rather than let you ship it, and the error it
+produces is one worth recognising on sight:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ERROR: [Place 30-574] Poor placement for routing between an IO pin and BUFG.
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  If this sub optimal condition is acceptable for this design, you may use the
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  CLOCK_DEDICATED_ROUTE constraint in the .xdc file to demote this message to
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  a WARNING...
+</code></pre></div>
+<p>That message means the clock-capable pin you chose is not in a clock region that can reach
+the <code>BUFGCE</code> the placer wants to use. <strong>The temptation is to paste the constraint the
+error message suggests. Do not.</strong> Demoting the message tells the tool to route your clock
+through fabric anyway — you have silenced the alarm, not fixed the fault.</p>
+<p><strong>The fix</strong>, in order of preference:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// 1. Best: bring the clock in on a clock-capable (CC) pin and buffer it explicitly.</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">IBUFDS</span><span class="w"> </span><span class="n">u_ibuf</span><span class="w"> </span><span class="p">(.</span><span class="n">I</span><span class="p">(</span><span class="n">sys_clk_p</span><span class="p">),</span><span class="w"> </span><span class="p">.</span><span class="n">IB</span><span class="p">(</span><span class="n">sys_clk_n</span><span class="p">),</span><span class="w"> </span><span class="p">.</span><span class="n">O</span><span class="p">(</span><span class="n">clk_ibuf</span><span class="p">));</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">BUFGCE</span><span class="w"> </span><span class="n">u_bufg</span><span class="w"> </span><span class="p">(.</span><span class="n">I</span><span class="p">(</span><span class="n">clk_ibuf</span><span class="p">),</span><span class="w"> </span><span class="p">.</span><span class="n">CE</span><span class="p">(</span><span class="mb">1&#39;b1</span><span class="p">),</span><span class="w"> </span><span class="p">.</span><span class="n">O</span><span class="p">(</span><span class="n">clk</span><span class="p">));</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c"># 2. Confirm the pin you chose is actually clock-capable, BEFORE the board is built:</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c">#    IS_GLOBAL_CLK is the property that matters.</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nv">get_property</span><span class="w"> </span>IS_GLOBAL_CLK<span class="w"> </span><span class="k">[</span><span class="nv">get_package_pins</span><span class="w"> </span>A10<span class="k">]</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c"># 3. Only if the board is already fabricated and the pin is wrong is the constraint</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="c">#    justified - and then it is a documented compromise, not a fix:</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c">#    set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets my_clock]</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="c">#    Record the measured skew in the design documentation so the next person knows</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="c">#    the timing report is optimistic.</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="c"># 4. Verify what you actually got:</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="nv">report_clock_networks</span><span class="w"> </span><span class="o">-</span>file<span class="w"> </span>clk_networks.rpt
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="c">#    Every clock should show a BUFG-class driver. A clock whose driver is a LUT or</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="c">#    an IBUF is being routed through fabric.</span>
+</code></pre></div>
+<p>The general principle: <strong>an error message that offers you a constraint to silence it is
+describing a trade, not a solution.</strong> Read what you would be trading away before you
+accept.</p>
+<h3 id="analogy-silicon">Analogy → Silicon</h3>
+<table>
+<thead>
+<tr>
+<th>In the story</th>
+<th>In the silicon</th>
+<th>Where the analogy breaks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Digital Tetris</td>
+<td><code>place_design</code> assigning cells to CLB/DSP/BRAM sites</td>
+<td>Tetris pieces are rigid and the board is empty at the start; placement is a continuous optimisation over a partly-constrained device, and "fits" is not the goal — "fits with slack" is</td>
+</tr>
+<tr>
+<td>Ten lanes narrowing to one</td>
+<td><strong>Routing congestion</strong>: demand for interconnect exceeding supply in a region</td>
+<td>Traffic redistributes over time; routing demand is fixed by your netlist, so a congested region does not clear — it fails, or it detours and costs you timing</td>
+</tr>
+<tr>
+<td>Zoning laws</td>
+<td><strong>Pblocks</strong> (<code>create_pblock</code>, <code>resize_pblock</code>)</td>
+<td>Zoning constrains what may be built; a pblock constrains <em>where</em>, and an over-tight one manufactures the congestion it was meant to prevent</td>
+</tr>
+<tr>
+<td>The great divide</td>
+<td>SLR boundaries crossed via SLLs and Laguna registers</td>
+<td>A divide is a line on a map; this one has a fixed resource budget and a delay you must budget a whole cycle for (Section 1.4)</td>
+</tr>
+<tr>
+<td>Soft constraint vs hard PBLOCK</td>
+<td><code>CONTAIN_ROUTING</code> / <code>EXCLUDE_PLACEMENT</code> off vs on</td>
+<td>"Soft" sounds like a weaker version of the same thing; it is a different thing — it lets the placer relieve pressure at the edges, which is usually what makes the pblock work at all</td>
+</tr>
+</tbody>
+</table>
+<h3 id="do-the-math">Do the Math</h3>
+<h4 id="utilisation-versus-routability-why-99-fails-and-75-does-not">Utilisation versus routability: why 99 % fails and 75 % does not</h4>
+<p>Each CLB has a finite number of routing tracks entering and leaving it. Placement fills
+<em>logic</em> sites; routing consumes <em>interconnect</em>, and the two run out at different points.</p>
+<p><strong>Givens</strong> — a simplified model that captures the effect:</p>
+<table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Logic sites in a region</td>
+<td>1,000 CLBs</td>
+</tr>
+<tr>
+<td>Routing tracks available per region</td>
+<td>24,000 track-segments</td>
+</tr>
+<tr>
+<td>Average track-segments consumed per placed CLB</td>
+<td>20</td>
+</tr>
+</tbody>
+</table>
+<p>At 75 % logic utilisation:</p>
+<div class="arithmatex">\[750\ \text{CLBs} \times 20 = 15{,}000\ \text{track-segments} \quad \Longrightarrow \quad \frac{15{,}000}{24{,}000} = 63\ \%\ \text{routing demand}\]</div>
+<p>At 99 %:</p>
+<div class="arithmatex">\[990 \times 20 = 19{,}800 \quad \Longrightarrow \quad \frac{19{,}800}{24{,}000} = 83\ \%\]</div>
+<p>83 % does not sound fatal — but routing demand is not uniform, and this is the part the
+average hides. <strong>The router must detour whenever a local hotspot exceeds 100 %</strong>, and each
+detour lengthens a net, which consumes yet more track-segments, which pushes neighbouring
+regions toward their own limit. The failure is <em>super-linear</em>: at 63 % average demand a
+hotspot at 1.5× the average is still routable; at 83 % the same hotspot is at 125 % and
+must detour, and its detours push its neighbours over too.</p>
+<p>That is why the practical guidance is a utilisation <em>band</em> rather than a limit:</p>
+<table>
+<thead>
+<tr>
+<th>Logic utilisation</th>
+<th>What to expect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&lt; 70 %</td>
+<td>Placement and routing are not your problem. Look elsewhere.</td>
+</tr>
+<tr>
+<td>70–85 %</td>
+<td>Normal. Congestion is manageable with directives and modest floorplanning.</td>
+</tr>
+<tr>
+<td>85–90 %</td>
+<td>Every run gets slower, results get noisier, incremental changes have non-local effects.</td>
+</tr>
+<tr>
+<td>&gt; 90 %</td>
+<td>You are buying timing closure with engineering weeks. Consider a bigger device — it is usually cheaper than the schedule.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="reading-congestion-levels">Reading congestion levels</h4>
+<p><code>report_design_analysis -congestion</code> reports congestion on a <strong>1–8 scale</strong> per region, for
+both placement and routing. The scale is logarithmic in the window size the router had to
+search:</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Meaning</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1–2</td>
+<td>Nothing to see</td>
+<td>—</td>
+</tr>
+<tr>
+<td>3–4</td>
+<td>Mild, localised</td>
+<td>Usually resolves itself; note it and move on</td>
+</tr>
+<tr>
+<td>5–6</td>
+<td>Real congestion</td>
+<td>Act: reduce fanout, spread logic, revisit a pblock</td>
+</tr>
+<tr>
+<td>7–8</td>
+<td>Severe</td>
+<td>Routing will likely fail or timing will collapse. Architectural fix needed.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Level 5 is the threshold that matters.</strong> Below it, spend your time on timing; at or above
+it, congestion <em>is</em> your timing problem and fixing paths individually will not help.</p>
+<h3 id="the-real-artifact">The Real Artifact</h3>
+<p>Congestion diagnosis, then a pblock that helps rather than hurts. Both are scripts you
+keep, not steps you remember.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c">#==============================================================================</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c"># congestion_triage.tcl - run after place_design, before you change anything.</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c">#</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c"># The mistake this script exists to prevent: reacting to a congested design by</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c"># tightening pblocks. Tight pblocks CAUSE congestion. Diagnose first.</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="c">#==============================================================================</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="k">proc</span><span class="w"> </span>congestion_triage<span class="w"> </span><span class="k">{}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;\n=== 1. Where is it congested, and how badly? ===&quot;</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">    </span><span class="c"># Levels are 1-8 per region for placement and routing. &gt;= 5 needs action.</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">    </span><span class="nv">report_design_analysis</span><span class="w"> </span><span class="o">-</span>congestion<span class="w"> </span><span class="o">-</span>name<span class="w"> </span>congestion
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;\n=== 2. Is it complexity (Rent exponent) or just density? ===&quot;</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">    </span><span class="c"># A high Rent exponent means the netlist itself is highly interconnected -</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">    </span><span class="c"># that is an RTL problem, and no placement directive will fix it.</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">    </span><span class="nv">report_design_analysis</span><span class="w"> </span><span class="o">-</span>complexity<span class="w"> </span><span class="o">-</span>name<span class="w"> </span>complexity
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;\n=== 3. High-fanout nets are the most common single cause ===&quot;</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="w">    </span><span class="nv">report_high_fanout_nets</span><span class="w"> </span><span class="o">-</span>timing<span class="w"> </span><span class="o">-</span>load_types<span class="w"> </span><span class="o">-</span>max_nets<span class="w"> </span><span class="mi">25</span>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;\n=== 4. Did any pblock become the bottleneck? ===&quot;</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="w">    </span><span class="k">foreach</span><span class="w"> </span>pb<span class="w"> </span><span class="k">[</span><span class="nv">get_pblocks</span><span class="w"> </span><span class="o">-</span>quiet<span class="k">]</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="w">        </span><span class="k">set</span><span class="w"> </span>cells<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span><span class="o">-</span>quiet<span class="w"> </span><span class="o">-</span>of_objects<span class="w"> </span><span class="nv">$pb</span><span class="k">]</span>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="w">        </span><span class="k">set</span><span class="w"> </span>stats<span class="w"> </span><span class="k">[</span><span class="nv">report_utilization</span><span class="w"> </span><span class="o">-</span>pblocks<span class="w"> </span><span class="nv">$pb</span><span class="w"> </span><span class="o">-</span>return_string<span class="k">]</span>
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a><span class="w">        </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;  pblock [get_property NAME $pb]: [llength $cells] cell(s)&quot;</span>
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a><span class="w">        </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;    (check the CLB row of this report - over ~80% inside a pblock is&quot;</span>
+<a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a><span class="w">        </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;     where a floorplan starts working against you)&quot;</span>
+<a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a><span class="w">    </span><span class="k">}</span>
+<a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a>
+<a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a><span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;\n=== 5. What does Vivado suggest? ===&quot;</span>
+<a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a><span class="w">    </span><span class="nv">report_qor_suggestions</span><span class="w"> </span><span class="o">-</span>max_paths<span class="w"> </span><span class="mi">10</span>
+<a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a><span class="k">}</span>
+<a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a>
+<a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a><span class="nv">congestion_triage</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c">#==============================================================================</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c"># floorplan.xdc - a pblock that helps.</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c">#</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c"># Four rules, learned expensively:</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="c">#   1. Size it from measured utilisation, not from intuition. Target &lt;= 70%</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="c">#      utilisation INSIDE the pblock, because the placer needs slack to route.</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="c">#   2. Leave CONTAIN_ROUTING false unless you have proven you need it. Containing</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="c">#      routing inside a tight boundary is the fastest way to manufacture congestion.</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="c">#   3. Align to CLOCKREGION boundaries. A pblock that cuts a clock region in half</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="c">#      splits the clock tree and buys you skew you did not want.</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="c">#   4. Constrain the module that has a REASON to be somewhere - next to its I/O,</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="c">#      next to its memory controller, inside one SLR. Do not pblock logic just</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="c">#      because it is large.</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="c">#==============================================================================</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="c"># The transceiver-facing datapath must live near its GT sites. That is the reason.</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="nv">create_pblock</span><span class="w"> </span>pblk_gt_datapath
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="nv">add_cells_to_pblock</span><span class="w"> </span>pblk_gt_datapath<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span><span class="o">-</span>hier<span class="w"> </span><span class="o">-</span>filter<span class="w"> </span><span class="k">{</span><span class="nv">NAME</span><span class="w"> </span><span class="err">=</span><span class="o">~</span><span class="w"> </span><span class="s2">&quot;*u_gt_rx_path*&quot;</span><span class="k">}]</span>
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="nv">resize_pblock</span><span class="w"> </span>pblk_gt_datapath<span class="w"> </span><span class="o">-</span>add<span class="w"> </span>CLOCKREGION_X0Y2:CLOCKREGION_X1Y5
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="c"># Soft by default: the placer may spill at the edges to relieve pressure.</span>
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="nv">set_property</span><span class="w"> </span>CONTAIN_ROUTING<span class="w">    </span>false<span class="w"> </span><span class="k">[</span><span class="nv">get_pblocks</span><span class="w"> </span>pblk_gt_datapath<span class="k">]</span>
+<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="nv">set_property</span><span class="w"> </span>EXCLUDE_PLACEMENT<span class="w">  </span>false<span class="w"> </span><span class="k">[</span><span class="nv">get_pblocks</span><span class="w"> </span>pblk_gt_datapath<span class="k">]</span>
+<a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a>
+<a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="c"># Check the size is right, every run:</span>
+<a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a><span class="c">#   report_utilization -pblocks [get_pblocks pblk_gt_datapath]</span>
+<a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a><span class="c"># If CLB utilisation inside the pblock exceeds ~70%, GROW IT. A pblock at 90%</span>
+<a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a><span class="c"># is a congestion generator, and it will make the design worse than no pblock.</span>
+<a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a>
+<a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a><span class="c"># Fanout control - cheaper and more effective than floorplanning, and the first</span>
+<a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a><span class="c"># thing to try when report_high_fanout_nets names a culprit.</span>
+<a id="__codelineno-5-33" name="__codelineno-5-33" href="#__codelineno-5-33"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-5-34" name="__codelineno-5-34" href="#__codelineno-5-34"></a><span class="c"># Replicate the driver of a high-fanout control net so each copy serves a</span>
+<a id="__codelineno-5-35" name="__codelineno-5-35" href="#__codelineno-5-35"></a><span class="c"># local group. &#39;MAX_FANOUT&#39; asks synthesis to do it for you:</span>
+<a id="__codelineno-5-36" name="__codelineno-5-36" href="#__codelineno-5-36"></a><span class="nv">set_property</span><span class="w"> </span>MAX_FANOUT<span class="w"> </span><span class="mi">200</span><span class="w"> </span><span class="k">[</span><span class="nv">get_nets</span><span class="w"> </span>u_ctrl<span class="o">/</span>global_enable<span class="k">]</span>
+<a id="__codelineno-5-37" name="__codelineno-5-37" href="#__codelineno-5-37"></a>
+<a id="__codelineno-5-38" name="__codelineno-5-38" href="#__codelineno-5-38"></a><span class="c"># For resets specifically, prefer a proper reset tree in RTL over MAX_FANOUT -</span>
+<a id="__codelineno-5-39" name="__codelineno-5-39" href="#__codelineno-5-39"></a><span class="c"># a replicated reset whose copies deassert in different cycles is a new bug.</span>
+<a id="__codelineno-5-40" name="__codelineno-5-40" href="#__codelineno-5-40"></a>
+<a id="__codelineno-5-41" name="__codelineno-5-41" href="#__codelineno-5-41"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-5-42" name="__codelineno-5-42" href="#__codelineno-5-42"></a><span class="c"># Implementation directives that specifically target congestion. Try in this</span>
+<a id="__codelineno-5-43" name="__codelineno-5-43" href="#__codelineno-5-43"></a><span class="c"># order; each is one implementation run.</span>
+<a id="__codelineno-5-44" name="__codelineno-5-44" href="#__codelineno-5-44"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-5-45" name="__codelineno-5-45" href="#__codelineno-5-45"></a><span class="c">#   place_design    -directive AltSpreadLogic_high</span>
+<a id="__codelineno-5-46" name="__codelineno-5-46" href="#__codelineno-5-46"></a><span class="c">#   place_design    -directive SSI_SpreadLogic_high     (SSI devices)</span>
+<a id="__codelineno-5-47" name="__codelineno-5-47" href="#__codelineno-5-47"></a><span class="c">#   phys_opt_design -directive AggressiveExplore</span>
+<a id="__codelineno-5-48" name="__codelineno-5-48" href="#__codelineno-5-48"></a><span class="c">#   route_design    -directive AlternateCLBRouting</span>
+</code></pre></div>
+<h3 id="sharpen-your-pencil">Sharpen Your Pencil</h3>
+<ol>
+<li><code>report_design_analysis -congestion</code> reports level 6 placement congestion in one clock
+   region, and your design is at 68 % overall LUT utilisation. What does the combination
+   of those two numbers tell you, and what would you check first?</li>
+<li>A pblock containing 4,000 CLBs' worth of logic is sized at 4,200 CLBs. Compute the
+   utilisation inside it and say whether it will help or hurt.</li>
+<li>You get <code>[Place 30-574]</code> on a design whose board is already fabricated with the clock
+   on a non-clock-capable pin. Write down what you will do and what you will document.</li>
+</ol>
+<h3 id="final-thoughts-on-the-grid">Final Thoughts on the Grid</h3>
+<p>Placement and Routing is where the "rubber meets the road." It’s the final test of your design's physical viability. By respecting congestion, pipelining SLR crossings, and using PBLOCKs wisely, you turn the "Digital Tetris" into a winning game. Keep your logic modular, give the tools some room to breathe, and watch your design slide perfectly into place.</p>
+<h3 id="answers">Answers</h3>
+<p><strong>Brain Power</strong> — <em>Why does a 99 % utilised design fail timing even when the logic is
+simple?</em></p>
+<p>Because <strong>logic sites and routing resources run out at different rates</strong>, and timing is
+paid for out of the second one.</p>
+<p>At 99 % logic utilisation the placer has essentially no freedom. Two cells that want to be
+adjacent get placed wherever there is a hole, which may be a long way apart. Then the
+router, which has almost no spare track-segments in that region, cannot take the direct
+path either — so it detours. Each detour lengthens a net, and a longer net both costs
+delay directly <em>and</em> consumes more track-segments, raising demand for every other net in
+the region. The effect is super-linear, which is why 90 % feels manageable and 99 % feels
+like a wall.</p>
+<p>Concretely, the same simple logic that routes in 200 ps at 70 % utilisation may route in
+900 ps at 99 %, and there is no RTL change that addresses it — the netlist was never the
+problem.</p>
+<p>There is a second, subtler mechanism worth knowing: at extreme utilisation the placer
+starts making <em>packing</em> compromises, putting flops with different control sets into
+suboptimal arrangements and spreading what should be a tight cluster across several CLBs.
+So even the "simple logic" gets physically larger than it needed to be.</p>
+<p>The practical conclusion: <strong>utilisation is a timing parameter, not just a capacity
+parameter.</strong> If you are above 90 % and fighting timing, price a bigger device against the
+engineering weeks. The device is usually cheaper.</p>
+<p><strong>Sharpen Your Pencil #1</strong> — Level 6 congestion at 68 % overall utilisation.</p>
+<p>The combination is the diagnostic. Overall utilisation is <em>comfortable</em>, so the design as
+a whole is not too big for the device — which means the congestion is <strong>local</strong>, not
+global. Something is concentrating interconnect demand in one region.</p>
+<p>What to check, in order:</p>
+<ol>
+<li><strong><code>report_high_fanout_nets -timing -load_types</code>.</strong> A single net with thousands of loads
+   whose driver sits in that region is the most common cause, and the cheapest to fix
+   (<code>MAX_FANOUT</code>, or replication in RTL).</li>
+<li><strong><code>report_design_analysis -complexity</code></strong> for that region. A high Rent exponent means
+   the <em>netlist</em> in that region is intrinsically highly interconnected — a crossbar, a
+   large multiplexer, a wide shared bus. That is an RTL problem, and placement directives
+   will not fix it.</li>
+<li><strong>Pblocks.</strong> If you have one covering or bordering that region, check its internal
+   utilisation. A pblock at 90 % inside is a congestion generator even when the device is
+   at 68 %.</li>
+<li><strong>Hard block placement.</strong> A memory controller, transceiver bank or HBM interface at one
+   edge pulls all its traffic through the fabric next to it. That congestion is
+   structural, and the fix is floorplanning the <em>consumers</em> nearer to it.</li>
+</ol>
+<p>What <em>not</em> to do: reach for a placement directive first. Directives redistribute
+congestion; they do not remove demand. Find what is generating the demand.</p>
+<p><strong>Sharpen Your Pencil #2</strong> —</p>
+<div class="arithmatex">\[\frac{4{,}000}{4{,}200} = 95\ \%\ \text{utilisation inside the pblock}\]</div>
+<p><strong>It will hurt, badly.</strong> You have created a region at 95 % utilisation inside a device that
+may be comfortable everywhere else — precisely the condition from the Brain Power answer,
+except you built it deliberately. The placer has no room to arrange logic well inside the
+boundary, the router has no spare tracks, and every net that must leave the pblock has to
+squeeze through an edge that is also saturated.</p>
+<p>The correct size, targeting ≤ 70 % inside:</p>
+<div class="arithmatex">\[\text{Required} = \frac{4{,}000}{0.70} \approx 5{,}715\ \text{CLBs}\]</div>
+<p>So roughly 5,700–6,000 CLBs, aligned outward to clock region boundaries. And check it
+every run:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nv">report_utilization</span><span class="w"> </span><span class="o">-</span>pblocks<span class="w"> </span><span class="k">[</span><span class="nv">get_pblocks</span><span class="w"> </span>pblk_name<span class="k">]</span>
+</code></pre></div>
+<p>The general lesson: <strong>a pblock is a hint about locality, not a container you fill.</strong> If you
+find yourself sizing one tightly to "not waste area," you have misunderstood what it is
+for — the area inside a pblock is not consumed by the pblock, it is available to whatever
+the placer wants to put there, and leaving room is the entire point.</p>
+<p><strong>Sharpen Your Pencil #3</strong> — <code>[Place 30-574]</code>, board already fabricated, clock on a
+non-clock-capable pin.</p>
+<p>What you will do:</p>
+<ol>
+<li>
+<p><strong>Verify the pin really is not clock-capable</strong>, rather than the placer simply having
+   chosen a distant <code>BUFGCE</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nv">get_property</span><span class="w"> </span>IS_GLOBAL_CLK<span class="w"> </span><span class="k">[</span><span class="nv">get_package_pins</span><span class="w"> </span><span class="o">&lt;</span>pin<span class="o">&gt;</span><span class="k">]</span>
+</code></pre></div>
+<p>If it <em>is</em> clock-capable, the fix is placement — constrain the <code>BUFGCE</code> to a clock
+region the pin can reach, and the error goes away legitimately.</p>
+</li>
+<li>
+<p><strong>If it genuinely is not</strong>, accept the compromise explicitly:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nv">set_property</span><span class="w"> </span>CLOCK_DEDICATED_ROUTE<span class="w"> </span>FALSE<span class="w"> </span><span class="k">[</span><span class="nv">get_nets</span><span class="w"> </span>my_clock<span class="k">]</span>
+</code></pre></div>
+<p>and immediately bound the damage: get the clock onto a <code>BUFGCE</code> as close to the pin as
+possible so only the pin-to-buffer segment is on fabric routing, not the whole tree.</p>
+</li>
+<li>
+<p><strong>Measure the consequence.</strong> Run <code>report_clock_networks</code> and, more importantly, look at
+   the clock skew reported on paths in that domain. Fabric routing on the input segment
+   adds delay and, more dangerously, adds <em>variation</em> — which shows up as increased
+   uncertainty on every path in that domain.</p>
+</li>
+<li>
+<p><strong>Consider derating the interface.</strong> If this clock feeds a source-synchronous input,
+   the extra insertion delay changes your input delay budget (Section 2.2). Recompute it.</p>
+</li>
+</ol>
+<p>What you will document, and this is the part that matters:</p>
+<ul>
+<li>That <code>CLOCK_DEDICATED_ROUTE FALSE</code> is present, on which net, and <strong>why</strong> — "board rev A
+  routed the clock to pin X which is not clock-capable."</li>
+<li>The measured skew and the timing margin lost.</li>
+<li><strong>A board change request for the next revision.</strong> The constraint is a workaround for a
+  hardware defect, and if nobody records it as such, revision B will have the same pin
+  assignment and the next engineer will find a mysterious constraint with no explanation.</li>
+</ul>
+<p>That last bullet is the difference between a compromise and a landmine.</p>
+<h3 id="there-are-no-dumb-questions">There Are No Dumb Questions</h3>
+<p><strong>Q: Should I floorplan every design?</strong></p>
+<p>A: No. Under about 70 % utilisation, on a single-SLR device, with no hard-block affinity
+to respect, the placer will beat your intuition and a pblock will only get in its way.
+Floorplan when there is a <em>reason</em> — an SLR boundary to respect, a hard block to sit next
+to, a repeating structure to align, or a proven congestion hotspot. "The design is big" is
+not a reason.</p>
+<p><strong>Q: <code>phys_opt_design</code> did nothing. Is it broken?</strong></p>
+<p>A: It has a narrow remit: it makes <em>physical</em> optimisations to paths that are already
+close — replicating drivers, retiming across placed registers, rewiring equivalent
+outputs. If your worst path is failing by 800 ps with 11 levels of logic, there is nothing
+physical to optimise and it will correctly report no improvement. Its sweet spot is the
+last 50–150 ps. Try <code>-directive AggressiveExplore</code> when you are in that range, and
+something else when you are not.</p>
+<p><strong>Q: What is the Rent exponent in <code>report_design_analysis -complexity</code>, in practical
+terms?</strong></p>
+<p>A: A measure of how interconnected a region's netlist is — how many external connections
+a block of logic needs, as a function of its size. A high value means the logic is
+intrinsically hard to partition, so no placement can make its wires short. Practically: a
+high Rent exponent tells you the congestion is coming from your <em>architecture</em> (a
+crossbar, a full mesh, a wide shared bus) and that placement tuning will not help. It is
+the number that tells you to stop tuning and go change the RTL.</p>
+<p><strong>Q: Can I just let the router run longer?</strong></p>
+<p>A: Routing effort is controlled by directives rather than by time, and <code>-directive
+Explore</code> or <code>AggressiveExplore</code> genuinely do search harder. But if the router is failing
+because demand exceeds supply in a region, more effort finds more detours, not a solution
+— and detours cost timing. A router that runs for six hours and succeeds has usually
+produced a design whose timing is worse than one that routed in forty minutes.</p>
+<p><strong>Q: How do I stop the placer scattering my module across the device?</strong></p>
+<p>A: First check that it is actually scattered rather than that you assume it is —
+<code>highlight_objects [get_cells -hier -filter {NAME =~ "*u_mod*"}]</code> in the Device view
+answers it in seconds. If it is, the cause is usually that something in the module is
+tied to a distant resource (an I/O, a hard block, a clock), and the placer is trading
+module locality for that connection. Fix the cause, or pblock the module — generously
+sized — so the trade is made your way.</p>
+<h3 id="bullet-points">Bullet Points</h3>
+<ul>
+<li><strong>Utilisation is a timing parameter.</strong> &lt; 70 %: not your problem. 70–85 %: normal.
+  85–90 %: everything gets slower and noisier. &gt; 90 %: you are buying closure with
+  engineering weeks.</li>
+<li><strong>Congestion levels run 1–8. Level 5 is the threshold for action.</strong> Below it, work on
+  timing; at or above it, congestion <em>is</em> your timing problem.</li>
+<li><strong>Local congestion at low overall utilisation means a local cause</strong>: high fanout, a
+  hard-block hotspot, a high Rent-exponent structure, or a too-tight pblock.</li>
+<li><strong>Size pblocks for ≤ 70 % internal utilisation.</strong> A pblock at 95 % manufactures the
+  congestion it was meant to prevent. Room inside is not waste.</li>
+<li><strong>Leave <code>CONTAIN_ROUTING</code> false</strong> unless you have proven you need it, and align pblocks
+  to <code>CLOCKREGION</code> boundaries.</li>
+<li><strong>Fanout before floorplan.</strong> <code>report_high_fanout_nets</code> then <code>MAX_FANOUT</code> or RTL
+  replication is cheaper and more effective than a pblock.</li>
+<li><strong><code>[Place 30-574]</code> is a hardware finding, not a constraint request.</strong> Fix the pin if you
+  can; if you cannot, apply <code>CLOCK_DEDICATED_ROUTE FALSE</code>, measure the skew, and file a
+  board change.</li>
+<li><strong>Congestion directives</strong>: <code>place_design -directive AltSpreadLogic_high</code> /
+  <code>SSI_SpreadLogic_high</code>, <code>phys_opt_design -directive AggressiveExplore</code>,
+  <code>route_design -directive AlternateCLBRouting</code>.</li>
+<li><strong>Reports</strong>: <code>report_design_analysis -congestion -complexity</code>,
+  <code>report_high_fanout_nets -timing -load_types</code>, <code>report_utilization -pblocks</code>,
+  <code>report_clock_networks</code>.</li>
+</ul>
+<hr />
+<p>[REVIEW_STATUS: APPROVED BY PUBLISHER]</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../4.1_synthesis/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 4.1 Synthesis">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                4.1 Synthesis
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../4.3_closure/" class="md-footer__link md-footer__link--next" aria-label="Next: 4.3 Closure">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                4.3 Closure
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2026 <a href="https://github.com/mehdibadjian">Mehdi Badjian</a> &middot; <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga">github.com/mehdibadjian/no-magic-smoke-fpga</a> &middot; content <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/blob/main/LICENSE-CODE">MIT</a> &middot; independent, unofficial guide - not affiliated with or endorsed by AMD, Inc.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" target="_blank" rel="noopener" title="Source and issues on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.footer", "content.code.copy", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

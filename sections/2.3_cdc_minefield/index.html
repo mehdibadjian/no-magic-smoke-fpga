@@ -1,0 +1,2408 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An independent, unofficial study companion to the AMD UltraFast Design Methodology. FPGA engineering taught Head First style, with the arithmetic left in - worked calculations, runnable artifacts, and answers to every question it asks.">
+      
+      
+        <meta name="author" content="Mehdi Badjian">
+      
+      
+        <link rel="canonical" href="https://mehdibadjian.github.io/no-magic-smoke-fpga/sections/2.3_cdc_minefield/">
+      
+      
+        <link rel="prev" href="../2.2_constraints/">
+      
+      
+        <link rel="next" href="../3.1_rtl_coding/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>2.3 CDC Minefield - No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#section-23-cdc-crossing-the-clock-domain-minefield" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-header__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              2.3 CDC Minefield
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../1.1_pcb_layout/" class="md-tabs__link">
+          
+  
+  
+  Chapter 1: Board Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../2.1_timing_ballet/" class="md-tabs__link">
+          
+  
+  
+  Chapter 2: Constraints
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../3.1_rtl_coding/" class="md-tabs__link">
+          
+  
+  
+  Chapter 3: Design Creation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../4.1_synthesis/" class="md-tabs__link">
+          
+  
+  
+  Chapter 4: Implementation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../5.1_power/" class="md-tabs__link">
+          
+  
+  
+  Chapter 5: Power & Thermal
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../6.1_debug/" class="md-tabs__link">
+          
+  
+  
+  Chapter 6: Debug & Tuning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../references/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  References
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-nav__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 1: Board Planning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 1: Board Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.1_pcb_layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.1 Hardware Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.2_power_planning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.2 Power Delivery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.3_clocking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.3 Clocking Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.4_ssi_hbm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.4 I/O Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 2: Constraints
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 2: Constraints
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.1_timing_ballet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.1 Defining Clocks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.2_constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.2 I/O Delays
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.3 CDC Minefield
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.3 CDC Minefield
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#metastability-the-digital-twilight-zone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metastability: The Digital Twilight Zone
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-synchronizer-guard-the-double-flop-pass" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Synchronizer Guard: The Double-Flop Pass
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-the-fast-clock-and-the-slow-signal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: The Fast Clock and the Slow Signal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-bus-skew-disaster-the-silent-killer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Bus Skew Disaster: The Silent Killer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#async-fifos-the-silicon-elevators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Async FIFOs: The Silicon Elevators
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gray-coding-the-one-bit-trick" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gray Coding: The One-Bit Trick
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-cdc-constraint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The CDC Constraint
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-the-minefield" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on the Minefield
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 3: Design Creation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 3: Design Creation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.1_rtl_coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1 RTL Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.2_ip_integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 IP Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.3_security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Design Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.4_verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 4: Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 4: Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.1_synthesis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.1 Synthesis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.2_placement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.2 Placement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.3_closure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.3 Closure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 5: Power & Thermal
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 5: Power & Thermal
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.1_power/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.1 Power Estimation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.2_thermal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.2 Thermal Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 6: Debug & Tuning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 6: Debug & Tuning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6.1_debug/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.1 Hardware Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6.2_tuning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.2 Performance Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#metastability-the-digital-twilight-zone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metastability: The Digital Twilight Zone
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-synchronizer-guard-the-double-flop-pass" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Synchronizer Guard: The Double-Flop Pass
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-the-fast-clock-and-the-slow-signal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: The Fast Clock and the Slow Signal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-bus-skew-disaster-the-silent-killer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Bus Skew Disaster: The Silent Killer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#async-fifos-the-silicon-elevators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Async FIFOs: The Silicon Elevators
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gray-coding-the-one-bit-trick" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gray Coding: The One-Bit Trick
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-cdc-constraint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The CDC Constraint
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-the-minefield" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on the Minefield
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/edit/main/docs/sections/2.3_cdc_minefield.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/raw/main/docs/sections/2.3_cdc_minefield.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
+
+
+<h1 id="section-23-cdc-crossing-the-clock-domain-minefield">Section 2.3: CDC: Crossing the Clock Domain Minefield</h1>
+<p>Welcome to the most dangerous part of FPGA design. If board layout is the foundation and timing closure is the ballet, then Clock Domain Crossing (CDC) is a minefield. One wrong step, and your design will work perfectly for three months, then suddenly crash in the middle of a critical operation—only to work perfectly again after a reboot. CDC errors are the "ghosts in the machine."</p>
+<p>In a modern AMD FPGA, you might have fifty different clock domains. Data is constantly hopping from a 156MHz PCIe clock to a 322MHz transceiver clock, then over to a 100MHz system clock. Every time a signal crosses from one "time zone" to another without a proper passport, you risk a catastrophic phenomenon called <strong>metastability</strong>.</p>
+<h3 id="metastability-the-digital-twilight-zone">Metastability: The Digital Twilight Zone</h3>
+<p>Remember the setup and hold times from Section 2.1? They only work when the data and the clock are synchronized. When data comes from a <em>different</em> clock domain, it can arrive at any time—including right in the middle of the setup/hold window.</p>
+<p>When this happens, the flip-flop doesn't know whether to capture a '0' or a '1'. It enters a metastable state, where its output hovers somewhere in between, or oscillates wildly for a few picoseconds. Eventually, it will settle to a '0' or a '1', but by that time, the downstream logic has already seen the "glitch." Metastability is like a coin landing on its edge; it's unstable, unpredictable, and it will ruin your day.</p>
+<blockquote>
+<p><strong>Brain Power</strong>
+<strong>If you have a 100MHz clock and a signal that changes once per second, do you still need a synchronizer? Why or why not? What happens if that 1-second pulse happens to hit the setup window of your 100MHz clock?</strong></p>
+</blockquote>
+<h3 id="the-synchronizer-guard-the-double-flop-pass">The Synchronizer Guard: The Double-Flop Pass</h3>
+<p>The simplest way to fight metastability is the "Double-Flop Synchronizer." You pass the asynchronous signal through two flip-flops in a row, both clocked by the destination domain. The first flop might go metastable, but it has a whole clock period to "settle" before the second flop captures it.</p>
+<p>This doesn't <em>eliminate</em> metastability (nothing can), but it reduces the probability of a failure to practically zero—measurable in billions of years (Mean Time Between Failures, or MTBF). In AMD UltraFast Methodology, any signal crossing a clock domain <strong>must</strong> have a synchronizer. No exceptions. No excuses.</p>
+<p><img alt="Double-Flop Synchronizer Trains" src="../../assets/images/fig_2_3_cdc_trains.png" /></p>
+<h3 id="fireside-chat-the-fast-clock-and-the-slow-signal">Fireside Chat: The Fast Clock and the Slow Signal</h3>
+<p><strong>Fast Clock (400MHz):</strong> "I'm waiting! Where's that enable signal from the slow domain? I've ticked four hundred million times while you were just sitting there."</p>
+<p><strong>Slow Signal (10MHz):</strong> "Hey, I'm coming! I'm crossing the boundary now. Here I am!"</p>
+<p><strong>Fast Clock:</strong> "Woah, woah! You just arrived right as my shutter was closing. You're all blurry! My first flip-flop is vibrating like a tuning fork. I don't know if you're a 1 or a 0!"</p>
+<p><strong>Slow Signal:</strong> "Sorry, I don't have a watch that matches yours. Just use your second flip-flop. By the time it clicks, I'll be solid as a rock."</p>
+<p><strong>Fast Clock:</strong> "Good thing I have that second flop. If I had sent your 'blurry' version straight to the state machine, we'd be in a deadlock right now."</p>
+<h3 id="the-bus-skew-disaster-the-silent-killer">The Bus Skew Disaster: The Silent Killer</h3>
+<p>A common—and deadly—mistake is trying to use a double-flop synchronizer on a multi-bit bus. Imagine you’re sending the value <code>0111</code> (7) to <code>1000</code> (8). If the individual bits arrive at slightly different times due to routing skew, the destination domain might capture <code>0000</code>, <code>1111</code>, or any other random value for one clock cycle.</p>
+<p>You cannot synchronize a bus bit-by-bit. To move a bus across clock domains, you need a <strong>Handshake</strong> or an <strong>Asynchronous FIFO</strong>. A handshake involves a "request" signal, waiting for an "acknowledge" signal, and ensuring the data remains stable the whole time. It's safe, but it’s slow.</p>
+<h3 id="async-fifos-the-silicon-elevators">Async FIFOs: The Silicon Elevators</h3>
+<p>When you need to move a lot of data quickly between domains, you use an Asynchronous FIFO (First-In-First-Out). It’s like a high-speed elevator between floors of a building. You write data on one side using the source clock, and you read it on the other side using the destination clock.</p>
+<p>The mechanism that makes it safe is the Gray coding of its pointers. Inside the FIFO, we have to compare the "Write Pointer" and the "Read Pointer" to know if the FIFO is full or empty. But these pointers live in different clock domains! To compare them safely, we convert them to Gray Code.</p>
+<p><img alt="Async FIFO Warehouse" src="../../assets/images/fig_2_3_fifo_warehouse.png" /></p>
+<h3 id="gray-coding-the-one-bit-trick">Gray Coding: The One-Bit Trick</h3>
+<p>In standard binary, moving from <code>011</code> (3) to <code>100</code> (4) changes three bits at once. If you synchronize this, you have three opportunities for a CDC error. In Gray Code, only <strong>one bit</strong> changes at a time: <code>010</code> (3) to <code>110</code> (4).</p>
+<p>Because only one bit changes, even if the destination clock captures the signal during a transition, it will either see the "old" value or the "new" value. It will <em>never</em> see a random, intermediate value. This is the secret sauce that makes high-speed FIFOs and counters safe in an asynchronous world.</p>
+<h3 id="code-detective-the-cdc-constraint">Code Detective: The CDC Constraint</h3>
+<p>Vivado needs to know when you are intentionally crossing clock domains so it can apply the right timing analysis (or ignore it).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c"># Code Detective: Why is this &#39;set_max_delay&#39; dangerous?</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">set_max_delay</span><span class="w"> </span><span class="mf">2.0</span><span class="w"> </span><span class="o">-</span>from<span class="w"> </span><span class="k">[</span><span class="nv">get_clocks</span><span class="w"> </span>clk_a<span class="k">]</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="k">[</span><span class="nv">get_clocks</span><span class="w"> </span>clk_b<span class="k">]</span><span class="w"> </span><span class="o">-</span>datapath_only
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c"># Hint: Does this ensure that the bits of a bus arrive at the same time?</span>
+</code></pre></div>
+<p>The flaw is that <code>set_max_delay -datapath_only</code> constrains each bit <em>individually</em>. It says "no bit may take longer than 2 ns." It says nothing about the bits arriving together. Constrain a 64-bit crossing this way and every bit can legally land anywhere in a 2 ns spread — which is exactly the tearing failure from earlier in this section, now blessed by a constraint file.</p>
+<p><strong>The fix</strong> is both constraints, applied to the crossing registers, not to the clocks:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c"># Corrected: bound the latency AND the spread.</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c">#</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c"># Scope to the actual crossing registers. Constraining -from [get_clocks clk_a]</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c"># catches every path between the domains, including ones that have no synchronizer</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c"># and therefore should be failing loudly rather than being quietly relaxed.</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="k">set</span><span class="w"> </span>src_regs<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span><span class="o">-</span>hier<span class="w"> </span><span class="o">-</span>filter<span class="w"> </span><span class="k">{</span><span class="nv">NAME</span><span class="w"> </span><span class="err">=</span><span class="o">~</span><span class="w"> </span><span class="s2">&quot;*u_gray_ptr/bin2gray_reg*&quot;</span><span class="k">}]</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="k">set</span><span class="w"> </span>dst_regs<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span><span class="o">-</span>hier<span class="w"> </span><span class="o">-</span>filter<span class="w"> </span><span class="k">{</span><span class="nv">NAME</span><span class="w"> </span><span class="err">=</span><span class="o">~</span><span class="w"> </span><span class="s2">&quot;*u_sync_ptr/meta_reg*&quot;</span><span class="k">}]</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="c"># 1. Latency bound: no bit may take longer than one destination period.</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c">#    -datapath_only removes the clock skew/uncertainty terms, which are</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="c">#    meaningless between unrelated clocks - that is the correct use of the flag.</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="nv">set_max_delay</span><span class="w"> </span><span class="o">-</span>datapath_only<span class="w"> </span><span class="mf">3.200</span><span class="w"> </span><span class="o">-</span>from<span class="w"> </span><span class="nv">$src_regs</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="nv">$dst_regs</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="c"># 2. Spread bound: all bits must land within a window narrow enough that the</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="c">#    destination cannot sample a torn value. Rule of thumb: &lt;= the destination</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="c">#    period, and tighter if you can afford it.</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="nv">set_bus_skew</span><span class="w"> </span><span class="mf">3.200</span><span class="w"> </span><span class="o">-</span>from<span class="w"> </span><span class="nv">$src_regs</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="nv">$dst_regs</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="c"># 3. Tell the tool (and the simulator) these are synchronizer flops.</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="c">#    ASYNC_REG does two things: it asks the placer to put the chain in one slice,</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="c">#    and it makes simulation model metastability instead of hiding it.</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="nv">set_property</span><span class="w"> </span>ASYNC_REG<span class="w"> </span>TRUE<span class="w"> </span><span class="nv">$dst_regs</span>
+</code></pre></div>
+<p>And the constraint you should <em>not</em> write here:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c"># WRONG for a data crossing. A false path lets the router take as long as it</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c"># likes - including several destination periods - so the synchronizer&#39;s own</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c"># assumption (data settles within one period) stops holding.</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="nv">set_false_path</span><span class="w"> </span><span class="o">-</span>from<span class="w"> </span><span class="k">[</span><span class="nv">get_clocks</span><span class="w"> </span>clk_a<span class="k">]</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="k">[</span><span class="nv">get_clocks</span><span class="w"> </span>clk_b<span class="k">]</span>
+</code></pre></div>
+<p><code>set_clock_groups -asynchronous</code> between the domains is fine and normal — it stops the
+tool trying to time unrelated clocks. But you still need the <code>set_max_delay</code> and
+<code>set_bus_skew</code> on the individual crossings, because the clock group removes the
+<em>analysis</em>, and these two put back the only two requirements that actually matter.</p>
+<p>Verify with <code>report_cdc</code>, not by reading the XDC:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nv">report_cdc</span><span class="w"> </span><span class="o">-</span>details<span class="w"> </span><span class="o">-</span>file<span class="w"> </span>cdc.rpt
+</code></pre></div>
+<h3 id="analogy-silicon">Analogy → Silicon</h3>
+<table>
+<thead>
+<tr>
+<th>In the story</th>
+<th>In the silicon</th>
+<th>Where the analogy breaks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Coin landing on its edge</td>
+<td>Metastability: a flop's output between valid levels after a setup/hold violation</td>
+<td>A coin settles at a random <em>time</em> but a definite value; a metastable flop's resolution time is exponentially distributed, so there is no worst case — only a probability you push down</td>
+</tr>
+<tr>
+<td>Passport at the border</td>
+<td>A two-flop synchronizer with <code>ASYNC_REG TRUE</code></td>
+<td>A passport check is deterministic pass/fail; a synchronizer never <em>eliminates</em> failure, it moves the MTBF from seconds to millennia</td>
+</tr>
+<tr>
+<td>High-speed elevator between floors</td>
+<td><code>xpm_fifo_async</code> — dual-clock FIFO with Gray-coded pointers</td>
+<td>Elevators have a schedule; the FIFO's latency varies with occupancy, and its full/empty flags are deliberately pessimistic because they are themselves synchronized</td>
+</tr>
+<tr>
+<td>Trains on parallel tracks</td>
+<td>Independent clock domains with no phase relationship</td>
+<td>Trains can be re-timetabled; you cannot make two free-running oscillators related, which is the whole reason synchronizers exist</td>
+</tr>
+<tr>
+<td>One bit changes at a time</td>
+<td>Gray coding of a counter before it crosses</td>
+<td>Gray coding only works for values that change by <strong>±1</strong>. A pointer that can jump arbitrarily (a reset, a flush, a load) breaks the guarantee completely</td>
+</tr>
+<tr>
+<td>"Ghosts in the machine"</td>
+<td>Failures with MTBF measured in months, appearing only under specific temperature and data-rate combinations</td>
+<td>Ghosts are unexplainable; this one is fully computable, and the arithmetic is below</td>
+</tr>
+</tbody>
+</table>
+<h3 id="do-the-math">Do the Math</h3>
+<p>Metastability is the one FPGA failure mode people treat as mystical, and it is the one
+with the cleanest formula. The mean time between synchronizer failures is:</p>
+<div class="arithmatex">\[\text{MTBF} = \frac{e^{\,t_r / \tau}}{T_0 \times f_{\text{clk}} \times f_{\text{data}}}\]</div>
+<p>where:</p>
+<ul>
+<li><span class="arithmatex">\(t_r\)</span> — <strong>resolution time available</strong>: how long the flop has to settle before the next
+  stage samples it,</li>
+<li><span class="arithmatex">\(\tau\)</span> — the flop's metastability <strong>decay constant</strong> (how fast the exponential resolves),</li>
+<li><span class="arithmatex">\(T_0\)</span> — a device constant describing the width of the metastability window,</li>
+<li><span class="arithmatex">\(f_{\text{clk}}\)</span> — destination clock frequency,</li>
+<li><span class="arithmatex">\(f_{\text{data}}\)</span> — rate at which the asynchronous input toggles.</li>
+</ul>
+<p><strong>Givens</strong> (<span class="arithmatex">\(\tau\)</span> and <span class="arithmatex">\(T_0\)</span> are device and speed-grade constants — AMD publishes them,
+and they are the two numbers you must not invent):</p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(f_{\text{clk}}\)</span></td>
+<td>Destination clock</td>
+<td>400 MHz → <span class="arithmatex">\(T_{\text{clk}} = 2.500\)</span> ns</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(f_{\text{data}}\)</span></td>
+<td>Async toggle rate</td>
+<td>10 MHz</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\tau\)</span></td>
+<td>Assumed decay constant</td>
+<td>20 ps</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(T_0\)</span></td>
+<td>Assumed window constant</td>
+<td>20 fs = <span class="arithmatex">\(2\times10^{-14}\)</span> s</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(T_{su}\)</span></td>
+<td>Setup of the second flop</td>
+<td>0.050 ns</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The healthy case: a two-flop chain, packed into one slice.</strong> The first flop gets a full
+clock period to resolve, minus the second flop's setup requirement:</p>
+<div class="arithmatex">\[t_r = T_{\text{clk}} - T_{su} = 2.500 - 0.050 = 2.450\ \text{ns}\]</div>
+<div class="arithmatex">\[\text{MTBF} = \frac{e^{\,2.450\times10^{-9} / 20\times10^{-12}}}{2\times10^{-14} \times 400\times10^{6} \times 10\times10^{6}}\]</div>
+<p>The exponent is <span class="arithmatex">\(2450/20 = 122.5\)</span>, and <span class="arithmatex">\(e^{122.5} \approx 2.2\times10^{53}\)</span>. The
+denominator is <span class="arithmatex">\(2\times10^{-14} \times 4\times10^{8} \times 10^{7} = 8\times10^{1} = 80\)</span>.</p>
+<div class="arithmatex">\[\text{MTBF} \approx \frac{2.2\times10^{53}}{80} \approx 2.8\times10^{51}\ \text{seconds}\]</div>
+<p>Absurdly safe — vastly longer than the age of the universe. <strong>Now see what happens when
+you take the resolution time away.</strong> Suppose someone puts a LUT between the two
+synchronizer flops (a very common mistake — an <code>and</code> with an enable term), costing
+2.3 ns of the 2.45 ns budget:</p>
+<div class="arithmatex">\[t_r = 2.450 - 2.300 = 0.150\ \text{ns} \quad \Longrightarrow \quad \frac{150}{20} = 7.5, \quad e^{7.5} \approx 1808\]</div>
+<div class="arithmatex">\[\text{MTBF} \approx \frac{1808}{80} \approx 22.6\ \text{seconds}\]</div>
+<p><strong>Twenty-two seconds.</strong> From <span class="arithmatex">\(10^{51}\)</span> seconds to under half a minute, from one LUT.</p>
+<p>That collapse is the entire lesson of this section, and it explains every rule that
+follows from it:</p>
+<ul>
+<li><strong>Nothing between the synchronizer flops.</strong> Not a LUT, not an enable, not a mux. This
+  is what <code>ASYNC_REG TRUE</code> protects by asking the placer to pack the chain into one slice.</li>
+<li><strong><code>set_max_delay -datapath_only</code> bounds <span class="arithmatex">\(t_r\)</span>.</strong> Without it, the router can stretch the
+  first-to-second-flop route and eat the exponent.</li>
+<li><strong>MTBF scales inversely with both frequencies.</strong> Doubling <span class="arithmatex">\(f_{\text{data}}\)</span> halves your
+  MTBF — linearly, and unremarkably. Losing resolution time destroys it —
+  <em>exponentially</em>. Spend your effort on <span class="arithmatex">\(t_r\)</span>.</li>
+<li><strong>Adding a third flop</strong> buys you another full period of <span class="arithmatex">\(t_r\)</span>, i.e. another factor of
+  <span class="arithmatex">\(e^{125}\)</span>. That is why <code>DEST_SYNC_FF=3</code> is cheap insurance on anything critical, and
+  why arguing about two versus three stages is usually arguing about <span class="arithmatex">\(10^{51}\)</span> versus
+  <span class="arithmatex">\(10^{105}\)</span>.</li>
+</ul>
+<h3 id="the-real-artifact">The Real Artifact</h3>
+<p>Do not hand-write synchronizers. AMD ships parameterised, correctly-constrained macros —
+the XPM (Xilinx Parameterized Macro) library — and they are available in any language
+with no IP to generate. Here is the decision table and a complete worked crossing.</p>
+<table>
+<thead>
+<tr>
+<th>What you are crossing</th>
+<th>Use</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>One bit, level</td>
+<td><code>xpm_cdc_single</code></td>
+<td>The plain 2-flop synchronizer</td>
+</tr>
+<tr>
+<td>One bit, pulse (may be shorter than dest period)</td>
+<td><code>xpm_cdc_pulse</code></td>
+<td>Handles the fast→slow case a <code>single</code> silently drops</td>
+</tr>
+<tr>
+<td>Multiple bits, <strong>independent</strong></td>
+<td><code>xpm_cdc_array_single</code></td>
+<td>Only if the bits are genuinely unrelated — no field they jointly encode</td>
+</tr>
+<tr>
+<td>Multiple bits, <strong>coherent</strong> (a value)</td>
+<td><code>xpm_cdc_gray</code></td>
+<td>Requires the value to change by ±1 only</td>
+</tr>
+<tr>
+<td>Arbitrary bus, coherent</td>
+<td><code>xpm_cdc_handshake</code></td>
+<td>Costs round-trip latency; safe for any change pattern</td>
+</tr>
+<tr>
+<td>Reset release</td>
+<td><code>xpm_cdc_sync_rst</code></td>
+<td>Asynchronous assert, synchronous release</td>
+</tr>
+<tr>
+<td>Streaming data</td>
+<td><code>xpm_fifo_async</code></td>
+<td>Gray pointers and skew constraints handled internally</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1">// cdc_status.sv</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c1">//</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1">// A worked example of the three crossings that appear in almost every design,</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1">// done with XPM macros so the constraints come along for free.</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c1">//</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="c1">// The one rule that survives every review: the ONLY thing allowed between the</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1">// source register and the macro is a wire. If you find yourself writing</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="c1">//     .src_in (busy &amp; ~flush)</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="c1">// stop - register that expression in the source domain first, then cross it.</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="k">module</span><span class="w"> </span><span class="n">cdc_status</span><span class="w"> </span><span class="p">#(</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">    </span><span class="k">parameter</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">CNT_W</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">12</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="p">)</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w">             </span><span class="n">src_clk</span><span class="p">,</span><span class="w">        </span><span class="c1">// 400 MHz datapath domain</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w">             </span><span class="n">src_rst_n</span><span class="p">,</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w">             </span><span class="n">src_busy</span><span class="p">,</span><span class="w">       </span><span class="c1">// level</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w">             </span><span class="n">src_error_pulse</span><span class="p">,</span><span class="c1">// single-cycle pulse</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w"> </span><span class="p">[</span><span class="n">CNT_W</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="n">src_count</span><span class="p">,</span><span class="w">      </span><span class="c1">// increments by 1 only</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="w">    </span><span class="k">input</span><span class="w">  </span><span class="kt">logic</span><span class="w">             </span><span class="n">dst_clk</span><span class="p">,</span><span class="w">        </span><span class="c1">// 100 MHz control domain</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="kt">logic</span><span class="w">             </span><span class="n">dst_busy</span><span class="p">,</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="kt">logic</span><span class="w">             </span><span class="n">dst_error_pulse</span><span class="p">,</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="kt">logic</span><span class="w"> </span><span class="p">[</span><span class="n">CNT_W</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="n">dst_count</span>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="p">);</span>
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a>
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a><span class="w">    </span><span class="c1">// --- 1. A level. Plain two-flop synchronizer. --------------------------------</span>
+<a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a><span class="w">    </span><span class="n">xpm_cdc_single</span><span class="w"> </span><span class="p">#(</span>
+<a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a><span class="w">        </span><span class="p">.</span><span class="n">DEST_SYNC_FF</span><span class="w">   </span><span class="p">(</span><span class="mi">3</span><span class="p">),</span><span class="w">   </span><span class="c1">// 3 stages: see the MTBF arithmetic above</span>
+<a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a><span class="w">        </span><span class="p">.</span><span class="n">INIT_SYNC_FF</span><span class="w">   </span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w">   </span><span class="c1">// initialise the chain, so simulation starts defined</span>
+<a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a><span class="w">        </span><span class="p">.</span><span class="n">SRC_INPUT_REG</span><span class="w">  </span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w">   </span><span class="c1">// register in the SOURCE domain before crossing.</span>
+<a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a><span class="w">                               </span><span class="c1">// This is what guarantees &quot;nothing but a wire&quot; into</span>
+<a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a><span class="w">                               </span><span class="c1">// the synchronizer, even if the caller passes logic.</span>
+<a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a><span class="w">        </span><span class="p">.</span><span class="n">SIM_ASSERT_CHK</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w">    </span><span class="c1">// scream in simulation on a protocol violation</span>
+<a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a><span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="n">u_busy</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-4-35" name="__codelineno-4-35" href="#__codelineno-4-35"></a><span class="w">        </span><span class="p">.</span><span class="n">src_clk</span><span class="w">  </span><span class="p">(</span><span class="n">src_clk</span><span class="p">),</span>
+<a id="__codelineno-4-36" name="__codelineno-4-36" href="#__codelineno-4-36"></a><span class="w">        </span><span class="p">.</span><span class="n">src_in</span><span class="w">   </span><span class="p">(</span><span class="n">src_busy</span><span class="p">),</span>
+<a id="__codelineno-4-37" name="__codelineno-4-37" href="#__codelineno-4-37"></a><span class="w">        </span><span class="p">.</span><span class="n">dest_clk</span><span class="w"> </span><span class="p">(</span><span class="n">dst_clk</span><span class="p">),</span>
+<a id="__codelineno-4-38" name="__codelineno-4-38" href="#__codelineno-4-38"></a><span class="w">        </span><span class="p">.</span><span class="n">dest_out</span><span class="w"> </span><span class="p">(</span><span class="n">dst_busy</span><span class="p">)</span>
+<a id="__codelineno-4-39" name="__codelineno-4-39" href="#__codelineno-4-39"></a><span class="w">    </span><span class="p">);</span>
+<a id="__codelineno-4-40" name="__codelineno-4-40" href="#__codelineno-4-40"></a>
+<a id="__codelineno-4-41" name="__codelineno-4-41" href="#__codelineno-4-41"></a><span class="w">    </span><span class="c1">// --- 2. A pulse, crossing 400 MHz -&gt; 100 MHz. -------------------------------</span>
+<a id="__codelineno-4-42" name="__codelineno-4-42" href="#__codelineno-4-42"></a><span class="w">    </span><span class="c1">// A one-cycle pulse at 400 MHz is 2.5 ns wide; the 100 MHz domain samples</span>
+<a id="__codelineno-4-43" name="__codelineno-4-43" href="#__codelineno-4-43"></a><span class="w">    </span><span class="c1">// every 10 ns. xpm_cdc_single would drop it three times out of four.</span>
+<a id="__codelineno-4-44" name="__codelineno-4-44" href="#__codelineno-4-44"></a><span class="w">    </span><span class="c1">// xpm_cdc_pulse toggles an internal flag so the event cannot be missed.</span>
+<a id="__codelineno-4-45" name="__codelineno-4-45" href="#__codelineno-4-45"></a><span class="w">    </span><span class="n">xpm_cdc_pulse</span><span class="w"> </span><span class="p">#(</span>
+<a id="__codelineno-4-46" name="__codelineno-4-46" href="#__codelineno-4-46"></a><span class="w">        </span><span class="p">.</span><span class="n">DEST_SYNC_FF</span><span class="w">   </span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>
+<a id="__codelineno-4-47" name="__codelineno-4-47" href="#__codelineno-4-47"></a><span class="w">        </span><span class="p">.</span><span class="n">REG_OUTPUT</span><span class="w">     </span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+<a id="__codelineno-4-48" name="__codelineno-4-48" href="#__codelineno-4-48"></a><span class="w">        </span><span class="p">.</span><span class="n">RST_USED</span><span class="w">       </span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+<a id="__codelineno-4-49" name="__codelineno-4-49" href="#__codelineno-4-49"></a><span class="w">        </span><span class="p">.</span><span class="n">SIM_ASSERT_CHK</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-4-50" name="__codelineno-4-50" href="#__codelineno-4-50"></a><span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="n">u_error</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-4-51" name="__codelineno-4-51" href="#__codelineno-4-51"></a><span class="w">        </span><span class="p">.</span><span class="n">src_clk</span><span class="w">  </span><span class="p">(</span><span class="n">src_clk</span><span class="p">),</span>
+<a id="__codelineno-4-52" name="__codelineno-4-52" href="#__codelineno-4-52"></a><span class="w">        </span><span class="p">.</span><span class="n">src_rst</span><span class="w">  </span><span class="p">(</span><span class="o">~</span><span class="n">src_rst_n</span><span class="p">),</span>
+<a id="__codelineno-4-53" name="__codelineno-4-53" href="#__codelineno-4-53"></a><span class="w">        </span><span class="p">.</span><span class="n">src_pulse</span><span class="p">(</span><span class="n">src_error_pulse</span><span class="p">),</span>
+<a id="__codelineno-4-54" name="__codelineno-4-54" href="#__codelineno-4-54"></a><span class="w">        </span><span class="p">.</span><span class="n">dest_clk</span><span class="w"> </span><span class="p">(</span><span class="n">dst_clk</span><span class="p">),</span>
+<a id="__codelineno-4-55" name="__codelineno-4-55" href="#__codelineno-4-55"></a><span class="w">        </span><span class="p">.</span><span class="n">dest_rst</span><span class="w"> </span><span class="p">(</span><span class="mb">1&#39;b0</span><span class="p">),</span>
+<a id="__codelineno-4-56" name="__codelineno-4-56" href="#__codelineno-4-56"></a><span class="w">        </span><span class="p">.</span><span class="n">dest_pulse</span><span class="p">(</span><span class="n">dst_error_pulse</span><span class="p">)</span>
+<a id="__codelineno-4-57" name="__codelineno-4-57" href="#__codelineno-4-57"></a><span class="w">    </span><span class="p">);</span>
+<a id="__codelineno-4-58" name="__codelineno-4-58" href="#__codelineno-4-58"></a>
+<a id="__codelineno-4-59" name="__codelineno-4-59" href="#__codelineno-4-59"></a><span class="w">    </span><span class="c1">// --- 3. A coherent multi-bit value that changes by +/- 1. -------------------</span>
+<a id="__codelineno-4-60" name="__codelineno-4-60" href="#__codelineno-4-60"></a><span class="w">    </span><span class="c1">// Gray coding is valid ONLY because src_count is an incrementing counter.</span>
+<a id="__codelineno-4-61" name="__codelineno-4-61" href="#__codelineno-4-61"></a><span class="w">    </span><span class="c1">// If it could ever be loaded or reset to an arbitrary value while the</span>
+<a id="__codelineno-4-62" name="__codelineno-4-62" href="#__codelineno-4-62"></a><span class="w">    </span><span class="c1">// destination is reading, this macro is the wrong choice and you need</span>
+<a id="__codelineno-4-63" name="__codelineno-4-63" href="#__codelineno-4-63"></a><span class="w">    </span><span class="c1">// xpm_cdc_handshake instead.</span>
+<a id="__codelineno-4-64" name="__codelineno-4-64" href="#__codelineno-4-64"></a><span class="w">    </span><span class="n">xpm_cdc_gray</span><span class="w"> </span><span class="p">#(</span>
+<a id="__codelineno-4-65" name="__codelineno-4-65" href="#__codelineno-4-65"></a><span class="w">        </span><span class="p">.</span><span class="n">WIDTH</span><span class="w">               </span><span class="p">(</span><span class="n">CNT_W</span><span class="p">),</span>
+<a id="__codelineno-4-66" name="__codelineno-4-66" href="#__codelineno-4-66"></a><span class="w">        </span><span class="p">.</span><span class="n">DEST_SYNC_FF</span><span class="w">        </span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>
+<a id="__codelineno-4-67" name="__codelineno-4-67" href="#__codelineno-4-67"></a><span class="w">        </span><span class="p">.</span><span class="n">REG_OUTPUT</span><span class="w">          </span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+<a id="__codelineno-4-68" name="__codelineno-4-68" href="#__codelineno-4-68"></a><span class="w">        </span><span class="p">.</span><span class="n">SIM_ASSERT_CHK</span><span class="w">      </span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+<a id="__codelineno-4-69" name="__codelineno-4-69" href="#__codelineno-4-69"></a><span class="w">        </span><span class="p">.</span><span class="n">SIM_LOSSLESS_GRAY_CHK</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w">   </span><span class="c1">// simulation checks the +/-1 assumption for you</span>
+<a id="__codelineno-4-70" name="__codelineno-4-70" href="#__codelineno-4-70"></a><span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="n">u_count</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-4-71" name="__codelineno-4-71" href="#__codelineno-4-71"></a><span class="w">        </span><span class="p">.</span><span class="n">src_clk</span><span class="w">         </span><span class="p">(</span><span class="n">src_clk</span><span class="p">),</span>
+<a id="__codelineno-4-72" name="__codelineno-4-72" href="#__codelineno-4-72"></a><span class="w">        </span><span class="p">.</span><span class="n">src_in_bin</span><span class="w">      </span><span class="p">(</span><span class="n">src_count</span><span class="p">),</span>
+<a id="__codelineno-4-73" name="__codelineno-4-73" href="#__codelineno-4-73"></a><span class="w">        </span><span class="p">.</span><span class="n">dest_clk</span><span class="w">        </span><span class="p">(</span><span class="n">dst_clk</span><span class="p">),</span>
+<a id="__codelineno-4-74" name="__codelineno-4-74" href="#__codelineno-4-74"></a><span class="w">        </span><span class="p">.</span><span class="n">dest_out_bin</span><span class="w">    </span><span class="p">(</span><span class="n">dst_count</span><span class="p">)</span>
+<a id="__codelineno-4-75" name="__codelineno-4-75" href="#__codelineno-4-75"></a><span class="w">    </span><span class="p">);</span>
+<a id="__codelineno-4-76" name="__codelineno-4-76" href="#__codelineno-4-76"></a>
+<a id="__codelineno-4-77" name="__codelineno-4-77" href="#__codelineno-4-77"></a><span class="k">endmodule</span>
+</code></pre></div>
+<p>Then let the tool audit you, every build:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c"># Run after synth_design, on every build, and treat Critical as an error.</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nv">report_cdc</span><span class="w"> </span><span class="o">-</span>details<span class="w"> </span><span class="o">-</span>file<span class="w"> </span>cdc.rpt
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c"># What the severity classes mean in practice:</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="c">#   Critical - a crossing with NO synchronizer, or combinational logic feeding one.</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="c">#              These are bugs. Not one of them is a false positive worth waiving.</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="c">#   Warning  - a crossing that is synchronized but whose structure the tool cannot</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="c">#              fully prove safe: multi-bit through single-bit synchronizers, a</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="c">#              synchronizer output fanning out to several loads, missing ASYNC_REG.</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="c">#   Info     - recognised, constrained, safe.</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="c">#</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="c"># Waiving is possible and is almost always the wrong instinct:</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="c">#   create_waiver -type CDC -id CDC-1 -user &quot;me&quot; -desc &quot;...&quot; -from ... -to ...</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="c"># If you write one, the description must say why it is safe, not that it is noisy.</span>
+</code></pre></div>
+<h3 id="sharpen-your-pencil">Sharpen Your Pencil</h3>
+<ol>
+<li>Using the MTBF formula and the same <span class="arithmatex">\(\tau = 20\)</span> ps and <span class="arithmatex">\(T_0 = 20\)</span> fs, compute the MTBF
+   for a two-flop synchronizer in a <strong>50 MHz</strong> destination domain (period 20 ns, setup
+   0.05 ns) with a 1 MHz toggle rate. Then compute it again with 15 ns of that period
+   consumed by routing. What does the comparison tell you about slow clock domains?</li>
+<li>You need to cross an 8-bit <em>status field</em> — say <code>{overflow, underflow, state[2:0],
+   parity, ecc_err, busy}</code> — from a 250 MHz domain into a 50 MHz domain. Which XPM macro,
+   and why not the other candidates?</li>
+<li><code>report_cdc</code> shows a Critical finding on a path from <code>u_ctrl/mode_reg[3:0]</code> to
+   <code>u_dsp/mode_sync_reg[3:0]</code>, described as a multi-bit crossing through independent
+   synchronizers. The signal changes about once a second. Is it safe? Justify with a
+   number, not an opinion.</li>
+</ol>
+<h3 id="final-thoughts-on-the-minefield">Final Thoughts on the Minefield</h3>
+<p>CDC is the ultimate test of an FPGA engineer's discipline. It’s easy to be lazy and skip a synchronizer "just this once." But in the world of high-reliability hardware, "just this once" is where the bugs live. Use double-flops for single bits, FIFOs for data, and always, always use Gray code for pointers. Respect the domain boundary, and your hardware will run for decades without a single "ghost" in sight.</p>
+<h3 id="answers">Answers</h3>
+<p><strong>Brain Power</strong> — <em>100 MHz clock, a signal that changes once per second. Do you still
+need a synchronizer?</em></p>
+<p><strong>Yes, and the rarity is exactly what makes it dangerous.</strong> Put the numbers in:</p>
+<div class="arithmatex">\[f_{\text{data}} = 1\ \text{Hz}, \qquad f_{\text{clk}} = 100\ \text{MHz}\]</div>
+<p>Rarity only affects the <em>denominator</em>, linearly. With a proper two-flop synchronizer at
+10 ns of resolution time the MTBF is astronomically large and the low toggle rate makes it
+larger still. <strong>Without</strong> a synchronizer, though, the question is not MTBF at all — it is
+simply "what happens the next time the edge lands in the aperture," and the answer is
+that a metastable value propagates directly into your logic.</p>
+<p>What happens when a 1-second pulse hits the setup window of a 100 MHz clock:</p>
+<ul>
+<li>The capture flop goes metastable. Its output hovers, then resolves — but the logic
+  downstream has already sampled it.</li>
+<li>If that output fans out to <em>two</em> different loads, the two loads can resolve to
+  <strong>different values</strong>. One branch of your state machine thinks the enable was high, the
+  other thinks it was low. This is how a state machine reaches a state your RTL says is
+  unreachable, and it is why fanout from an unsynchronized crossing is worse than the
+  metastability itself.</li>
+<li>The event happens roughly once per second times the aperture probability — which is to
+  say, rarely enough to pass every test you run, and often enough to be a field failure.</li>
+</ul>
+<p>The general principle: <strong>the probability of a crossing being sampled badly does not
+depend on how often you cross, only on whether you crossed at all.</strong> Slow signals are not
+safer signals. They are signals whose failures take longer to reproduce.</p>
+<p><strong>Sharpen Your Pencil #1</strong> — 50 MHz, <span class="arithmatex">\(T_{\text{clk}} = 20\)</span> ns, <span class="arithmatex">\(f_{\text{data}} = 1\)</span> MHz.</p>
+<p>Healthy case, <span class="arithmatex">\(t_r = 20.000 - 0.050 = 19.950\)</span> ns:</p>
+<div class="arithmatex">\[\frac{t_r}{\tau} = \frac{19950\ \text{ps}}{20\ \text{ps}} = 997.5\]</div>
+<p><span class="arithmatex">\(e^{997.5}\)</span> is a number with over four hundred digits. Denominator:
+<span class="arithmatex">\(2\times10^{-14} \times 5\times10^{7} \times 1\times10^{6} = 1.0\)</span>. MTBF is
+<span class="arithmatex">\(\approx e^{997.5}\)</span> seconds — safe beyond any meaning of the word.</p>
+<p>With 15 ns consumed by routing, <span class="arithmatex">\(t_r = 19.950 - 15.000 = 4.950\)</span> ns:</p>
+<div class="arithmatex">\[\frac{4950}{20} = 247.5, \qquad e^{247.5} \approx 10^{107}\]</div>
+<div class="arithmatex">\[\text{MTBF} \approx 10^{107}\ \text{seconds}\]</div>
+<p>Still absurdly safe. <strong>That is the lesson: slow destination domains are enormously
+forgiving.</strong> A 50 MHz synchronizer can lose three quarters of its period to bad routing
+and remain safe, whereas the 400 MHz example collapsed to 22 seconds after losing the same
+<em>fraction</em>. The exponent scales with absolute time, so the fast domains are where
+<code>ASYNC_REG</code>, <code>set_max_delay -datapath_only</code> and slice packing actually earn their keep.</p>
+<p>Corollary worth internalising: when you speed a design up from 200 MHz to 400 MHz, your
+synchronizers do not merely get "a bit tighter." Their MTBF changes by a factor with
+hundreds of digits in it. Re-check them.</p>
+<p><strong>Sharpen Your Pencil #2</strong> — <code>{overflow, underflow, state[2:0], parity, ecc_err, busy}</code>
+from 250 MHz to 50 MHz.</p>
+<p><strong><code>xpm_cdc_handshake</code>.</strong> Reasoning by elimination:</p>
+<ul>
+<li><strong><code>xpm_cdc_array_single</code></strong> is wrong, and it is the one most people pick. It is
+  legitimate only when the bits are <em>independent</em> — when no consumer ever interprets two
+  of them together. Here <code>state[2:0]</code> alone rules it out: the three bits form one value,
+  and independent synchronizers let it tear through illegal intermediate states.</li>
+<li><strong><code>xpm_cdc_gray</code></strong> is wrong because Gray coding requires the value to change by ±1.
+  This field is a status vector; several bits can change in the same cycle, and there is
+  no ordering guarantee at all.</li>
+<li><strong><code>xpm_fifo_async</code></strong> would work but is heavy for a status field, and it changes the
+  semantics: you would be delivering a <em>stream</em> of status updates rather than a current
+  value, and the 250 MHz side can produce them faster than the 50 MHz side drains them.</li>
+<li><strong><code>xpm_cdc_handshake</code></strong> is correct: it holds the source data stable while a
+  request/acknowledge round trip completes, so the destination samples a coherent
+  snapshot. The cost is latency and a maximum update rate — the source cannot present a
+  new value until the previous handshake completes.</li>
+</ul>
+<p>The one thing you must then handle in your own logic: <code>xpm_cdc_handshake</code> will <em>skip</em>
+intermediate values if the source changes faster than the round trip. For a status
+snapshot that is fine and correct. For events you must not lose (like <code>ecc_err</code>), make
+them <strong>sticky</strong> in the source domain and clear them from the destination — a design
+pattern, not a macro choice.</p>
+<p><strong>Sharpen Your Pencil #3</strong> — 4-bit <code>mode_reg</code> through independent synchronizers, changing
+once per second. <strong>It is not safe, and here is the number.</strong></p>
+<p>Metastability is not the failure mode here; <strong>tearing</strong> is. Consider a mode change from
+<code>0111</code> (7) to <code>1000</code> (8) — all four bits change together. Each bit's synchronizer resolves
+independently, and a bit that changes near the destination's aperture can land one cycle
+later than its neighbours. The destination therefore observes some intermediate value for
+one cycle. Possible transient values include <code>0000</code>, <code>1111</code>, <code>1100</code> — any of the 16.</p>
+<p>Now the arithmetic that matters:</p>
+<ul>
+<li>The window in which a bit can land on the wrong side of the boundary is roughly the
+  destination period, so a multi-bit change is at risk essentially <strong>every time it
+  happens</strong>, not with some tiny probability. This is not a <span class="arithmatex">\(10^{-15}\)</span> event; it is close
+  to a coin flip whenever two or more bits change simultaneously.</li>
+<li>At one change per second, over a year: <span class="arithmatex">\(3.15\times10^{7}\)</span> opportunities. Even at a
+  pessimistic-sounding 1 % tearing rate that is <strong>315,000 corrupt mode values per year.</strong></li>
+<li>If mode <code>0000</code> happens to mean "bypass" or <code>1111</code> means "test mode," you have a device
+  that spontaneously enters an unintended mode several times a day.</li>
+</ul>
+<p>"It only changes once a second" is an argument about <em>frequency of exposure</em>, and tearing
+does not care about frequency of exposure — it triggers on the change itself. The fix is
+<code>xpm_cdc_handshake</code> (or <code>xpm_cdc_gray</code> if and only if <code>mode</code> is genuinely an incrementing
+counter, which a mode register never is). <code>report_cdc</code> classified it Critical for exactly
+this reason, and it was right.</p>
+<h3 id="there-are-no-dumb-questions">There Are No Dumb Questions</h3>
+<p><strong>Q: Why can't I just add more flops and stop worrying?</strong></p>
+<p>A: More flops fix metastability and nothing else. They do not fix tearing on a multi-bit
+crossing, they do not fix a pulse that is narrower than the destination period, and they
+do not fix a synchronizer output that fans out to loads which then disagree. Adding a
+third flop is cheap and worth doing; believing it makes a crossing correct is the
+mistake.</p>
+<p><strong>Q: What exactly does <code>ASYNC_REG TRUE</code> do?</strong></p>
+<p>A: Two distinct things. In implementation, it asks the placer to pack the marked
+registers into the same slice, which minimises the route between them and therefore
+maximises <span class="arithmatex">\(t_r\)</span> — the exponent in the MTBF formula. In simulation, it makes the flop model
+metastability by propagating <code>X</code> on a setup/hold violation instead of silently taking the
+new value. The second one is why RTL simulation of a design with proper <code>ASYNC_REG</code> will
+sometimes show you a bug that a "clean" simulation hid.</p>
+<p><strong>Q: Do I need <code>set_max_delay -datapath_only</code> if I use XPM macros?</strong></p>
+<p>A: The macros ship with their own constraints, so in the normal case, no. You need it
+when you have hand-written a crossing, when a crossing goes between two IP blocks and
+neither owns it, or when the tool tells you so — which is what the <code>report_cdc</code> Warning
+class is for. The habit of running <code>report_cdc</code> every build matters more than memorising
+which macro carries which constraint.</p>
+<p><strong>Q: My design has one clock. Am I exempt?</strong></p>
+<p>A: From CDC between clock domains, yes. Not from <strong>asynchronous inputs</strong>. Every push
+button, every external status pin, every reset from another chip, and every signal from a
+transceiver's recovered clock domain is an asynchronous input and needs a synchronizer.
+<code>report_cdc</code> will find them; single-clock designs frequently have a dozen.</p>
+<p><strong>Q: Is <code>set_clock_groups -asynchronous</code> enough on its own?</strong></p>
+<p>A: It is necessary and not sufficient. It stops Vivado from timing paths between unrelated
+clocks — correct, because the analysis would be meaningless. But "not timed" means the
+router has no upper bound, and an unbounded route between synchronizer stages eats the
+resolution time you depend on. Pair it with <code>set_max_delay -datapath_only</code> and
+<code>set_bus_skew</code> on the actual crossings.</p>
+<h3 id="bullet-points">Bullet Points</h3>
+<ul>
+<li><strong>MTBF</strong> <span class="arithmatex">\(= e^{t_r/\tau} / (T_0 \cdot f_{\text{clk}} \cdot f_{\text{data}})\)</span>. Resolution
+  time is in the <strong>exponent</strong>; frequencies are merely linear. Protect <span class="arithmatex">\(t_r\)</span> above all.</li>
+<li>One LUT between synchronizer stages took the worked example from <span class="arithmatex">\(10^{51}\)</span> seconds to
+  <strong>22 seconds</strong>. Nothing goes between the flops.</li>
+<li><strong><code>ASYNC_REG TRUE</code></strong>: packs the chain into one slice <em>and</em> makes simulation model
+  metastability.</li>
+<li><strong>Slow destination domains are hugely forgiving</strong>; fast ones are not. Re-audit every
+  synchronizer when you raise a clock frequency.</li>
+<li><strong>Pick the macro by what you are crossing</strong>: <code>xpm_cdc_single</code> (level),
+  <code>xpm_cdc_pulse</code> (event, fast→slow), <code>xpm_cdc_array_single</code> (<strong>independent</strong> bits only),
+  <code>xpm_cdc_gray</code> (±1 counters only), <code>xpm_cdc_handshake</code> (any coherent bus),
+  <code>xpm_cdc_sync_rst</code> (reset release), <code>xpm_fifo_async</code> (streams).</li>
+<li><strong>Multi-bit tearing is not a probability, it is a near-certainty</strong> on simultaneous bit
+  changes. Rarity of change does not make it safer.</li>
+<li><strong>Constrain crossings with both</strong>: <code>set_max_delay -datapath_only</code> (latency) <strong>and</strong>
+  <code>set_bus_skew</code> (spread). <code>set_false_path</code> on a data crossing is a bug.</li>
+<li><strong>Gray code guarantees hold only for ±1 changes.</strong> A loadable or resettable counter
+  breaks them.</li>
+<li><strong>Run <code>report_cdc -details</code> every build.</strong> Critical findings are bugs; waivers need a
+  written safety argument, not a note that the message was noisy.</li>
+</ul>
+<hr />
+<p>[REVIEW_STATUS: APPROVED BY PUBLISHER]</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../2.2_constraints/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 2.2 I/O Delays">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                2.2 I/O Delays
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../3.1_rtl_coding/" class="md-footer__link md-footer__link--next" aria-label="Next: 3.1 RTL Coding">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                3.1 RTL Coding
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2026 <a href="https://github.com/mehdibadjian">Mehdi Badjian</a> &middot; <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga">github.com/mehdibadjian/no-magic-smoke-fpga</a> &middot; content <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/blob/main/LICENSE-CODE">MIT</a> &middot; independent, unofficial guide - not affiliated with or endorsed by AMD, Inc.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" target="_blank" rel="noopener" title="Source and issues on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.footer", "content.code.copy", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2303 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An independent, unofficial study companion to the AMD UltraFast Design Methodology. FPGA engineering taught Head First style, with the arithmetic left in - worked calculations, runnable artifacts, and answers to every question it asks.">
+      
+      
+        <meta name="author" content="Mehdi Badjian">
+      
+      
+        <link rel="canonical" href="https://mehdibadjian.github.io/no-magic-smoke-fpga/sections/2.2_constraints/">
+      
+      
+        <link rel="prev" href="../2.1_timing_ballet/">
+      
+      
+        <link rel="next" href="../2.3_cdc_minefield/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>2.2 I/O Delays - No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#section-22-constraints-telling-the-tools-what-to-do" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-header__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              2.2 I/O Delays
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../1.1_pcb_layout/" class="md-tabs__link">
+          
+  
+  
+  Chapter 1: Board Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../2.1_timing_ballet/" class="md-tabs__link">
+          
+  
+  
+  Chapter 2: Constraints
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../3.1_rtl_coding/" class="md-tabs__link">
+          
+  
+  
+  Chapter 3: Design Creation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../4.1_synthesis/" class="md-tabs__link">
+          
+  
+  
+  Chapter 4: Implementation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../5.1_power/" class="md-tabs__link">
+          
+  
+  
+  Chapter 5: Power & Thermal
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../6.1_debug/" class="md-tabs__link">
+          
+  
+  
+  Chapter 6: Debug & Tuning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../references/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  References
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" class="md-nav__button md-logo" aria-label="No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mehdibadjian/no-magic-smoke-fpga
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 1: Board Planning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 1: Board Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.1_pcb_layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.1 Hardware Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.2_power_planning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.2 Power Delivery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.3_clocking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.3 Clocking Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1.4_ssi_hbm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.4 I/O Planning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 2: Constraints
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 2: Constraints
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.1_timing_ballet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.1 Defining Clocks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.2 I/O Delays
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.2 I/O Delays
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-xdc-language-commands-not-suggestions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The XDC Language: Commands, Not Suggestions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#primary-clocks-defining-the-heartbeat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Primary Clocks: Defining the Heartbeat
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generated-clocks-the-derived-beats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generated Clocks: The Derived Beats
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-the-primary-clock-and-the-pll" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: The Primary Clock and the PLL
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-false-path-escape-hatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The False Path Escape Hatch
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multi-cycle-paths-negotiating-for-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Cycle Paths: Negotiating for Time
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-xdc-conflict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The XDC Conflict
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on Constraints
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2.3_cdc_minefield/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.3 CDC Minefield
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 3: Design Creation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 3: Design Creation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.1_rtl_coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.1 RTL Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.2_ip_integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 IP Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.3_security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Design Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3.4_verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 4: Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 4: Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.1_synthesis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.1 Synthesis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.2_placement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.2 Placement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4.3_closure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.3 Closure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 5: Power & Thermal
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 5: Power & Thermal
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.1_power/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.1 Power Estimation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5.2_thermal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.2 Thermal Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chapter 6: Debug & Tuning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chapter 6: Debug & Tuning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6.1_debug/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.1 Hardware Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6.2_tuning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.2 Performance Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-xdc-language-commands-not-suggestions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The XDC Language: Commands, Not Suggestions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#primary-clocks-defining-the-heartbeat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Primary Clocks: Defining the Heartbeat
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generated-clocks-the-derived-beats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generated Clocks: The Derived Beats
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fireside-chat-the-primary-clock-and-the-pll" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fireside Chat: The Primary Clock and the PLL
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-false-path-escape-hatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The False Path Escape Hatch
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multi-cycle-paths-negotiating-for-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Cycle Paths: Negotiating for Time
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-detective-the-xdc-conflict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Detective: The XDC Conflict
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analogy-silicon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analogy → Silicon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#do-the-math" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do the Math
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-artifact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Real Artifact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharpen-your-pencil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharpen Your Pencil
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-thoughts-on-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Thoughts on Constraints
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#there-are-no-dumb-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        There Are No Dumb Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bullet-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bullet Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/edit/main/docs/sections/2.2_constraints.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/raw/main/docs/sections/2.2_constraints.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
+
+
+<h1 id="section-22-constraints-telling-the-tools-what-to-do">Section 2.2: Constraints: Telling the Tools What to Do</h1>
+<p>If timing closure is a ballet, then XDC (Xilinx Design Constraints) is the script. Without it, the dancers have no idea when to move, and the orchestra is playing whatever they want. In the world of AMD FPGAs, the tools are incredibly smart, but they aren't psychic. If you don't tell them exactly what your timing requirements are, they will optimize for the wrong things, and your design will be a disorganized mess.</p>
+<p>Constraints are the bridge between your high-level HDL and the physical reality of the chip. They tell Vivado, "This clock runs at 156.25MHz," and "This input arrives 2ns after the clock." Without these rules, Vivado will just try to make everything as fast as possible, which ironically leads to a design that is slower and harder to close.</p>
+<h3 id="the-xdc-language-commands-not-suggestions">The XDC Language: Commands, Not Suggestions</h3>
+<p>XDC is based on the industry-standard SDC (Synopsys Design Constraints) format, but with some AMD-specific secret sauce. It’s a Tcl-based language, which means it’s powerful and flexible. But with great power comes the ability to completely shoot yourself in the foot.</p>
+<p>The most important thing to remember is that constraints are <strong>strict orders</strong>. If you set a constraint that is physically impossible—like asking for 100Gbps through a single LUT—the tool will spend hours trying to achieve it, eventually failing and giving you a "routing congestion" error. You have to be realistic. The tools are your partners, not your slaves.</p>
+<blockquote>
+<p><strong>Brain Power</strong>
+<strong>If you have a 100MHz clock but you don't constrain it, Vivado will treat it as unconstrained. Will the timing report show a failure? Or will it just say "No paths found"? What are the risks of ignoring unconstrained paths?</strong></p>
+</blockquote>
+<h3 id="primary-clocks-defining-the-heartbeat">Primary Clocks: Defining the Heartbeat</h3>
+<p>Everything starts with the primary clock. This is the clock that enters the FPGA from an external pin. It’s the "Master Beat" of your entire system. If you get this wrong, every other timing calculation in your design will be incorrect.</p>
+<p>The <code>create_clock</code> command is your first line of defense. You need to specify the period and the port it’s attached to. AMD’s UltraFast methodology recommends defining your primary clocks as early as possible in the design cycle. If you change your clock frequency later, you’ll have to re-evaluate every single constraint in your file.</p>
+<p><img alt="The Golden Metronome" src="../../assets/images/fig_2_2_metronome.png" /></p>
+<h3 id="generated-clocks-the-derived-beats">Generated Clocks: The Derived Beats</h3>
+<p>Most modern designs don't just use one clock. They use PLLs (Phase-Locked Loops) or MMCMs (Mixed-Mode Clock Managers) to create new clocks from the primary one. These are "Generated Clocks." Vivado derives these for you automatically wherever it can read the ratio out of a hard block — it knows an MMCM's <code>CLKFBOUT_MULT_F</code> and <code>CLKOUT*_DIVIDE</code> properties, so it can compute the output period itself. Where it cannot read the ratio, because you built the divider out of fabric logic, you must state it with <code>create_generated_clock</code>.</p>
+<p>The danger here is "Clock Latency." A generated clock is always slightly delayed compared to its source. Vivado handles this automatically, but if you have a complex clock tree with multiple levels of division and multiplication, the uncertainty adds up. Keep your clock trees as shallow as possible to avoid the "latency tax."</p>
+<h3 id="fireside-chat-the-primary-clock-and-the-pll">Fireside Chat: The Primary Clock and the PLL</h3>
+<p><strong>Primary Clock:</strong> "I'm the boss. I come from a high-quality crystal oscillator outside the chip. I'm stable, I'm clean, and I set the pace for everything."</p>
+<p><strong>PLL:</strong> "Yeah, yeah, you're the boss, but I'm the one who does the work. I take your boring 100MHz and turn it into 400MHz for the memory controller and 25MHz for the LED blinker. I'm the flexible one here."</p>
+<p><strong>Primary Clock:</strong> "Flexible? You're a jitter factory! Every time you multiply me, you add uncertainty. If you aren't careful, you'll ruin the timing for the entire SLR."</p>
+<p><strong>PLL:</strong> "I'm just following orders! If the constraints say I need to be 400MHz, I'll be 400MHz. Just make sure the human tells me what to do, or I'll just sit here and vibrate."</p>
+<h3 id="the-false-path-escape-hatch">The False Path Escape Hatch</h3>
+<p>Sometimes, you have signals that cross between clock domains where timing doesn't matter. Maybe it’s a configuration register that only changes once a year. In these cases, you can use a <code>set_false_path</code> constraint. This tells Vivado, "Ignore this path. Don't waste any effort trying to make it fast."</p>
+<p><strong>WARNING:</strong> False paths are the most abused constraint in the world. Engineers use them to "hide" timing failures they don't know how to fix. If you set a false path on a signal that actually <em>does</em> need to be synchronized, you’ll get intermittent data corruption that is almost impossible to debug. The UltraFast methodology says: Use false paths only as a last resort, and always use a proper synchronization circuit (like a 2-stage flip-flop) first.</p>
+<p><img alt="The False Path Hammock" src="../../assets/images/fig_2_2_false_path.png" /></p>
+<h3 id="multi-cycle-paths-negotiating-for-time">Multi-Cycle Paths: Negotiating for Time</h3>
+<p>A multi-cycle path (<code>set_multicycle_path</code>) is a way to tell Vivado that a piece of logic has more than one clock period to complete its work. This is common in DSP operations or slow control loops. It’s like telling your boss, "I know the deadline is tomorrow, but I have a special permit to turn this in next week."</p>
+<p>This is a great way to reduce power and congestion, but you have to be careful. If you tell the tools it's a multi-cycle path of 2, but your logic actually changes every cycle, you’ll get garbage data. You must ensure your RTL (the "Enable" signals) actually respects the multi-cycle constraint.</p>
+<h3 id="code-detective-the-xdc-conflict">Code Detective: The XDC Conflict</h3>
+<p>Vivado processes constraints in the order they appear in the file. If you have two constraints that affect the same path, the last one wins.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c"># Code Detective: Which constraint is active for the &#39;clk_main&#39; clock?</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">create_clock</span><span class="w"> </span><span class="o">-</span>period<span class="w"> </span><span class="mf">10.000</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>clk_main<span class="w"> </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span>sys_clk<span class="k">]</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nv">create_clock</span><span class="w"> </span><span class="o">-</span>period<span class="w"> </span><span class="mf">5.000</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>clk_fast<span class="w"> </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span>sys_clk<span class="k">]</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c"># Hint: Look at the port names. Can one pin have two master clocks?</span>
+</code></pre></div>
+<p>The flaw here is that the user is trying to define two different clocks on the <strong>same physical port</strong>. The second <code>create_clock</code> silently replaces the first — and "silently" is the dangerous word, because <code>clk_main</code> still <em>exists</em> as a name you can reference in later constraints, so a <code>set_false_path -from [get_clocks clk_main]</code> further down the file quietly matches nothing.</p>
+<p><strong>The fix</strong> depends on which of two situations you are actually in:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c"># Case A: the port really does run at one frequency, and the second line was a</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c"># leftover from a previous board revision. Delete it. Then prove no other constraint</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c"># referenced the name you removed:</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nv">create_clock</span><span class="w"> </span><span class="o">-</span>period<span class="w"> </span><span class="mf">10.000</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>clk_main<span class="w"> </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span>sys_clk<span class="k">]</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nv">report_clocks</span><span class="w">                      </span><span class="k">;</span><span class="c"># confirm exactly the clocks you expect exist</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nv">check_timing</span><span class="w"> </span><span class="o">-</span>verbose<span class="w">              </span><span class="k">;</span><span class="c"># no_clock, unconstrained_internal_endpoints, ...</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="c"># Case B: the port genuinely carries two frequencies in two operating modes</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="c"># (a board strap, a different oscillator fitted). Constrain BOTH, then analyse</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c"># one mode at a time - Vivado can hold two clocks on a port, it just cannot</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="c"># analyse them as if both were live simultaneously.</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="nv">create_clock</span><span class="w"> </span><span class="o">-</span>period<span class="w"> </span><span class="mf">10.000</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>clk_slow<span class="w"> </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span>sys_clk<span class="k">]</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="nv">create_clock</span><span class="w"> </span><span class="o">-</span>period<span class="w">  </span><span class="mf">5.000</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>clk_fast<span class="w"> </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span>sys_clk<span class="k">]</span><span class="w"> </span><span class="o">-</span>add
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="c"># Declare them mutually exclusive so the tool does not analyse cross-mode paths</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="c"># that can never exist:</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="nv">set_clock_groups</span><span class="w"> </span><span class="o">-</span>physically_exclusive<span class="w"> </span><span class="err">\</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">    </span><span class="nv">-group</span><span class="w"> </span><span class="k">[</span><span class="nv">get_clocks</span><span class="w"> </span>clk_slow<span class="k">]</span><span class="w"> </span><span class="err">\</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">    </span><span class="nv">-group</span><span class="w"> </span><span class="k">[</span><span class="nv">get_clocks</span><span class="w"> </span>clk_fast<span class="k">]</span>
+</code></pre></div>
+<p>Note <code>-add</code> on the second <code>create_clock</code>: without it you get replacement, with it you get
+coexistence. And note <code>-physically_exclusive</code> rather than <code>-asynchronous</code> — the two
+clocks are not asynchronous to each other, they are <em>never present at the same time</em>,
+which is a different (and stronger) statement that removes the paths entirely instead of
+merely declining to time them.</p>
+<p>The habit that prevents the whole class of bug: end every constraint file with
+<code>report_clocks</code> and <code>check_timing</code> during development. <code>check_timing</code> reports the
+categories that silently ruin timing sign-off — <code>no_clock</code>, <code>no_input_delay</code>,
+<code>no_output_delay</code>, <code>unconstrained_internal_endpoints</code>, <code>multiple_clock</code> — and each one is
+a hole where the tool is reporting success because you never asked it a question.</p>
+<h3 id="analogy-silicon">Analogy → Silicon</h3>
+<table>
+<thead>
+<tr>
+<th>In the story</th>
+<th>In the silicon</th>
+<th>Where the analogy breaks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The script of the ballet</td>
+<td>The <code>.xdc</code> file, evaluated as Tcl in file order</td>
+<td>A script is descriptive; XDC is <em>the definition of correctness</em>. If it is wrong, a passing timing report is a wrong answer, not a lenient one</td>
+</tr>
+<tr>
+<td>Strict orders, not suggestions</td>
+<td><code>create_clock</code>, <code>set_input_delay</code>, <code>set_max_delay</code></td>
+<td>Orders can be refused audibly; an over-tight constraint mostly manifests as runtime and congestion, not as an error message</td>
+</tr>
+<tr>
+<td>Special permit to file late</td>
+<td><code>set_multicycle_path</code></td>
+<td>A permit is one document; a multicycle needs <strong>two</strong> constraints (setup <em>and</em> hold) or you have created a hold violation you cannot see</td>
+</tr>
+<tr>
+<td>Escape hatch</td>
+<td><code>set_false_path</code></td>
+<td>An escape hatch is a way out of a real building; a false path deletes the check entirely, including for the case you did not think about</td>
+</tr>
+<tr>
+<td>The boss and the flexible worker</td>
+<td>Primary clock via <code>create_clock</code> on a port; derived clocks auto-generated at MMCM outputs</td>
+<td>The worker reports to the boss; a <code>create_clock</code> written on an internal pin <em>severs</em> that relationship and the tool stops tracking it</td>
+</tr>
+</tbody>
+</table>
+<h3 id="do-the-math">Do the Math</h3>
+<p>The constraint people get wrong most often is <code>set_input_delay</code>, because it asks you to
+describe the <em>outside world</em> — and the sign convention feels backwards until you have
+derived it once.</p>
+<p><code>set_input_delay</code> declares <strong>how long after the clock edge the data arrives at the FPGA
+pin</strong>, measured in the launching device's timeline. For a system-synchronous interface
+(one clock source feeds both the external device and the FPGA):</p>
+<div class="arithmatex">\[T_{\text{input,max}} = T_{co,\max}^{\text{ext}} + T_{\text{pcb,data}}^{\max} - T_{\text{pcb,clk}}^{\min}$$
+$$T_{\text{input,min}} = T_{co,\min}^{\text{ext}} + T_{\text{pcb,data}}^{\min} - T_{\text{pcb,clk}}^{\max}\]</div>
+<p><strong>Givens</strong> — from the external device's datasheet and your board's length report:</p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(T_{co,\max}^{\text{ext}}\)</span></td>
+<td>External ADC clock-to-out, max</td>
+<td>3.200 ns</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(T_{co,\min}^{\text{ext}}\)</span></td>
+<td>External ADC clock-to-out, min</td>
+<td>1.100 ns</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(T_{\text{pcb,data}}\)</span></td>
+<td>Data trace flight time (min/max over the bus)</td>
+<td>0.420 / 0.510 ns</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(T_{\text{pcb,clk}}\)</span></td>
+<td>Clock trace flight time to the FPGA (min/max)</td>
+<td>0.380 / 0.450 ns</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(T_{\text{clk}}\)</span></td>
+<td>Interface clock period</td>
+<td>10.000 ns</td>
+</tr>
+</tbody>
+</table>
+<div class="arithmatex">\[T_{\text{input,max}} = 3.200 + 0.510 - 0.380 = 3.330\ \text{ns}$$
+$$T_{\text{input,min}} = 1.100 + 0.420 - 0.450 = 1.070\ \text{ns}\]</div>
+<p>Which becomes:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nv">set_input_delay</span><span class="w"> </span><span class="o">-</span>clock<span class="w"> </span>adc_clk<span class="w"> </span><span class="o">-</span>max<span class="w"> </span><span class="mf">3.330</span><span class="w"> </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span><span class="k">{</span><span class="nv">adc_data</span><span class="k">[</span><span class="o">*</span><span class="k">]}]</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nv">set_input_delay</span><span class="w"> </span><span class="o">-</span>clock<span class="w"> </span>adc_clk<span class="w"> </span><span class="o">-</span>min<span class="w"> </span><span class="mf">1.070</span><span class="w"> </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span><span class="k">{</span><span class="nv">adc_data</span><span class="k">[</span><span class="o">*</span><span class="k">]}]</span>
+</code></pre></div>
+<p><strong>Now check that the interface is even possible</strong>, before you spend a day closing it. The
+window the FPGA has left to capture the data is:</p>
+<div class="arithmatex">\[T_{\text{window}} = T_{\text{clk}} - T_{\text{input,max}} - T_{\text{input,min}}$$
+$$= 10.000 - 3.330 - 1.070 = 5.600\ \text{ns}\]</div>
+<p>5.6 ns of capture window at 100 MHz — comfortable. Run the same arithmetic at 300 MHz
+(3.333 ns period):</p>
+<div class="arithmatex">\[T_{\text{window}} = 3.333 - 3.330 - 1.070 = -1.067\ \text{ns}\]</div>
+<p><strong>Negative.</strong> The data valid window is <em>shorter than zero</em>: this interface cannot be
+captured with a single edge on this clock, at any placement, with any constraint you
+write. That is not a timing closure problem, it is a board or interface architecture
+problem, and the answer is source-synchronous capture with an <code>IDELAY</code> element, or a
+different interface entirely.</p>
+<p><strong>Verdict: the input delay arithmetic tells you whether an interface is feasible before
+you commit to it.</strong> Doing it after implementation, when the tool reports failure, is
+doing it too late to change anything cheaply.</p>
+<h3 id="the-real-artifact">The Real Artifact</h3>
+<p>A constraint file is a document with an argument structure, and the order of its sections
+is not cosmetic — later constraints override earlier ones with the same scope, and
+exceptions are applied in a fixed precedence regardless of file order.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c">#==============================================================================</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c"># top.xdc - ordered by the standard XDC section sequence.</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c">#</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c"># Two rules that are easy to state and easy to violate:</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c">#   1. FILE ORDER matters for same-type constraints: the last one wins, silently.</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="c">#   2. EXCEPTION PRECEDENCE does not follow file order. Vivado applies:</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c">#        set_false_path  &gt;  set_max_delay/set_min_delay  &gt;  set_multicycle_path</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="c">#      A false path further down the file still beats a multicycle further up.</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="c">#      This is why &quot;my multicycle isn&#39;t working&quot; is nearly always a false path</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="c">#      somewhere else in the repo swallowing the same endpoints.</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="c">#==============================================================================</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="c"># 1. TIMING ASSERTIONS - what the clocks are. Nothing else can be right until</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="c">#    these are.</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="nv">create_clock</span><span class="w"> </span><span class="o">-</span>period<span class="w"> </span><span class="mf">10.000</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>sys_clk<span class="w">  </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span>sys_clk_p<span class="k">]</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="nv">create_clock</span><span class="w"> </span><span class="o">-</span>period<span class="w">  </span><span class="mf">8.000</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>adc_clk<span class="w">  </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span>adc_clk_p<span class="k">]</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="c"># Jitter the tool cannot know about: the reference oscillator&#39;s own spec.</span>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="nv">set_input_jitter</span><span class="w"> </span>sys_clk<span class="w"> </span><span class="mf">0.050</span>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="nv">set_input_jitter</span><span class="w"> </span>adc_clk<span class="w"> </span><span class="mf">0.120</span>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="c"># 2. I/O DELAYS - describing the world outside the package. See &quot;Do the Math&quot;.</span>
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a><span class="nv">set_input_delay</span><span class="w">  </span><span class="o">-</span>clock<span class="w"> </span>adc_clk<span class="w"> </span><span class="o">-</span>max<span class="w"> </span><span class="mf">3.330</span><span class="w"> </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span><span class="k">{</span><span class="nv">adc_data</span><span class="k">[</span><span class="o">*</span><span class="k">]}]</span>
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a><span class="nv">set_input_delay</span><span class="w">  </span><span class="o">-</span>clock<span class="w"> </span>adc_clk<span class="w"> </span><span class="o">-</span>min<span class="w"> </span><span class="mf">1.070</span><span class="w"> </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span><span class="k">{</span><span class="nv">adc_data</span><span class="k">[</span><span class="o">*</span><span class="k">]}]</span>
+<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>
+<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a><span class="c"># Outputs: how much of the period the receiving device needs before/after the edge.</span>
+<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a><span class="c">#   max = its setup requirement + max board flight time</span>
+<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a><span class="c">#   min = -(its hold requirement) + min board flight time   &lt;- note the sign</span>
+<a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a><span class="nv">set_output_delay</span><span class="w"> </span><span class="o">-</span>clock<span class="w"> </span>sys_clk<span class="w"> </span><span class="o">-</span>max<span class="w">  </span><span class="mf">2.100</span><span class="w"> </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span><span class="k">{</span><span class="nv">dac_data</span><span class="k">[</span><span class="o">*</span><span class="k">]}]</span>
+<a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a><span class="nv">set_output_delay</span><span class="w"> </span><span class="o">-</span>clock<span class="w"> </span>sys_clk<span class="w"> </span><span class="o">-</span>min<span class="w"> </span><span class="o">-</span><span class="mf">0.400</span><span class="w"> </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span><span class="k">{</span><span class="nv">dac_data</span><span class="k">[</span><span class="o">*</span><span class="k">]}]</span>
+<a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a>
+<a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a><span class="c"># 3. CLOCK GROUPS - which domains are genuinely unrelated. Declaring this</span>
+<a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a><span class="c">#    explicitly is what turns &quot;unanalysed&quot; into &quot;deliberately not analysed&quot;.</span>
+<a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-3-40" name="__codelineno-3-40" href="#__codelineno-3-40"></a><span class="nv">set_clock_groups</span><span class="w"> </span><span class="o">-</span>asynchronous<span class="w"> </span><span class="err">\</span>
+<a id="__codelineno-3-41" name="__codelineno-3-41" href="#__codelineno-3-41"></a><span class="w">    </span><span class="nv">-group</span><span class="w"> </span><span class="k">[</span><span class="nv">get_clocks</span><span class="w"> </span><span class="o">-</span>include_generated_clocks<span class="w"> </span>sys_clk<span class="k">]</span><span class="w"> </span><span class="err">\</span>
+<a id="__codelineno-3-42" name="__codelineno-3-42" href="#__codelineno-3-42"></a><span class="w">    </span><span class="nv">-group</span><span class="w"> </span><span class="k">[</span><span class="nv">get_clocks</span><span class="w"> </span><span class="o">-</span>include_generated_clocks<span class="w"> </span>adc_clk<span class="k">]</span>
+<a id="__codelineno-3-43" name="__codelineno-3-43" href="#__codelineno-3-43"></a>
+<a id="__codelineno-3-44" name="__codelineno-3-44" href="#__codelineno-3-44"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-3-45" name="__codelineno-3-45" href="#__codelineno-3-45"></a><span class="c"># 4. TIMING EXCEPTIONS - narrowest scope first, and every one of them commented</span>
+<a id="__codelineno-3-46" name="__codelineno-3-46" href="#__codelineno-3-46"></a><span class="c">#    with WHY it is safe. An uncommented exception is a future outage.</span>
+<a id="__codelineno-3-47" name="__codelineno-3-47" href="#__codelineno-3-47"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-3-48" name="__codelineno-3-48" href="#__codelineno-3-48"></a>
+<a id="__codelineno-3-49" name="__codelineno-3-49" href="#__codelineno-3-49"></a><span class="c"># Config register written once at boot from software, read by the datapath.</span>
+<a id="__codelineno-3-50" name="__codelineno-3-50" href="#__codelineno-3-50"></a><span class="c"># Safe as a multicycle because the write enable is asserted for &gt;= 4 cycles and</span>
+<a id="__codelineno-3-51" name="__codelineno-3-51" href="#__codelineno-3-51"></a><span class="c"># the datapath never samples it during that window. See u_cfg/gate_en.</span>
+<a id="__codelineno-3-52" name="__codelineno-3-52" href="#__codelineno-3-52"></a><span class="nv">set_multicycle_path</span><span class="w"> </span><span class="o">-</span>setup<span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="err">\</span>
+<a id="__codelineno-3-53" name="__codelineno-3-53" href="#__codelineno-3-53"></a><span class="w">    </span><span class="nv">-from</span><span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span>u_cfg<span class="o">/</span>cfg_reg<span class="o">*</span><span class="k">]</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span>u_dsp<span class="o">/</span>coef_reg<span class="o">*</span><span class="k">]</span>
+<a id="__codelineno-3-54" name="__codelineno-3-54" href="#__codelineno-3-54"></a><span class="nv">set_multicycle_path</span><span class="w"> </span><span class="o">-</span>hold<span class="w">  </span><span class="mi">3</span><span class="w"> </span><span class="err">\</span>
+<a id="__codelineno-3-55" name="__codelineno-3-55" href="#__codelineno-3-55"></a><span class="w">    </span><span class="nv">-from</span><span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span>u_cfg<span class="o">/</span>cfg_reg<span class="o">*</span><span class="k">]</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span>u_dsp<span class="o">/</span>coef_reg<span class="o">*</span><span class="k">]</span>
+<a id="__codelineno-3-56" name="__codelineno-3-56" href="#__codelineno-3-56"></a>
+<a id="__codelineno-3-57" name="__codelineno-3-57" href="#__codelineno-3-57"></a><span class="c"># CDC into the status domain, already protected by a 2-flop synchronizer.</span>
+<a id="__codelineno-3-58" name="__codelineno-3-58" href="#__codelineno-3-58"></a><span class="c"># Bound the crossing so it cannot take longer than one destination period, and</span>
+<a id="__codelineno-3-59" name="__codelineno-3-59" href="#__codelineno-3-59"></a><span class="c"># bound the skew so multi-bit fields cannot tear. NOT a false path - a false</span>
+<a id="__codelineno-3-60" name="__codelineno-3-60" href="#__codelineno-3-60"></a><span class="c"># path here would let the router make the crossing arbitrarily long.</span>
+<a id="__codelineno-3-61" name="__codelineno-3-61" href="#__codelineno-3-61"></a><span class="nv">set_max_delay</span><span class="w"> </span><span class="o">-</span>datapath_only<span class="w"> </span><span class="mf">4.000</span><span class="w"> </span><span class="err">\</span>
+<a id="__codelineno-3-62" name="__codelineno-3-62" href="#__codelineno-3-62"></a><span class="w">    </span><span class="nv">-from</span><span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span>u_core<span class="o">/</span>stat_reg<span class="o">*</span><span class="k">]</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span>u_sync<span class="o">/</span>stat_meta_reg<span class="o">*</span><span class="k">]</span>
+<a id="__codelineno-3-63" name="__codelineno-3-63" href="#__codelineno-3-63"></a><span class="nv">set_bus_skew</span><span class="w">  </span><span class="mf">2.000</span><span class="w"> </span><span class="err">\</span>
+<a id="__codelineno-3-64" name="__codelineno-3-64" href="#__codelineno-3-64"></a><span class="w">    </span><span class="nv">-from</span><span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span>u_core<span class="o">/</span>stat_reg<span class="o">*</span><span class="k">]</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span>u_sync<span class="o">/</span>stat_meta_reg<span class="o">*</span><span class="k">]</span>
+<a id="__codelineno-3-65" name="__codelineno-3-65" href="#__codelineno-3-65"></a>
+<a id="__codelineno-3-66" name="__codelineno-3-66" href="#__codelineno-3-66"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-3-67" name="__codelineno-3-67" href="#__codelineno-3-67"></a><span class="c"># 5. SELF-CHECK - run these every time this file changes.</span>
+<a id="__codelineno-3-68" name="__codelineno-3-68" href="#__codelineno-3-68"></a><span class="c">#------------------------------------------------------------------------------</span>
+<a id="__codelineno-3-69" name="__codelineno-3-69" href="#__codelineno-3-69"></a><span class="c">#   report_clocks                     - exactly the clocks you meant, no more</span>
+<a id="__codelineno-3-70" name="__codelineno-3-70" href="#__codelineno-3-70"></a><span class="c">#   check_timing -verbose             - the holes: no_clock, no_input_delay,</span>
+<a id="__codelineno-3-71" name="__codelineno-3-71" href="#__codelineno-3-71"></a><span class="c">#                                       unconstrained_internal_endpoints</span>
+<a id="__codelineno-3-72" name="__codelineno-3-72" href="#__codelineno-3-72"></a><span class="c">#   report_exceptions -ignored        - exceptions overridden by another exception</span>
+<a id="__codelineno-3-73" name="__codelineno-3-73" href="#__codelineno-3-73"></a><span class="c">#   report_timing_summary -report_unconstrained</span>
+</code></pre></div>
+<p><code>report_exceptions -ignored</code> deserves special attention. It lists every exception that
+Vivado parsed, accepted, and then discarded because a higher-precedence exception covered
+the same paths. That list is where "but I constrained that!" goes to die.</p>
+<h3 id="sharpen-your-pencil">Sharpen Your Pencil</h3>
+<ol>
+<li>An external device specifies <span class="arithmatex">\(T_{co}\)</span> of 2.0 ns min / 4.5 ns max. Your data traces
+   are 0.30–0.35 ns and the clock trace is 0.60–0.65 ns. Compute the <code>-max</code> and <code>-min</code>
+   input delays, then the capture window at a 8.000 ns period.</li>
+<li>You want a path from a slow control register to a datapath register to take four
+   cycles. Write both required constraints. Then explain, in one sentence, what happens
+   if you write only the <code>-setup</code> one.</li>
+<li>Your <code>set_multicycle_path</code> appears in <code>report_exceptions</code> but the path still shows a
+   one-cycle requirement in <code>report_timing</code>. Name the single most likely cause and the
+   command that confirms it.</li>
+</ol>
+<h3 id="final-thoughts-on-constraints">Final Thoughts on Constraints</h3>
+<p>Constraints are the ultimate "Truth" in your design. They are how you communicate your intent to the silicon. A design with perfect RTL but bad constraints will never work. A design with mediocre RTL but perfect constraints has a fighting chance. Learn the language of XDC, respect the hierarchy, and never, ever use a false path to hide a real problem.</p>
+<h3 id="answers">Answers</h3>
+<p><strong>Brain Power</strong> — <em>An unconstrained 100 MHz clock: does the report show a failure, or
+"no paths found"?</em></p>
+<p>Neither, and that is precisely the danger. <code>report_timing_summary</code> will show the clocks
+it knows about — and this one is not among them — so the summary looks <em>clean</em>. WNS will
+be a healthy positive number computed over the constrained portion of your design, and
+the unconstrained logic contributes nothing to it because it was never analysed.</p>
+<p>What you actually get:</p>
+<ul>
+<li>Paths in the unconstrained domain are <strong>not optimised for timing</strong>. The placer and
+  router have no requirement to meet, so they optimise for wirelength and congestion and
+  give you whatever frequency falls out — often 60–100 MHz on a design you believed ran
+  at 250 MHz.</li>
+<li><code>check_timing</code> reports it under <strong><code>no_clock</code></strong>, and <code>report_timing_summary
+  -report_unconstrained</code> lists the endpoints. Neither runs by default in a
+  "click Generate Bitstream" flow.</li>
+<li>Crossings between the unconstrained domain and your real clocks are unanalysed in both
+  directions, so genuine CDC bugs sail through.</li>
+</ul>
+<p>The risk in one sentence: <strong>an unconstrained path does not fail, it lies.</strong> A design with
+one unconstrained clock and 0.500 ns of WNS is in worse shape than a design with −0.050 ns
+of WNS and complete constraints, because the second one you can fix and the first one you
+do not know is broken. Run <code>check_timing -verbose</code> and
+<code>report_timing_summary -report_unconstrained</code> on every build; treat <code>no_clock</code> and
+<code>unconstrained_internal_endpoints</code> as errors.</p>
+<p><strong>Sharpen Your Pencil #1</strong> —</p>
+<div class="arithmatex">\[T_{\text{input,max}} = T_{co,\max} + T_{\text{data}}^{\max} - T_{\text{clk}}^{\min} = 4.5 + 0.35 - 0.60 = 4.250\ \text{ns}\]</div>
+<div class="arithmatex">\[T_{\text{input,min}} = T_{co,\min} + T_{\text{data}}^{\min} - T_{\text{clk}}^{\max} = 2.0 + 0.30 - 0.65 = 1.650\ \text{ns}\]</div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nv">set_input_delay</span><span class="w"> </span><span class="o">-</span>clock<span class="w"> </span>ext_clk<span class="w"> </span><span class="o">-</span>max<span class="w"> </span><span class="mf">4.250</span><span class="w"> </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span><span class="k">{</span><span class="nv">data</span><span class="k">[</span><span class="o">*</span><span class="k">]}]</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nv">set_input_delay</span><span class="w"> </span><span class="o">-</span>clock<span class="w"> </span>ext_clk<span class="w"> </span><span class="o">-</span>min<span class="w"> </span><span class="mf">1.650</span><span class="w"> </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span><span class="k">{</span><span class="nv">data</span><span class="k">[</span><span class="o">*</span><span class="k">]}]</span>
+</code></pre></div>
+<p>Capture window at 8.000 ns:</p>
+<div class="arithmatex">\[T_{\text{window}} = 8.000 - 4.250 - 1.650 = 2.100\ \text{ns}\]</div>
+<p>2.1 ns is workable but not generous — it is about a quarter of the period, and it leaves
+little room for the FPGA's own input path uncertainty. Worth noticing: the <em>clock</em> trace
+being longer than the data traces cost you nothing here and in fact helped, by
+subtracting from <code>-max</code>. Deliberately lengthening the clock trace is a real (if crude)
+board-level technique for buying setup margin on a system-synchronous input.</p>
+<p><strong>Sharpen Your Pencil #2</strong> —</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nv">set_multicycle_path</span><span class="w"> </span><span class="o">-</span>setup<span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">-</span>from<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span>u_cfg<span class="o">/</span>ctrl_reg<span class="o">*</span><span class="k">]</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span>u_dsp<span class="o">/</span>dat_reg<span class="o">*</span><span class="k">]</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nv">set_multicycle_path</span><span class="w"> </span><span class="o">-</span>hold<span class="w">  </span><span class="mi">3</span><span class="w"> </span><span class="o">-</span>from<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span>u_cfg<span class="o">/</span>ctrl_reg<span class="o">*</span><span class="k">]</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span>u_dsp<span class="o">/</span>dat_reg<span class="o">*</span><span class="k">]</span>
+</code></pre></div>
+<p>If you write only the <code>-setup 4</code>: you have moved the setup capture edge out by four
+cycles, <strong>and moved the hold check with it.</strong> The hold check now compares against an edge
+three cycles later than the launch, so the tool demands the data stay stable for three
+extra cycles — a requirement almost nothing satisfies. You will see a large, baffling
+crop of hold violations appear on paths you just "relaxed."</p>
+<p>The rule to memorise: <strong><code>-hold</code> is always <code>N-1</code> for a setup multicycle of <code>N</code></strong> in the
+common same-clock case. The <code>-setup</code> constraint alone is not half a fix, it is a new bug.</p>
+<p><strong>Sharpen Your Pencil #3</strong> — Most likely cause: <strong>a <code>set_false_path</code> elsewhere covers the
+same endpoints.</strong> Exception precedence is <code>set_false_path</code> &gt; <code>set_max_delay</code>/<code>set_min_delay</code></p>
+<blockquote>
+<p><code>set_multicycle_path</code>, and it does not care about file order — a false path in a
+constraints file read <em>after</em> yours, or in an IP's own XDC, silently outranks your
+multicycle.</p>
+</blockquote>
+<p>Confirm with:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nv">report_exceptions</span><span class="w"> </span><span class="o">-</span>ignored
+</code></pre></div>
+<p>which lists exactly the exceptions Vivado accepted and then discarded, and why. If your
+multicycle appears there, you have your answer. <code>report_exceptions -coverage</code> is the
+companion — it shows which exceptions are doing nothing because they match no paths at
+all, usually because a cell name changed and the <code>get_cells</code> pattern quietly returned an
+empty list.</p>
+<p>That empty-list failure mode is worth its own habit: a <code>get_cells</code> that matches nothing
+is not an error in Tcl, so a constraint referencing a renamed instance simply stops
+applying. Guard the important ones:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">set</span><span class="w"> </span>cfg_regs<span class="w"> </span><span class="k">[</span><span class="nv">get_cells</span><span class="w"> </span><span class="o">-</span>quiet<span class="w"> </span>u_cfg<span class="o">/</span>cfg_reg<span class="o">*</span><span class="k">]</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">if</span><span class="w"> </span><span class="k">{[</span><span class="nb">llength</span><span class="w"> </span><span class="nv">$cfg_regs</span><span class="k">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nv">0</span><span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="k">error</span><span class="w"> </span><span class="s2">&quot;XDC: u_cfg/cfg_reg* matched nothing - did the hierarchy change?&quot;</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="k">}</span>
+</code></pre></div>
+<h3 id="there-are-no-dumb-questions">There Are No Dumb Questions</h3>
+<p><strong>Q: Should I use <code>set_clock_groups -asynchronous</code> or <code>set_false_path</code> between two
+clock domains?</strong></p>
+<p>A: <code>set_clock_groups -asynchronous</code>, essentially always. It is bidirectional (a false
+path is one direction, so you need two), it is applied at the clock level so it
+automatically covers generated clocks with <code>-include_generated_clocks</code>, and it states
+your <em>intent</em> — "these domains are unrelated" — rather than an <em>action</em>. The exception:
+when you want to bound the crossing rather than ignore it, in which case you want
+neither, and you want <code>set_max_delay -datapath_only</code> plus <code>set_bus_skew</code>. Section 2.3
+covers why.</p>
+<p><strong>Q: Where do IP core constraints fit into the ordering?</strong></p>
+<p>A: Vivado reads IP XDC files at points the IP itself specifies (<code>PROCESSING_ORDER</code> of
+<code>EARLY</code>, <code>NORMAL</code> or <code>LATE</code>), which means an IP's constraints can land after yours no
+matter where the IP sits in your file list. If you need to override something an IP
+constrains, set your own file to <code>LATE</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nv">set_property</span><span class="w"> </span>PROCESSING_ORDER<span class="w"> </span>LATE<span class="w"> </span><span class="k">[</span><span class="nv">get_files</span><span class="w"> </span>my_overrides.xdc<span class="k">]</span>
+</code></pre></div>
+<p>and verify with <code>report_exceptions -ignored</code> that you actually won.</p>
+<p><strong>Q: My <code>set_input_delay</code> numbers feel like guesses. How exact do they need to be?</strong></p>
+<p>A: Exact enough that the <em>sum</em> of max and min is right, because that sum is what defines
+your capture window. Being pessimistic by 200 ps on both costs you 400 ps of window you
+did have. Being optimistic ships a board that fails intermittently at temperature. Get
+<span class="arithmatex">\(T_{co}\)</span> from the datasheet's timing table, get flight times from your layout tool's
+length report divided by roughly 6 ps/mm for a stripline on FR-4, and write the source of
+each number in a comment.</p>
+<p><strong>Q: Is there any legitimate use of <code>set_false_path</code>?</strong></p>
+<p>A: Yes — genuinely static signals. A configuration strap that is set by a resistor and
+never changes, a debug mux select written once at boot and quiesced for cycles either
+side, a test-mode enable. The test is not "does this signal change rarely" but "<strong>can this
+signal change while the destination is sampling it?</strong>" If the answer is ever yes, you need
+a synchronizer, not an exception. "It only changes once a year" is not the same as "it
+cannot change during a sample," and the difference is what causes the once-a-year outage.</p>
+<h3 id="bullet-points">Bullet Points</h3>
+<ul>
+<li><strong>XDC section order</strong>: assertions (<code>create_clock</code>) → I/O delays → clock groups →
+  exceptions. Same-type constraints: <strong>last one wins, silently.</strong></li>
+<li><strong>Exception precedence ignores file order</strong>:
+  <code>set_false_path</code> &gt; <code>set_max_delay</code>/<code>set_min_delay</code> &gt; <code>set_multicycle_path</code>.</li>
+<li><strong>Input delay, system-synchronous</strong>:
+  max <span class="arithmatex">\(= T_{co,\max} + T_{\text{data}}^{\max} - T_{\text{clk}}^{\min}\)</span>;
+  min <span class="arithmatex">\(= T_{co,\min} + T_{\text{data}}^{\min} - T_{\text{clk}}^{\max}\)</span>.</li>
+<li><strong>Capture window</strong> <span class="arithmatex">\(= T_{\text{clk}} - T_{\text{in,max}} - T_{\text{in,min}}\)</span>. If it is
+  negative, no constraint can save the interface — change the architecture.</li>
+<li><strong>A setup multicycle of <span class="arithmatex">\(N\)</span> needs a hold multicycle of <span class="arithmatex">\(N-1\)</span>.</strong> The <code>-setup</code> alone
+  creates hold violations.</li>
+<li><strong>Two clocks on one port</strong>: use <code>-add</code> and <code>set_clock_groups -physically_exclusive</code>.
+  Without <code>-add</code>, the second silently replaces the first.</li>
+<li><strong>A <code>get_cells</code> that matches nothing is not an error.</strong> Guard constraints whose scope
+  depends on hierarchy names.</li>
+<li><strong>Run every build</strong>: <code>report_clocks</code>, <code>check_timing -verbose</code>,
+  <code>report_exceptions -ignored</code>, <code>report_exceptions -coverage</code>,
+  <code>report_timing_summary -report_unconstrained</code>.</li>
+<li><strong><code>no_clock</code> and <code>unconstrained_internal_endpoints</code> are errors</strong>, not advisories. An
+  unconstrained path does not fail — it lies.</li>
+</ul>
+<hr />
+<p>[REVIEW_STATUS: APPROVED BY PUBLISHER]</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../2.1_timing_ballet/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 2.1 Defining Clocks">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                2.1 Defining Clocks
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../2.3_cdc_minefield/" class="md-footer__link md-footer__link--next" aria-label="Next: 2.3 CDC Minefield">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                2.3 CDC Minefield
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2026 <a href="https://github.com/mehdibadjian">Mehdi Badjian</a> &middot; <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga">github.com/mehdibadjian/no-magic-smoke-fpga</a> &middot; content <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/blob/main/LICENSE-CODE">MIT</a> &middot; independent, unofficial guide - not affiliated with or endorsed by AMD, Inc.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga" target="_blank" rel="noopener" title="Source and issues on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.footer", "content.code.copy", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
