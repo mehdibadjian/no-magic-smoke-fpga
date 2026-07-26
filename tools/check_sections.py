@@ -236,6 +236,54 @@ def check_nav(rep: Report) -> None:
             rep.error("mkdocs.yml", f"nav references docs/{ref} which does not exist")
 
 
+def check_skills(spec: dict, rep: Report) -> None:
+    """Agent skills must not drift out of sync with the book.
+
+    The skills let an agent retrieve from the book without reading 74,000 words.
+    That only works while the routing table knows about every section — a new
+    section the index has never heard of is invisible to retrieval, which is the
+    same class of silent drift that let toc.json point at eight files that did
+    not exist.
+    """
+    skills_dir = REPO / ".claude" / "skills"
+    if not skills_dir.is_dir():
+        return  # skills are optional; nothing to keep in sync
+
+    for skill in ("fpga-ultrafast", "ultrafast-authoring"):
+        path = skills_dir / skill / "SKILL.md"
+        if not path.exists():
+            rep.error(f".claude/skills/{skill}", "SKILL.md is missing")
+            continue
+        text = path.read_text(encoding="utf-8")
+        if not text.startswith("---"):
+            rep.error(f".claude/skills/{skill}/SKILL.md", "missing YAML frontmatter")
+            continue
+        front = text.split("---", 2)[1]
+        for field in ("name:", "description:"):
+            if field not in front:
+                rep.error(
+                    f".claude/skills/{skill}/SKILL.md",
+                    f"frontmatter has no '{field.rstrip(':')}' — skills trigger on it",
+                )
+
+    index = skills_dir / "fpga-ultrafast" / "references" / "topic-index.md"
+    if not index.exists():
+        rep.error(".claude/skills/fpga-ultrafast", "references/topic-index.md is missing")
+        return
+
+    index_text = index.read_text(encoding="utf-8")
+    where = ".claude/skills/fpga-ultrafast/references/topic-index.md"
+    for entry in spec["sections"]:
+        sid = entry["id"]
+        # Match the id as a standalone token so "1.1" does not match "11.1".
+        if not re.search(rf"(?<![\d.]){re.escape(sid)}(?![\d.])", index_text):
+            rep.error(
+                where,
+                f"section {sid} is not routed to from the topic index — "
+                "agents will not find it",
+            )
+
+
 def main() -> int:
     spec = json.loads(SPEC_PATH.read_text(encoding="utf-8"))
     rep = Report()
@@ -245,6 +293,7 @@ def main() -> int:
 
     check_toc(spec, rep)
     check_nav(rep)
+    check_skills(spec, rep)
 
     on_disk = {p.name for p in (REPO / "docs" / "sections").glob("*.md")}
     in_spec = {Path(s["file"]).name for s in spec["sections"]}

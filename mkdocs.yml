@@ -1,7 +1,16 @@
-site_name: AMD UltraFast Design Methodology
+site_name: 'No Magic Smoke: A Brain-Friendly Guide to AMD UltraFast'
 site_url: https://mehdibadjian.github.io/no-magic-smoke-fpga/
-site_description: A Brain-Friendly Guide to the AMD UltraFast Design Methodology.
-site_author: BFAL Autonomous Publisher
+site_description: >-
+  An independent, unofficial study companion to the AMD UltraFast Design Methodology.
+  FPGA engineering taught Head First style, with the arithmetic left in - worked
+  calculations, runnable artifacts, and answers to every question it asks.
+site_author: Mehdi Badjian
+copyright: >-
+  Content CC BY 4.0, code MIT. An independent, unofficial guide - not affiliated with
+  or endorsed by AMD, Inc.
+repo_url: https://github.com/mehdibadjian/no-magic-smoke-fpga
+repo_name: mehdibadjian/no-magic-smoke-fpga
+edit_uri: edit/main/docs/
 
 theme:
   name: material
@@ -52,6 +61,7 @@ nav:
   - "Chapter 6: Debug & Tuning":
     - 6.1 Hardware Debugging: sections/6.1_debug.md
     - 6.2 Performance Tuning: sections/6.2_tuning.md
+  - References: references.md
 
 markdown_extensions:
   - admonition

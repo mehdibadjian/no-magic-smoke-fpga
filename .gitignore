@@ -2,5 +2,18 @@
 .DS_Store
 
 #agent
-.agents 
+.agents
 .gemini
+
+# mkdocs build output
+site/
+.cache/
+
+# written by tools/install_skills.sh - machine-specific path, never commit
+book_path.txt
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
