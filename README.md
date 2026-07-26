@@ -134,6 +134,7 @@ pip install mkdocs-material
 mkdocs serve                      # http://127.0.0.1:8000
 
 python3 tools/check_sections.py   # run the authoring contract checks
+./tools/install_skills.sh         # make the agent skills available everywhere
 ```
 
 ## For agents
@@ -141,6 +142,12 @@ python3 tools/check_sections.py   # run the authoring contract checks
 The book ships with two [Agent Skills](.claude/skills/), so an AI assistant working on an
 FPGA problem can pull grounded facts out of it instead of recalling plausible ones. Full
 entry point: **[`AGENTS.md`](AGENTS.md)**.
+
+Install once and they work from any project, not just this repo:
+
+```bash
+./tools/install_skills.sh     # → ~/.claude/skills, pins the book path, verifies it resolves
+```
 
 **[`fpga-ultrafast`](.claude/skills/fpga-ultrafast/)** — retrieval. Triggers on FPGA,
 Vivado, XDC, timing, CDC and UltraScale work. Because every section carries the same named

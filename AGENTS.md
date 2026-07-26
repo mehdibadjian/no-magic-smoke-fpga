@@ -50,16 +50,32 @@ symptoms, tasks, Vivado commands and primitives to section IDs.
 
 ### Working outside this repo
 
-The script auto-detects the book when run inside the repo. Elsewhere:
+Most FPGA work does not happen in this repo, so install the skills globally once:
+
+```bash
+./tools/install_skills.sh          # copies to ~/.claude/skills, pins the book path
+```
+
+The installer records this checkout's location inside the installed copy, so `lookup.py`
+resolves the book from any working directory without an environment variable. It verifies
+that from outside the repo before reporting success. Undo with `--uninstall`.
+
+Without installing, the script auto-detects the book when run inside the repo. Otherwise:
 
 ```bash
 export NO_MAGIC_SMOKE_ROOT=/path/to/no-magic-smoke-fpga
-# or: --book-root /path/to/no-magic-smoke-fpga
+# or pass: --book-root /path/to/no-magic-smoke-fpga
 ```
 
-With no local copy, the book is published at
-<https://mehdibadjian.github.io/no-magic-smoke-fpga/>, with section URLs of the form
-`.../sections/2.3_cdc_minefield/`.
+An explicit `--book-root` is authoritative — a wrong one fails loudly rather than silently
+reading a different copy.
+
+**With no local copy at all**, the book is published at
+<https://mehdibadjian.github.io/no-magic-smoke-fpga/>. Fetch section pages directly; URLs
+follow `.../sections/2.3_cdc_minefield/`, and `.../references/` has the source list. The
+same block headings (`Bullet Points`, `Do the Math`, …) appear on the rendered pages, so
+the retrieval strategy above still applies — you are just reading HTML instead of running
+the script.
 
 ### What not to do with it
 

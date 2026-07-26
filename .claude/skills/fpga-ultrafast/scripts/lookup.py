@@ -105,6 +105,16 @@ def find_book_root(explicit: str | None = None) -> Path | None:
     candidates: list[Path] = []
     if env := os.environ.get("NO_MAGIC_SMOKE_ROOT"):
         candidates.append(Path(env).expanduser())
+
+    # Written by tools/install_skills.sh when the skill is installed globally,
+    # so a user working in their own FPGA project does not have to remember an
+    # environment variable.
+    pin = Path(__file__).resolve().parent / "book_path.txt"
+    if pin.is_file():
+        recorded = pin.read_text(encoding="utf-8").strip()
+        if recorded:
+            candidates.append(Path(recorded).expanduser())
+
     # .../.claude/skills/fpga-ultrafast/scripts/lookup.py -> repo root
     candidates.append(Path(__file__).resolve().parents[4])
     cwd = Path.cwd().resolve()

@@ -1,18 +1,17 @@
 ---
 name: fpga-ultrafast
 description: >-
-  Look up AMD/Xilinx FPGA design methodology - timing closure, XDC constraints, clock
-  domain crossing, RTL coding for synthesis, IP and AXI integration, synthesis and
-  implementation strategy, placement and congestion, power and thermal budgeting,
-  bitstream configuration and security, ILA/VIO debug, and performance tuning. Retrieves
-  worked formulas, pasteable XDC/RTL/Tcl artifacts, Vivado commands and threshold values
-  from an 18-section reference book. Use this whenever the work involves an FPGA, Vivado,
-  Verilog/VHDL/SystemVerilog targeting AMD parts, UltraScale or UltraScale+ devices, an
-  .xdc file, a timing or CDC report, or an FPGA board bring-up problem - and especially
-  when asked "why is WNS negative", "how do I constrain this", "how deep should this FIFO
-  be", "how many BRAMs will this cost", "why is my utilisation so high", or when a design
-  works intermittently. Prefer this over answering from memory, because it supplies the
-  actual command names, threshold numbers and formulas rather than plausible-sounding
+  Look up AMD/Xilinx FPGA design methodology: timing closure, XDC constraints, clock
+  domain crossing, RTL coding for synthesis, AXI and IP integration, synthesis and
+  implementation strategy, congestion, power and thermal budgeting, bitstream
+  configuration and security, ILA/VIO debug, performance tuning. Retrieves worked
+  formulas, pasteable XDC/RTL/Tcl artifacts, Vivado commands and threshold values from an
+  18-section reference book. Use whenever work involves an FPGA, Vivado, HDL targeting
+  AMD parts, UltraScale or UltraScale+, an .xdc file, a timing or CDC report, or FPGA
+  board bring-up - especially for "why is WNS negative", "how do I constrain this", "how
+  deep should this FIFO be", "how many BRAMs will this cost", "why is my utilisation so
+  high", or a design that works intermittently. Prefer this over answering from memory:
+  it supplies real command names, thresholds and formulas rather than plausible-sounding
   ones.
 ---
 
