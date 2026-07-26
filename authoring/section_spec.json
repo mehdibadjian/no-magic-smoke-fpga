@@ -1,0 +1,199 @@
+{
+  "$comment": "Machine-readable form of AUTHORING.md. Enforced by tools/check_sections.py.",
+  "version": 2,
+  "required_headings": [
+    "### Analogy → Silicon",
+    "### Do the Math",
+    "### The Real Artifact",
+    "### Code Detective",
+    "### Sharpen Your Pencil",
+    "### Answers",
+    "### There Are No Dumb Questions",
+    "### Bullet Points"
+  ],
+  "thresholds": {
+    "min_code_blocks": 3,
+    "min_artifact_lines": 20,
+    "min_tables": 1,
+    "min_tool_tokens": 3,
+    "min_numbers_with_units": 6,
+    "min_words": 1400
+  },
+  "tool_token_pattern": "\\b(report_[a-z_]+|create_clock|create_generated_clock|set_input_delay|set_output_delay|set_clock_groups|set_max_delay|set_bus_skew|set_false_path|set_multicycle_path|set_case_analysis|set_clock_uncertainty|set_property|create_pblock|resize_pblock|add_cells_to_pblock|synth_design|opt_design|place_design|phys_opt_design|route_design|write_bitstream|write_qor_suggestions|read_qor_suggestions|get_ports|get_pins|get_cells|get_clocks|get_nets|get_timing_paths|get_hw_[a-z_]+|refresh_hw_device|create_debug_core|connect_debug_port|write_debug_probes|write_cfgmem|check_timing|read_saif|set_switching_activity|set_operating_conditions|power_opt_design|upgrade_ip|generate_target|xpm_cdc_[a-z_]+|xpm_fifo_[a-z_]+|xpm_memory_[a-z_]+|ASYNC_REG|DONT_TOUCH|MARK_DEBUG|MAX_FANOUT|RAM_STYLE|SRL_STYLE|USE_DSP|KEEP_HIERARCHY|CLOCK_DEDICATED_ROUTE|USER_SLL_REG|BUFGCE(?:_DIV)?|BUFGCTRL|MMCME[0-9]|PLLE[0-9]|DSP48E2|RAMB(?:18|36)E2|URAM288|LAGUNA)\\b",
+  "$comment_units": "Physical units OR countable engineering quantities. A bare number is not evidence of engineering; a number attached to a thing you can count is.",
+  "units_pattern": "\\b\\d+(?:[.,]\\d+)?\\s?(?:ps|ns|us|µs|ms|s|MHz|GHz|kHz|Hz|mV|V|mA|A|W|mW|°C|C/W|Gb/s|GB/s|Mb/s|MB/s|Kb|Mb|Gb|KB|MB|GB|mils?|mm|um|µm|ohms?|Ω|%|cycles?|LUTs?|CLBs?|DSPs?|BRAMs?|URAMs?|SRLs?|flip-flops?|flops?|registers?|bits?|bytes?|stages?|levels?|entries|samples?|ports?|layers?|lanes?|channels?|control sets?)\\b",
+  "banned_patterns": [
+    {
+      "pattern": "(?i)\\bmagic\\b(?!\\s+smoke)",
+      "reason": "Hand-waving. Name the mechanism instead."
+    },
+    {
+      "pattern": "(?i)the tools will figure it out",
+      "reason": "The whole point of the methodology is that they will not."
+    }
+  ],
+  "sections": [
+    {
+      "id": "1.1",
+      "file": "docs/sections/1.1_pcb_layout.md",
+      "objectives": [
+        "Compute a breakout channel budget from BGA pitch, trace width and clearance",
+        "Read an I/O bank rule and predict the DRC that fires when it is violated",
+        "Distinguish get_ports from get_pins when writing a pin-check script"
+      ]
+    },
+    {
+      "id": "1.2",
+      "file": "docs/sections/1.2_power_planning.md",
+      "objectives": [
+        "Compute PDN target impedance from rail voltage, ripple budget and transient current",
+        "Size a decoupling network by frequency band",
+        "Write a fail-safe SYSMON health check"
+      ]
+    },
+    {
+      "id": "1.3",
+      "file": "docs/sections/1.3_clocking.md",
+      "objectives": [
+        "Choose between BUFGCE, BUFGCE_DIV and BUFGCTRL from a stated requirement",
+        "Compute MMCM VCO frequency and output divider settings",
+        "Read report_clock_networks and report_clock_interaction"
+      ]
+    },
+    {
+      "id": "1.4",
+      "file": "docs/sections/1.4_ssi_hbm.md",
+      "objectives": [
+        "Budget an SLR crossing against a clock period and decide the pipeline depth",
+        "Compute achievable HBM bandwidth from port count, width and frequency",
+        "Constrain logic to an SLR with a pblock and USER_SLL_REG"
+      ]
+    },
+    {
+      "id": "2.1",
+      "file": "docs/sections/2.1_timing_ballet.md",
+      "objectives": [
+        "Compute setup and hold slack from the terms of a Vivado timing path report",
+        "Explain why hold failures are frequency independent",
+        "Convert a WNS/TNS pair into an action"
+      ]
+    },
+    {
+      "id": "2.2",
+      "file": "docs/sections/2.2_constraints.md",
+      "objectives": [
+        "Write set_input_delay/set_output_delay for a system-synchronous interface",
+        "Write a correct set_multicycle_path pair (setup and hold)",
+        "Order an XDC file so that later constraints do not silently overwrite earlier ones"
+      ]
+    },
+    {
+      "id": "2.3",
+      "file": "docs/sections/2.3_cdc_minefield.md",
+      "objectives": [
+        "Compute synchronizer MTBF and see what settling time buys",
+        "Pick the right XPM_CDC macro for a given crossing",
+        "Constrain a crossing with set_max_delay -datapath_only plus set_bus_skew"
+      ]
+    },
+    {
+      "id": "3.1",
+      "file": "docs/sections/3.1_rtl_coding.md",
+      "objectives": [
+        "Count control sets and predict CLB packing",
+        "Write DSP48E2-inferring RTL with the correct pipeline depth",
+        "Write BRAM/URAM-inferring RTL and know what breaks inference"
+      ]
+    },
+    {
+      "id": "3.2",
+      "file": "docs/sections/3.2_ip_integration.md",
+      "objectives": [
+        "Write an AXI4-Stream source that obeys the VALID/READY rules",
+        "Compute interconnect bandwidth and spot the width/clock mismatch",
+        "Manage IP versioning and lock state in a repo"
+      ]
+    },
+    {
+      "id": "3.3",
+      "file": "docs/sections/3.3_security.md",
+      "objectives": [
+        "Compute configuration time from bitstream size, bus width and CONFIGRATE",
+        "Set the bitstream properties for encryption, authentication and fallback",
+        "Design a golden-image fallback map with real flash addresses"
+      ]
+    },
+    {
+      "id": "3.4",
+      "file": "docs/sections/3.4_verification.md",
+      "objectives": [
+        "Write a self-checking testbench with a scoreboard and a SystemVerilog assertion",
+        "Compute how much stimulus a coverage goal implies",
+        "Avoid testbench race conditions with correct event scheduling"
+      ]
+    },
+    {
+      "id": "4.1",
+      "file": "docs/sections/4.1_synthesis.md",
+      "objectives": [
+        "Pick a synth_design directive from a stated QoR problem",
+        "Use report_utilization and report_control_sets to explain LUT bloat",
+        "Apply DONT_TOUCH, KEEP and MARK_DEBUG without breaking optimization"
+      ]
+    },
+    {
+      "id": "4.2",
+      "file": "docs/sections/4.2_placement.md",
+      "objectives": [
+        "Read congestion levels out of report_design_analysis and act on them",
+        "Write a pblock that helps instead of hurts",
+        "Diagnose a CLOCK_DEDICATED_ROUTE failure"
+      ]
+    },
+    {
+      "id": "4.3",
+      "file": "docs/sections/4.3_closure.md",
+      "objectives": [
+        "Decompose a failing path into logic delay, net delay and levels of logic",
+        "Choose between pipelining, retiming, replication and a directive sweep",
+        "Use report_qor_suggestions and incremental implementation"
+      ]
+    },
+    {
+      "id": "5.1",
+      "file": "docs/sections/5.1_power.md",
+      "objectives": [
+        "Compute dynamic power from the alpha-C-V-squared-f terms",
+        "Improve report_power confidence with a SAIF from simulation",
+        "Quantify what clock enables actually save"
+      ]
+    },
+    {
+      "id": "5.2",
+      "file": "docs/sections/5.2_thermal.md",
+      "objectives": [
+        "Compute junction temperature from ambient, power and theta-JA",
+        "Solve for the theta-SA a heatsink must hit",
+        "Build an over-temperature response that does not depend on the fabric clock"
+      ]
+    },
+    {
+      "id": "6.1",
+      "file": "docs/sections/6.1_debug.md",
+      "objectives": [
+        "Compute ILA BRAM cost from probe width and depth",
+        "Use capture control and storage qualification to stretch a buffer",
+        "Instrument a design with MARK_DEBUG and connect_debug_port"
+      ]
+    },
+    {
+      "id": "6.2",
+      "file": "docs/sections/6.2_tuning.md",
+      "objectives": [
+        "Size a FIFO from the latency-bandwidth product",
+        "Compute achieved versus theoretical throughput on an AXI link",
+        "Locate a bottleneck with the AXI Performance Monitor"
+      ]
+    }
+  ]
+}
