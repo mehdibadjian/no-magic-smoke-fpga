@@ -20,7 +20,8 @@
     "min_words": 1400
   },
   "tool_token_pattern": "\\b(report_[a-z_]+|create_clock|create_generated_clock|set_input_delay|set_output_delay|set_clock_groups|set_max_delay|set_bus_skew|set_false_path|set_multicycle_path|set_case_analysis|set_clock_uncertainty|set_property|create_pblock|resize_pblock|add_cells_to_pblock|synth_design|opt_design|place_design|phys_opt_design|route_design|write_bitstream|write_qor_suggestions|read_qor_suggestions|get_ports|get_pins|get_cells|get_clocks|get_nets|get_timing_paths|xpm_cdc_[a-z_]+|xpm_fifo_[a-z_]+|xpm_memory_[a-z_]+|ASYNC_REG|DONT_TOUCH|MARK_DEBUG|MAX_FANOUT|RAM_STYLE|SRL_STYLE|USE_DSP|KEEP_HIERARCHY|CLOCK_DEDICATED_ROUTE|USER_SLL_REG|BUFGCE(?:_DIV)?|BUFGCTRL|MMCME[0-9]|PLLE[0-9]|DSP48E2|RAMB(?:18|36)E2|URAM288|LAGUNA)\\b",
-  "units_pattern": "\\b\\d+(?:\\.\\d+)?\\s?(?:ps|ns|us|µs|ms|s|MHz|GHz|kHz|mV|V|mA|A|W|mW|°C|C/W|Gb/s|GB/s|Mb/s|MB/s|Kb|Mb|Gb|KB|MB|GB|mil|mm|um|µm|ohm|Ω|%)\\b",
+  "$comment_units": "Physical units OR countable engineering quantities. A bare number is not evidence of engineering; a number attached to a thing you can count is.",
+  "units_pattern": "\\b\\d+(?:[.,]\\d+)?\\s?(?:ps|ns|us|µs|ms|s|MHz|GHz|kHz|Hz|mV|V|mA|A|W|mW|°C|C/W|Gb/s|GB/s|Mb/s|MB/s|Kb|Mb|Gb|KB|MB|GB|mils?|mm|um|µm|ohms?|Ω|%|cycles?|LUTs?|CLBs?|DSPs?|BRAMs?|URAMs?|SRLs?|flip-flops?|flops?|registers?|bits?|bytes?|stages?|levels?|entries|samples?|ports?|layers?|lanes?|channels?|control sets?)\\b",
   "banned_patterns": [
     {
       "pattern": "(?i)\\bmagic\\b(?!\\s+smoke)",
