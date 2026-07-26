@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+title: "No Magic Smoke: A Brain-Friendly Guide to the AMD UltraFast Design Methodology"
+message: "If you use or adapt this guide, please cite it."
+type: dataset
+authors:
+  - family-names: Badjian
+    given-names: Mehdi
+repository-code: "https://github.com/mehdibadjian/no-magic-smoke-fpga"
+url: "https://mehdibadjian.github.io/no-magic-smoke-fpga/"
+abstract: >-
+  An independent, unofficial study companion to the AMD UltraFast Design Methodology,
+  covering board and device planning, timing constraints and clock domain crossing, RTL
+  and IP design, implementation and timing closure, power and thermal management, and
+  hardware debug. Written in the Head First pedagogical style, with every analogy mapped
+  onto named silicon and tool commands, a worked calculation in every section, and
+  answers to every question posed. Conformance to the authoring contract is enforced
+  programmatically in CI.
+keywords:
+  - FPGA
+  - AMD
+  - Xilinx
+  - UltraScale
+  - Vivado
+  - UltraFast Design Methodology
+  - timing closure
+  - clock domain crossing
+  - technical education
+license: CC-BY-4.0
+license-url: "https://creativecommons.org/licenses/by/4.0/"
