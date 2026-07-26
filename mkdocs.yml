@@ -6,8 +6,11 @@ site_description: >-
   calculations, runnable artifacts, and answers to every question it asks.
 site_author: Mehdi Badjian
 copyright: >-
-  Content CC BY 4.0, code MIT. An independent, unofficial guide - not affiliated with
-  or endorsed by AMD, Inc.
+  &copy; 2026 <a href="https://github.com/mehdibadjian">Mehdi Badjian</a> &middot;
+  <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga">github.com/mehdibadjian/no-magic-smoke-fpga</a>
+  &middot; content <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>,
+  code <a href="https://github.com/mehdibadjian/no-magic-smoke-fpga/blob/main/LICENSE-CODE">MIT</a>
+  &middot; independent, unofficial guide - not affiliated with or endorsed by AMD, Inc.
 repo_url: https://github.com/mehdibadjian/no-magic-smoke-fpga
 repo_name: mehdibadjian/no-magic-smoke-fpga
 edit_uri: edit/main/docs/
@@ -33,7 +36,18 @@ theme:
     - navigation.tabs
     - navigation.sections
     - navigation.expand
+    - navigation.footer
     - content.code.copy
+    - content.action.edit
+    - content.action.view
+  icon:
+    repo: fontawesome/brands/github
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/mehdibadjian/no-magic-smoke-fpga
+      name: Source and issues on GitHub
 
 nav:
   - Home: index.md
