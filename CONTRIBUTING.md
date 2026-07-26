@@ -26,6 +26,17 @@ please [open an issue](https://github.com/mehdibadjian/no-magic-smoke-fpga/issue
 pull request with the fix and the source you checked it against. Include the document ID
 and version. That makes the correction verifiable instead of a difference of opinion.
 
+## Using an AI assistant
+
+Fine, and the repo is set up for it — see [`AGENTS.md`](AGENTS.md). The
+[`ultrafast-authoring`](.claude/skills/ultrafast-authoring/) skill encodes the contract
+below so an assistant produces a section that passes CI rather than a fluent essay with no
+answers in it.
+
+Two things the skill cannot do for you: verify that a calculation is correct, and verify
+that a primitive exists on the device family you named. Both have bitten this book before.
+Check them yourself before opening the pull request.
+
 ## Editing or adding a section
 
 Every section must satisfy the contract in [`AUTHORING.md`](AUTHORING.md). Read it first;

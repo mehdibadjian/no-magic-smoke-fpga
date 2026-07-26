@@ -136,6 +136,42 @@ mkdocs serve                      # http://127.0.0.1:8000
 python3 tools/check_sections.py   # run the authoring contract checks
 ```
 
+## For agents
+
+The book ships with two [Agent Skills](.claude/skills/), so an AI assistant working on an
+FPGA problem can pull grounded facts out of it instead of recalling plausible ones. Full
+entry point: **[`AGENTS.md`](AGENTS.md)**.
+
+**[`fpga-ultrafast`](.claude/skills/fpga-ultrafast/)** — retrieval. Triggers on FPGA,
+Vivado, XDC, timing, CDC and UltraScale work. Because every section carries the same named
+blocks, retrieval is structural rather than semantic: an agent asks for `Bullet Points`
+and gets the commands and thresholds, or `Do the Math` and gets the formula worked
+through, without loading 4,300 words to answer a 40-word question.
+
+```console
+$ python3 .claude/skills/fpga-ultrafast/scripts/lookup.py --search "clock domain crossing"
+Sections matching 'clock domain crossing':
+
+  2.3   CDC: Crossing the Clock Domain Minefield  (score 212)
+        https://mehdibadjian.github.io/no-magic-smoke-fpga/sections/2.3_cdc_minefield/
+
+$ python3 .claude/skills/fpga-ultrafast/scripts/lookup.py --section 2.3 --block math
+```
+
+It ships a [symptom index](.claude/skills/fpga-ultrafast/references/topic-index.md) too,
+because symptoms rarely share vocabulary with their causes — *"works for hours, then
+crashes, then works after a reset"* is a CDC problem, and no keyword search for "crashes"
+will ever find §2.3.
+
+**[`ultrafast-authoring`](.claude/skills/ultrafast-authoring/)** — writing. Encodes the
+contract so an agent adding a section produces one that passes CI, rather than another
+fluent essay with no answers in it. This is the skill that would have prevented the
+original failure.
+
+Both are kept honest by the same checker: `tools/check_sections.py` fails the build if the
+topic index stops routing to every section, so a new section can never be invisible to
+retrieval.
+
 ## Contributing
 
 Corrections to technical content are the most valuable thing you can send. See
